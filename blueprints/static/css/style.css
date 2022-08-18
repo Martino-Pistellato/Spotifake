@@ -1,0 +1,11 @@
+body {
+    background-color: #404040;
+  }
+  h1 {
+    color: blue;
+    font-family: verdana;
+    font-size: 300%;
+  }
+  p {
+    color: red;
+  }
