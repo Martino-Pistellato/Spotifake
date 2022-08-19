@@ -19,6 +19,11 @@ p {
     font-family: Gotham_Light;
     font-size: 2vw;
 }
+div {
+  color: rgb(249, 248, 241);
+  font-family: Gotham_Light;
+  font-size: 2vw;
+}
 a {
   color: rgb(219, 219, 213);
   font-family: Gotham_Light;
