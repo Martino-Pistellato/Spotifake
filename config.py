@@ -4,7 +4,7 @@ from os import environ, path
 basedir = path.abspath(path.dirname(__file__))
 
 # Database
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:martino@localhost/prog_db'
+SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:Dat4Bas32022!@localhost/prog_db'
 SQLALCHEMY_ECHO = True
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 

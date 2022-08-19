@@ -15,10 +15,12 @@ def create_app():
         # Import parts of our application
         from .home import routes
         from .profile import routes
+        from .log import routes
         
         # Register Blueprints
         #app.register_blueprint(home.home_bp)
         #app.register_blueprint(profile.profile_bp)
+        app.register_blueprint(log.login_bp)
         
         # Create Database
         db.create_all()

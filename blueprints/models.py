@@ -3,7 +3,7 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-engine = create_engine("postgresql://postgres:martino@localhost/prog_db")
+engine = create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")
 metadata = MetaData()
 Base = declarative_base()
 Session = sessionmaker(bind=engine)      
@@ -28,15 +28,16 @@ class Users(Base):
     profile = relationship('Profiles', back_populates="users")
     
     def __repr__(self):
-        return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s')>" % (self.email, self.Name, self.BirthDate, self.Country, self.Gender)
+        return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
     
-    def __init__(self, email, name, birth, country, gender, password):
+    def __init__(self, email, name, birth, country, gender, password, profile):
         self.email = email
         self.Name = name
         self.BirthDate = birth
         self.Country = country
         self.Gender = gender
         self.Password = password
+        self.Profile = profile
 
     def create_user(self):
         session.add(self)
