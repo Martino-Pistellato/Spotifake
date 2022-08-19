@@ -15,7 +15,7 @@ session = Session()
 class Users(Base, UserMixin):
     __tablename__ = "Users"
     
-    email = Column(String, CheckConstraint(column('email').like('%@%')), primary_key = True) 
+    Email = Column(String, CheckConstraint(column('Email').like('%@%')), primary_key = True) 
     Name = Column(String)
     BirthDate = Column(Date)
     Country = Column(String)
@@ -29,10 +29,10 @@ class Users(Base, UserMixin):
     profile = relationship('Profiles', back_populates="users")
     
     def __repr__(self):
-        return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
+        return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
     
     def __init__(self, email, name, birth, country, gender, password, profile):
-        self.email = email
+        self.Email = email
         self.Name = name
         self.BirthDate = birth
         self.Country = country
@@ -45,7 +45,7 @@ class Users(Base, UserMixin):
         session.commit()
     
     def get_id(self):
-        return self.email
+        return self.Email
         
   
 class Profiles(Base):
@@ -58,6 +58,9 @@ class Profiles(Base):
     
     def __repr__(self):
         return "<Profiles(Name='%s')>" % (self.Name)
+    
+    def __init__(self, name):
+        self.Name = name
 
 class Songs(Base):
     __tablename__ = "Songs"
@@ -76,7 +79,9 @@ class Songs(Base):
 
 class Record_Houses(Base):
     __tablename__ = "Record_Houses"
+
     Name = Column(String, primary_key = True)
+
     albums = relationship('Albums', back_populates="record_house")
     
     def __repr__(self):
@@ -84,6 +89,7 @@ class Record_Houses(Base):
 
 class Albums(Base):
     __tablename__ = "Albums"
+
     Name = Column(String)
     ReleaseDate = Column(Date)
     Duration = Column(Time)
@@ -99,6 +105,7 @@ class Albums(Base):
 
 class Playlists(Base):
     __tablename__ = "Playlists"
+
     Name = Column(String)
     Id = Column(Integer, primary_key = True)
     
@@ -110,6 +117,7 @@ class Playlists(Base):
 
 class Actions(Base):
     __tablename__ = "Actions"
+
     Name = Column(String)
     Id = Column(Integer, primary_key = True)
     
@@ -124,7 +132,7 @@ class ArtistsSongs(Base):
     __tablename__ = "ArtistsSongs"
     
     song_id = Column(Integer, ForeignKey(Songs.Id), primary_key = True)
-    artist_email = Column(String, ForeignKey(Users.email), primary_key = True)
+    artist_email = Column(String, ForeignKey(Users.Email), primary_key = True)
     
     def __repr__(self):
         return "<ArtistsSongs(song_id='%d', artist_email='%s')>" % (self.song_id, self.artist_email)  
@@ -133,7 +141,7 @@ class ArtistsAlbums(Base):
     __tablename__ = "ArtistsAlbums"
     
     album_id = Column(Integer, ForeignKey(Albums.Id), primary_key = True)
-    artist_email = Column(String, ForeignKey(Users.email), primary_key = True)
+    artist_email = Column(String, ForeignKey(Users.Email), primary_key = True)
     
     def __repr__(self):
         return "<ArtistsAlbums(album_id='%d', artist_email='%s')>" % (self.album_id, self.artist_email)  
@@ -160,7 +168,7 @@ class PlaylistsUsers(Base):
     __tablename__ = "PlaylistsUsers"
     
     playlist_id = Column(Integer, ForeignKey(Playlists.Id), primary_key = True)
-    user_email = Column(String, ForeignKey(Users.email), primary_key = True)
+    user_email = Column(String, ForeignKey(Users.Email), primary_key = True)
     
     def __repr__(self):
         return "<PlaylistsUsers(playlist_id='%d', user_email='%s')>" % (self.playlist_id, self.user_email) 
@@ -176,4 +184,16 @@ class ProfilesActions(Base):
 
 ####################################################################################
 
-Base.metadata.create_all(engine) 
+
+Base.metadata.create_all(engine)
+
+Free = Profiles('Free')
+Premium = Profiles('Premium')
+Artist = Profiles('Artist')
+
+session.add(Free)
+session.add(Premium)
+session.add(Artist)
+
+session.commit()
+
