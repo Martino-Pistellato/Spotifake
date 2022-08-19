@@ -11,6 +11,6 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 class Config:
     """Base config."""
     DEBUG = True
-    SECRET_KEY = environ.get('SECRET_KEY')
+    SECRET_KEY = environ.get('SECRRET_KEY')
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'

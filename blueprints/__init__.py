@@ -16,11 +16,15 @@ def create_app():
         from .home import routes
         from .profile import routes
         from .log import routes
+        from .album import routes
+        from .playlist import routes
         
         # Register Blueprints
-        #app.register_blueprint(home.home_bp)
-        #app.register_blueprint(profile.profile_bp)
-        app.register_blueprint(log.login_bp)
+        app.register_blueprint(home.routes.home_bp)
+        #app.register_blueprint(profile.routes.profile_bp)
+        app.register_blueprint(log.routes.login_bp)
+        #app.register_blueprint(album.routes.album_bp)
+        #app.register_blueprint(playlist.routes.playlist_bp)
         
         # Create Database
         db.create_all()

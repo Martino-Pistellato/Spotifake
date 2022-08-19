@@ -2,6 +2,7 @@ import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from flask_login import UserMixin
 
 engine = create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")
 metadata = MetaData()
@@ -11,14 +12,14 @@ session = Session()
 
 ### Definizione tabelle principali ###
 
-class Users(Base):
+class Users(Base, UserMixin):
     __tablename__ = "Users"
     
-    email = Column(String, CheckConstraint(column('email').like('%@%')), primary_key = True)
+    email = Column(String, CheckConstraint(column('email').like('%@%')), primary_key = True) 
     Name = Column(String)
     BirthDate = Column(Date)
     Country = Column(String)
-    Gender = Column(String, CheckConstraint(or_('Gender' == 'M', 'Gender' == 'F')))
+    Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F'))) #, CheckConstraint(or_('Gender' == 'M', 'Gender' == 'F'))
     Profile = Column(String, ForeignKey('Profiles.Name'), default = 'Free')
     Password = Column(String, nullable = False)
     
@@ -42,6 +43,9 @@ class Users(Base):
     def create_user(self):
         session.add(self)
         session.commit()
+    
+    def get_id(self):
+        return self.email
         
   
 class Profiles(Base):

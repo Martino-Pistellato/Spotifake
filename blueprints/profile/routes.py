@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 from flask import current_app as app
 
 
@@ -8,3 +8,7 @@ profile_bp = Blueprint(
     template_folder='templates',
     static_folder='static'
 )
+
+@profile_bp.route('/')
+def profile():
+    return render_template("profile.html")
