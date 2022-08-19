@@ -12,7 +12,7 @@ home_bp = Blueprint(
     static_folder='static'
 )
 
-@home_bp.route('/private')
+@home_bp.route('/home')
 @login_required # richiede autenticazione
-def private():
+def home():
     return render_template("home.html")
