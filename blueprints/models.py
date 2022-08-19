@@ -19,7 +19,7 @@ class Users(Base, UserMixin):
     Name = Column(String)
     BirthDate = Column(Date)
     Country = Column(String)
-    Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F'))) #, CheckConstraint(or_('Gender' == 'M', 'Gender' == 'F'))
+    Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F'))) 
     Profile = Column(String, ForeignKey('Profiles.Name'), default = 'Free')
     Password = Column(String, nullable = False)
     
@@ -51,7 +51,7 @@ class Users(Base, UserMixin):
 class Profiles(Base):
     __tablename__ = "Profiles"
     
-    Name = Column(String, primary_key = True)
+    Name = Column(String, CheckConstraint(or_(column('Name') == 'Free', column('Name') == 'Premium', column('Name') == 'Artist')), primary_key = True)
     
     actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles")
     users = relationship('Users', back_populates="profile") #cascade="all, delete, delete-orphan"
@@ -184,7 +184,7 @@ class ProfilesActions(Base):
 
 ####################################################################################
 
-
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(engine)
 
 Free = Profiles('Free')
