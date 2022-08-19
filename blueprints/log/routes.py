@@ -56,7 +56,7 @@ def login ():
         if(request.form["pass"] == real_us.Password): 
             user = get_user_by_email(request.form["user"])
             login_user(user) # chiamata a Flask - Login
-            return redirect(url_for('home_bp.private'))    
+            return redirect(url_for('home_bp.home'))    
         else:
             return redirect(url_for('login_bp.login_home'))
     else:
