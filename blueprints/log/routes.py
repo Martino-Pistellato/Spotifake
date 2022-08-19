@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask import current_app as app
 from blueprints.models import *
 from flask_login import *
-from blueprints.home import *
 
 login_manager=LoginManager()
 login_manager.init_app(app)
