@@ -1,14 +1,13 @@
 from flask import Blueprint, render_template
 from flask import current_app as app
 
-
 # Blueprint Configuration
-profile_bp = Blueprint(
-    'profile_bp', __name__,
+library_bp = Blueprint(
+    'library_bp', __name__,
     template_folder='templates',
     static_folder='static'
 )
 
-@profile_bp.route('/profile')
-def profile():
-    return render_template("profile.html")
+@library_bp.route('/library')
+def library():
+    return render_template("library.html")
