@@ -184,12 +184,12 @@ class ProfilesActions(Base):
 
 ####################################################################################
 
-Base.metadata.drop_all(bind=engine)
+#Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(engine)
 
-session.add(Profiles('Free'))
-session.add(Profiles('Premium'))
-session.add(Profiles('Artist'))
+#session.add(Profiles('Free'))
+#session.add(Profiles('Premium'))
+#session.add(Profiles('Artist'))
 
-session.commit()
+#session.commit()
 

@@ -1,5 +1,30 @@
-<html>
-    <body>
-        <h1>UN PROFILO CANDIDO COME LA NEVE...</h1>
-    </body>
-</html>
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="w3-container"> <h1>Il tuo profilo </h1> </div>
+    <div style="display:inline-block; width:35%;">
+        <img src="..\static\img\profile.png" style="width:100%;">
+    </div>
+    <div style="display:inline-block; width:35%;">
+        <h1 id="user_name", contenteditable="false">{{user.Name}}</h1> 
+        <p><button id="button", onclick="Edit_Name_Function()", style="width:100%, height=100%">Modifica nome</button></p>
+
+    </div>
+    
+    <script>
+        function Edit_Name_Function() {
+          var name = document.getElementById("user_name");
+          var button = document.getElementById("button");
+          if(button.innerHTML === "Modifica nome"){
+            name.contentEditable = "true"
+            name.innerHTML = "";
+            button.innerHTML = "Salva"
+          }
+          else if(button.innerHTML === "Salva"){
+            name.contentEditable = "false";
+            button.innerHTML = "Modifica nome";
+          }
+        }
+    </script>
+
+{% endblock %}
