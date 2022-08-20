@@ -20,7 +20,7 @@ class Users(Base, UserMixin):
     BirthDate = Column(Date)
     Country = Column(String)
     Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F'))) 
-    Profile = Column(String, ForeignKey('Profiles.Name'))
+    Profile = Column(String, ForeignKey('Profiles.Name'), default = 'Free')
     Password = Column(String, nullable = False)
     
     songs = relationship('Songs', secondary = 'ArtistsSongs', back_populates="artist")
@@ -187,9 +187,13 @@ class PlaylistsUsers(Base):
 Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(engine)
 
-session.add(Profiles('Free'))
-session.add(Profiles('Premium'))
-session.add(Profiles('Artist'))
+Free = Profiles('Free')
+Premium = Profiles('Premium')
+Artist = Profiles('Artist')
+
+session.add(Free)
+session.add(Premium)
+session.add(Artist)
 
 session.commit()
 

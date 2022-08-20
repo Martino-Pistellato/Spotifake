@@ -9,6 +9,6 @@ profile_bp = Blueprint(
     static_folder='static'
 )
 
-@profile_bp.route('/profile')
+@profile_bp.route('/')
 def profile():
     return render_template("profile.html")

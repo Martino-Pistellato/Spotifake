@@ -18,17 +18,13 @@ def create_app():
         from .log import routes
         from .album import routes
         from .playlist import routes
-        from .library import routes
-        from .find import routes
         
         # Register Blueprints
         app.register_blueprint(home.routes.home_bp)
-        app.register_blueprint(profile.routes.profile_bp)
+        #app.register_blueprint(profile.routes.profile_bp)
         app.register_blueprint(log.routes.login_bp)
-        app.register_blueprint(album.routes.album_bp)
-        app.register_blueprint(playlist.routes.playlist_bp)
-        app.register_blueprint(library.routes.library_bp)
-        app.register_blueprint(find.routes.find_bp)
+        #app.register_blueprint(album.routes.album_bp)
+        #app.register_blueprint(playlist.routes.playlist_bp)
         
         # Create Database
         db.create_all()

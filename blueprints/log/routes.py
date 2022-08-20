@@ -36,7 +36,7 @@ def create_new_user():
             sesso = request.form["sesso"]
             pwd = request.form["pass"]
             profilo = request.form["profilo"]
-            if(email is not None and nome is not None and data is not None and paese is not None and sesso is not None and pwd is not None and profilo is not None):
+            if(email is not None and nome is not None and data is not None and paese is not None and sesso is not None and pwd is not None):
                 res = Users(email, nome, data, paese, sesso, pwd, profilo) 
                 Users.create_user(res)
                 return redirect(url_for('login_bp.login_home'))
