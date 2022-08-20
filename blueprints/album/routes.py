@@ -9,6 +9,6 @@ album_bp = Blueprint(
     static_folder='static'
 )
 
-album_bp.route('/')
-def album_home():
+@album_bp.route('/album')
+def album():
     render_template("album.html")

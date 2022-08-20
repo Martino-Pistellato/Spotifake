@@ -15,6 +15,4 @@ home_bp = Blueprint(
 @home_bp.route('/home')
 @login_required # richiede autenticazione
 def home():
-    if (current_user.Profile =='Free' or current_user.Profile =='Premium'):
-        return render_template("home.html")
-    return redirect(url_for('login_bp.login_home'))
+    return render_template("home.html", user=current_user)
