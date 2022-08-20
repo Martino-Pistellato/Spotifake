@@ -36,7 +36,7 @@
                 <td align="center"><a href="{{ url_for('playlist_bp.playlist') }}"><img src="..\static\img\add.png" style="width:60%;"></a></td>
                 <td><a href="{{ url_for('playlist_bp.playlist') }}">Crea playlist</a></td>
             </tr>
-            {% if g.profile == 'Artist' %}
+            {% if user.Profile == 'Artist' %}
             <tr>
                 <td align="center"><a href="{{ url_for('album_bp.album') }}"><img src="..\static\img\add.png" style="width:60%;"></a></td>
                 <td><a href="{{ url_for('album_bp.album') }}">Crea album</a></td> 
@@ -62,6 +62,7 @@
     <!-- Page Content -->
     <div style="margin-left:20%">
         <div class="w3-container"></div>
-        {% block content %} {% endblock %}
+        <!-- {% block content %} {% endblock %} -->
+        <div class="w3-container"> <h1>Le tue playlist </h1> </div>
     </div>
 </body>
