@@ -1,5 +1,45 @@
-<html>
-    <body>
-        <h1>QUI SI VEDONO GLI ALBUM, CIRCA...</h1>
-    </body>
-</html>
+{% extends 'layout.html' %}
+
+{% block content %}
+    
+<div style="display:inline-block; width:30%;">
+    <img src="..\static\img\gallery.png" style="width:100%;">
+</div>
+<div style="display:inline-block;">
+    <h1>{{album.Name}}</h1>
+    <ul>
+        <li style="display:inline;">{{album.artist}} - </li>
+        <li style="display:inline;"> {{n_songs}} - </li>
+        <li style="display:inline;"> {{length}} </li>
+    </ul>
+</div>
+
+<table> 
+    <tr>
+        <th text-align="left"> TITOLO </th>
+        <th text-align="right"> DURATA </th>
+    </tr>
+</table>
+
+
+
+
+
+
+
+
+
+    
+
+    <div class="w3-container"> <h1> Consigliata per oggi </h1> </div>
+{% endblock %}
+<img src="..\static\img\gallery.png" style="width:10%;">
+<dl>
+    {% for p in playlists %}
+        <dt style="display:inline;"> 
+            <a href="{{ url_for('playlist_bp.playlist') }}?playlist={{p.Name}}">
+                <img src="..\static\img\gallery.png" style="width:10%;"> {{p.Name}} 
+            </a> 
+        </dt>
+    {% endfor %}
+    </dl>
