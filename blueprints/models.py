@@ -20,7 +20,7 @@ class Users(Base, UserMixin):
     BirthDate = Column(Date)
     Country = Column(String)
     Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F'))) 
-    Profile = Column(String, ForeignKey('Profiles.Name'), default = 'Free')
+    Profile = Column(String, ForeignKey('Profiles.Name'))
     Password = Column(String, nullable = False)
     
     songs = relationship('Songs', secondary = 'ArtistsSongs', back_populates="artist")
@@ -53,7 +53,7 @@ class Profiles(Base):
     
     Name = Column(String, CheckConstraint(or_(column('Name') == 'Free', column('Name') == 'Premium', column('Name') == 'Artist')), primary_key = True)
     
-#    actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles")
+    actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles")
     users = relationship('Users', back_populates="profile") #cascade="all, delete, delete-orphan"
     
     def __repr__(self):
@@ -115,16 +115,16 @@ class Playlists(Base):
     def __repr__(self):
         return "<Playlists(Name='%s', Id='%d')>" % (self.Name, self.Id)
 
-#class Actions(Base):
-#    __tablename__ = "Actions"
+class Actions(Base):
+    __tablename__ = "Actions"
 
-#    Name = Column(String)
-#    Id = Column(Integer, primary_key = True)
+    Name = Column(String)
+    Id = Column(Integer, primary_key = True)
     
-#    profiles = relationship('Profiles', secondary = 'ProfilesActions', back_populates="actions")
+    profiles = relationship('Profiles', secondary = 'ProfilesActions', back_populates="actions")
     
-#    def __repr__(self):
-#        return "<Actions(Name='%s', Id='%d')>" % (self.Name, self.Id)
+    def __repr__(self):
+        return "<Actions(Name='%s', Id='%d')>" % (self.Name, self.Id)
 
 ### Definizione tabelle delle associazioni ###
 
@@ -173,27 +173,23 @@ class PlaylistsUsers(Base):
     def __repr__(self):
         return "<PlaylistsUsers(playlist_id='%d', user_email='%s')>" % (self.playlist_id, self.user_email) 
 
-#class ProfilesActions(Base):    
-#   __tablename__ = "ProfilesActions"
+class ProfilesActions(Base):    
+    __tablename__ = "ProfilesActions"
     
-#    profile_name = Column(String, ForeignKey(Profiles.Name), primary_key = True)
-#    action_id = Column(Integer, ForeignKey(Actions.Id), primary_key = True)
+    profile_name = Column(String, ForeignKey(Profiles.Name), primary_key = True)
+    action_id = Column(Integer, ForeignKey(Actions.Id), primary_key = True)
     
-#    def __repr__(self):
-#        return "<ProfilesActions(profile_name='%s', action_id='%d')>" % (self.profile_name, self.action_id)
+    def __repr__(self):
+        return "<ProfilesActions(profile_name='%s', action_id='%d')>" % (self.profile_name, self.action_id)
 
 ####################################################################################
 
 Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(engine)
 
-Free = Profiles('Free')
-Premium = Profiles('Premium')
-Artist = Profiles('Artist')
-
-session.add(Free)
-session.add(Premium)
-session.add(Artist)
+session.add(Profiles('Free'))
+session.add(Profiles('Premium'))
+session.add(Profiles('Artist'))
 
 session.commit()
 
