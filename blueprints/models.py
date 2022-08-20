@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 engine = create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")
 metadata = MetaData()
@@ -53,7 +53,7 @@ class Profiles(Base):
     
     Name = Column(String, CheckConstraint(or_(column('Name') == 'Free', column('Name') == 'Premium', column('Name') == 'Artist')), primary_key = True)
     
-    actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles")
+#    actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles")
     users = relationship('Users', back_populates="profile") #cascade="all, delete, delete-orphan"
     
     def __repr__(self):
@@ -115,16 +115,16 @@ class Playlists(Base):
     def __repr__(self):
         return "<Playlists(Name='%s', Id='%d')>" % (self.Name, self.Id)
 
-class Actions(Base):
-    __tablename__ = "Actions"
+#class Actions(Base):
+#    __tablename__ = "Actions"
 
-    Name = Column(String)
-    Id = Column(Integer, primary_key = True)
+#    Name = Column(String)
+#    Id = Column(Integer, primary_key = True)
     
-    profiles = relationship('Profiles', secondary = 'ProfilesActions', back_populates="actions")
+#    profiles = relationship('Profiles', secondary = 'ProfilesActions', back_populates="actions")
     
-    def __repr__(self):
-        return "<Actions(Name='%s', Id='%d')>" % (self.Name, self.Id)
+#    def __repr__(self):
+#        return "<Actions(Name='%s', Id='%d')>" % (self.Name, self.Id)
 
 ### Definizione tabelle delle associazioni ###
 
@@ -173,14 +173,14 @@ class PlaylistsUsers(Base):
     def __repr__(self):
         return "<PlaylistsUsers(playlist_id='%d', user_email='%s')>" % (self.playlist_id, self.user_email) 
 
-class ProfilesActions(Base):    
-    __tablename__ = "ProfilesActions"
+#class ProfilesActions(Base):    
+#   __tablename__ = "ProfilesActions"
     
-    profile_name = Column(String, ForeignKey(Profiles.Name), primary_key = True)
-    action_id = Column(Integer, ForeignKey(Actions.Id), primary_key = True)
+#    profile_name = Column(String, ForeignKey(Profiles.Name), primary_key = True)
+#    action_id = Column(Integer, ForeignKey(Actions.Id), primary_key = True)
     
-    def __repr__(self):
-        return "<ProfilesActions(profile_name='%s', action_id='%d')>" % (self.profile_name, self.action_id)
+#    def __repr__(self):
+#        return "<ProfilesActions(profile_name='%s', action_id='%d')>" % (self.profile_name, self.action_id)
 
 ####################################################################################
 
