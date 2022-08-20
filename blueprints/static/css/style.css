@@ -14,6 +14,11 @@ h1 {
     font-family: Gotham_Regular;
     font-size: 4vw;
 }
+h2 {
+    color: rgb(249, 248, 241);
+    font-family: Gotham_Regular;
+    font-size: 3vw;
+}
 p {
     color: rgb(249, 248, 241);
     font-family: Gotham_Light;
@@ -36,5 +41,7 @@ a:link {
     text-decoration: none;
 }
 th{
-    
+    color: rgb(219, 219, 213);
+    font-family: Gotham_Light;
+    font-size: 1.5vw;
 }
