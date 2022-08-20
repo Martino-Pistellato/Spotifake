@@ -18,7 +18,7 @@
         <table style="width:100%">
             <tr> 
               <td style="width:30%" align="center"><a href="{{ url_for('profile_bp.profile') }}"><img src="..\static\img\profile.png" style="width:100%;"></a></td>
-              <td><a href="{{ url_for('profile_bp.profile') }}">user.Name</a></td> 
+              <td><a href="{{ url_for('profile_bp.profile') }}">{{user.Name}}</a></td> 
             </tr>
             <tr>
                 <td align="center"><a href="{{ url_for('home_bp.home') }}"><img src="..\static\img\home.png" style="width:60%;"></a></td>
@@ -52,7 +52,7 @@
             {% for p in playlists %}
             <dl>
                 <dt> 
-                    <a href="{{ url_for('playlist_bp.playlist') }}"> p.Name </a> 
+                    <a href="{{ url_for('playlist_bp.playlist') }}"> {{p.Name}} </a> 
                 </dt>
             </dl>
             {% endfor %}
@@ -63,6 +63,5 @@
     <div style="margin-left:20%">
         <div class="w3-container"></div>
         <!-- {% block content %} {% endblock %} -->
-        <div class="w3-container"> <h1>Le tue playlist </h1> </div>
     </div>
 </body>
