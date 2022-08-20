@@ -15,45 +15,46 @@
 </head>
 
 <body>
-    <nav class="navbar bg-light fixed-top">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Offcanvas navbar</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Dropdown
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li>
-                      <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-                </li>
-              </ul>
-              <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <main>
+        <table>
+            <tr align="top">
+                <td style="width:20%;">
+                    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <li class="nav-item" align="left">
+                            <a href="{{ url_for('profile_bp.profile') }}" class="nav-link text-white"  style="font-family:Gotham_Regular;">
+                                <img src="..\static\img\profile.png" style="width:40%;"> Nome
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('home_bp.home') }}" class="nav-link text-white" style="font-size:1.5vw;">
+                                <img src="..\static\img\home.png" style="width:20%;">  Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('find_bp.find') }}" class="nav-link text-white" style="font-size:1.5vw;">
+                                <img src="..\static\img\search.png" style="width:20%;">  Cerca
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('library_bp.library') }}" class="nav-link text-white" style="font-size:1.5vw;">
+                                <img src="..\static\img\library.png" style="width:20%;">  Libreria
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('playlist_bp.playlist') }}" class="nav-link text-white" style="font-size:1.5vw;">
+                                <img src="..\static\img\add.png" style="width:20%;">  Crea playlist
+                            </a>
+                        </li>
+                    </ul>
+                    <hr>
+                    </div>
+                </td>
+                <td align="top">
+                    <p>boh</p>
+                    {% block content %} {% endblock %}
+                </td>
+            </tr>
+    </main>
+        
 </body>

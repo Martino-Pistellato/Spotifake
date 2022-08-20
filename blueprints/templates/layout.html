@@ -4,6 +4,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="..\static\css\style.css">
+<link rel="stylesheet" href="..\static\css\bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="..\static\js\bootstrap.min.js"> </script>
 
 <head>
     <title>Spotifake</title>
@@ -15,32 +18,33 @@
     <div class="w3-sidebar w3-bar-block" style="width:20%; background-color: #1d1d1d;">
         <table style="width:100%">
             <tr> 
-              <td style="width:30%" align="center"><a href="#"><img src="..\static\img\profile.png" style="width:100%;"></a></td>
-              <td><a href="#"><h1>Nome</h1></a></td> 
+              <td style="width:30%" align="center"><a href="{{ url_for('profile_bp.profile') }}"><img src="..\static\img\profile.png" style="width:100%;"></a></td>
+              <td><a href="{{ url_for('profile_bp.profile') }}"><h1>Nome</h1></a></td> 
             </tr>
             <tr>
                 <td align="center"><a href="{{ url_for('home_bp.home') }}"><img src="..\static\img\home.png" style="width:60%;"></a></td>
                 <td><a href="{{ url_for('home_bp.home') }}">Home</a></td> 
             </tr>
             <tr> 
-                <td align="center"><a href="#"><img src="..\static\img\search.png" style="width:60%;"></a></td>
-                <td><a href="#">Cerca</a></td> 
+                <td align="center"><a href="{{ url_for('find_bp.find') }}"><img src="..\static\img\search.png" style="width:60%;"></a></td>
+                <td><a href="{{ url_for('find_bp.find') }}">Cerca</a></td> 
             </tr>
             <tr>
-                <td align="center"><a href="#"><img src="..\static\img\library.png" style="width:60%;"></a></td>
-                <td><a href="#">Libreria</a></td> 
+                <td align="center"><a href="{{ url_for('library_bp.library') }}"><img src="..\static\img\library.png" style="width:60%;"></a></td>
+                <td><a href="{{ url_for('library_bp.library') }}">Libreria</a></td> 
             </tr>
             <tr> 
-                <td align="center"><a href="#"><img src="..\static\img\add.png" style="width:60%;"></a></td>
-                <td><a href="#">Crea playlist</a></td>
+                <td align="center"><a href="{{ url_for('playlist_bp.playlist') }}"><img src="..\static\img\add.png" style="width:60%;"></a></td>
+                <td><a href="{{ url_for('playlist_bp.playlist') }}">Crea playlist</a></td>
             </tr>
         </table>
+        <hr>
+
     </div>
       
     <!-- Page Content -->
     <div style="margin-left:20%">
-        <div class="w3-container">boh</div>
-        <p>boh</p>
+        <div class="w3-container"></div>
         {% block content %} {% endblock %}
     </div>
 </body>
