@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask import current_app as app
 from blueprints.models import *
+from blueprints import bcrypt
 from flask_login import *
 
 login_manager=LoginManager()
@@ -34,10 +35,10 @@ def create_new_user():
             data = request.form["data"]
             paese = request.form["paese"]
             sesso = request.form["sesso"]
-            pwd = request.form["pass"]
+            encrypted_pwd = bcrypt.generate_password_hash(request.form["pass"]).decode('UTF-8')
             profilo = request.form["profilo"]
-            if(email is not None and nome is not None and data is not None and paese is not None and sesso is not None and pwd is not None):
-                res = Users(email, nome, data, paese, sesso, pwd, profilo) 
+            if(email is not None and nome is not None and data is not None and paese is not None and sesso is not None and encrypted_pwd is not None):
+                res = Users(email, nome, data, paese, sesso, encrypted_pwd, profilo) 
                 Users.create_user(res)
                 return redirect(url_for('login_bp.login_home'))
         return redirect(url_for('login_bp.subscribe'))
@@ -58,7 +59,7 @@ def login ():
         res = conn.execute(select([Users]).where(Users.Email == request.form["user"]))
         real_us = res.fetchone ()
         conn.close ()
-        if(real_us is not None and request.form["pass"] == real_us.Password): 
+        if(real_us is not None and bcrypt.check_password_hash(real_us.Password, request.form["pass"]) ):  
             user = get_user_by_email(request.form["user"])
             login_user(user) # chiamata a Flask - Login
             return redirect(url_for('home_bp.home'))    

@@ -4,11 +4,11 @@ from flask import current_app as app
 
 # Blueprint Configuration
 playlist_bp = Blueprint(
-    'palylist_bp', __name__,
+    'playlist_bp', __name__,
     template_folder='templates',
     static_folder='static'
 )
 
-playlist_bp.route('/')
-def album_home():
+@playlist_bp.route('/playlist')
+def playlist():
     render_template("playlist.html")
