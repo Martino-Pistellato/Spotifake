@@ -9,7 +9,7 @@
         <ul>
             <li style="display:inline;">{{album.artist}} - </li>
             <li style="display:inline;"> {{n_songs}} - </li>
-            <li style="display:inline;"> {{length}} </li>
+            <li style="display:inline;"> {{album.Duration}} </li>
         </ul>
     </div>
 
@@ -27,13 +27,17 @@
     </table>
 
     <div class="w3-container"> <h2> Altro di {{album.artist}} </h2> </div>
-    {% for a in albums %}
-    <dt style="display:inline;"> 
-        <a href="{{ url_for('album_bp.album') }}?album={{a.Name}}"> 
-            <!-- MANCANO COSE DA MANDARE AL SITO FORSE-->
-            <img src="..\static\img\gallery.png" style="width:10%;"> {{a.Name}} 
-        </a> 
-    </dt>
-    {% endfor %}
+    <dl>
+        {% for a in albums %}
+        <dt style="display:inline;"> 
+            <a href="{{ url_for('album_bp.album') }}?album={{a}}">
+                <figure style="display:inline-block; width:15%;">
+                    <img src="..\static\img\gallery.png" style="width:100%;">
+                    <figcaption style="text-align:center;"> {{a.Name}} </figcaption>
+                </figure>  
+            </a> 
+        </dt>
+        {% endfor %}
+    </dl>
 
 {% endblock %}
