@@ -5,8 +5,11 @@
     <dl>
     {% for p in playlists %}
         <dt style="display:inline;"> 
-            <a href="{{ url_for('playlist_bp.playlist') }}?playlist={{p.Name}}">
-                <img src="..\static\img\gallery.png" style="width:10%;"> {{p.Name}} 
+            <a href="{{ url_for('playlist_bp.playlist') }}?playlist={{p}}">
+                <figure style="display:inline-block; width:15%;">
+                    <img src="..\static\img\gallery.png" style="width:100%;">
+                    <figcaption style="text-align:center;"> {{p.Name}} </figcaption>
+                </figure>  
             </a> 
         </dt>
     {% endfor %}
