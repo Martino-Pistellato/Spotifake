@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="w3-container"> <h1>Scegli che canzoni aggiungere </h1> </div>
+<dl>
+
+    <table>
+        <th style="width: 5%">Titolo</th>
+        <th style="width: 5%">Genere</th>
+        <th style="width: 5%">Durata</th>
+    </table>
+    {% for s in songs %}
+    <div style="display:inline-block; width:35%;">
+        <img src="..\static\img\gallery.png" style="width:5%;">
+        <td style="width: 5%">{{s.Name}}</td>
+        <td style="width: 5%">{{s.Genre}}</td>
+        <td style="width: 5%">{{s.Duration}}</td>
+    </div>
+   
+    {% endfor %}
+</dl>
+{% endblock %}
+

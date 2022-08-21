@@ -2,6 +2,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_login import *
+from blueprints.models import *
 
 #from blueprints.library.routes import library
 
@@ -15,6 +17,7 @@ def create_app():
 
     db.init_app(app)
     bcrypt.init_app(app)
+  
     
     with app.app_context():
         # Import parts of our application
@@ -41,3 +44,4 @@ def create_app():
         db.create_all()
         
         return app
+

@@ -46,7 +46,8 @@ class Users(Base, UserMixin):
     
     def get_id(self):
         return self.Email
-        
+    
+            
   
 class Profiles(Base):
     __tablename__ = "Profiles"

@@ -11,22 +11,5 @@
 
     </div>
     
-    <script>
-        function Edit_Name_Function() {
-          var name = document.getElementById("user_name");
-          var button = document.getElementById("button");
-          if(button.innerHTML === "Modifica nome"){
-            name.contentEditable = "true";
-            name.innerHTML = "";
-            button.innerHTML = "Salva";
-          }
-          else if(button.innerHTML === "Salva"){
-            name.contentEditable = "false";
-            button.innerHTML = "Modifica nome";
-          }
-        }
-    </script>
-    
-    
 
 {% endblock %}

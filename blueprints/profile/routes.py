@@ -3,10 +3,6 @@ from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
 
-
-login_manager=LoginManager()
-login_manager.init_app(app)
-
 # Blueprint Configuration
 profile_bp = Blueprint(
     'profile_bp', __name__,

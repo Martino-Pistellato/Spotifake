@@ -1,5 +1,15 @@
-<html>
-    <body>
-        <h1>DOVREBBERO ESSERCI DELLE PLAYLIST...</h1>
-    </body>
-</html>
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="w3-container"> <h1>Dai un nome alla tua playlist </h1> </div>
+    <div style="display:inline-block; width:35%;">
+        <img src="..\static\img\gallery.png" style="width:100%;">
+    </div>
+    <div style="display:inline-block; width:35%;">
+        <form id="playlist_name", action="/create_playlist/{{user.Email}}" method="POST"> 
+            <input type="text", name="name" placeholder="Nome playlist">
+            <input type="submit", value="Salva">
+    </div>
+    
+
+{% endblock %}

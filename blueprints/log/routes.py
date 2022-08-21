@@ -1,11 +1,19 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask import current_app as app
-from blueprints.models import *
-from blueprints import bcrypt
 from flask_login import *
+from sqlalchemy import exc
+from blueprints import *
 
 login_manager=LoginManager()
 login_manager.init_app(app)
+
+@login_manager.user_loader # attenzione a questo !
+def get_user_by_email(email):
+    conn = engine.connect()
+    res = conn.execute(select([Users]).where(Users.Email == email))
+    user = res.fetchone()
+    conn.close()
+    return Users(user.Email, user.Name, user.BirthDate, user.Country, user.Gender, user.Password, user.Profile)
 
 # Blueprint Configuration
 login_bp = Blueprint(
@@ -25,11 +33,12 @@ def subscribe():
 @login_bp.route('/create_new_user', methods=['GET', 'POST'])
 def create_new_user():
     if request.method == 'POST':
-        conn = engine.connect()
-        us = conn.execute(select([Users]).where(Users.Email == request.form["email"]))
-        existing_user = us.fetchone()
-        conn.close()
-        if(existing_user is None):
+        #conn = engine.connect()
+        #us = conn.execute(select([Users]).where(Users.Email == request.form["email"]))
+        #existing_user = us.fetchone()
+        #conn.close()
+        #if(existing_user is None):
+        try:
             email = request.form["email"]
             nome = request.form["nome"]
             data = request.form["data"]
@@ -41,16 +50,12 @@ def create_new_user():
                 res = Users(email, nome, data, paese, sesso, encrypted_pwd, profilo) 
                 Users.create_user(res)
                 return redirect(url_for('login_bp.login_home'))
-        return redirect(url_for('login_bp.subscribe'))
+            return redirect(url_for('login_bp.subscribe'))
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            #print(type(err.orig.diag.message_primary))
+            return redirect(url_for('login_bp.subscribe'))
 
-
-@login_manager.user_loader # attenzione a questo !
-def get_user_by_email(email):
-    conn = engine.connect()
-    res = conn.execute(select([Users]).where(Users.Email == email))
-    user = res.fetchone()
-    conn.close()
-    return Users(user.Email, user.Name, user.BirthDate, user.Country, user.Gender, user.Password, user.Profile)
 
 @login_bp.route('/login', methods=['GET', 'POST'])
 def login ():
