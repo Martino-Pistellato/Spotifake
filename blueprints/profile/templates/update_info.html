@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="w3-container"> <h1>Il tuo profilo </h1> </div>
+    <div style="display:inline-block; width:35%;">
+        <img src="..\static\img\profile.png" style="width:100%;">
+    </div>
+    <div style="display:inline-block; width:35%;">
+        <form id="user_name", action="/update_info/{{user.Email}}" method="POST"> 
+            <input type="text", name="name" placeholder="Nuovo nome", value="{{user.Name}}">
+            <input type="submit", value="Salva">
+    </div>
+
+{% endblock %}
