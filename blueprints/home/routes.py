@@ -16,5 +16,5 @@ home_bp = Blueprint(
 @home_bp.route('/home')
 @login_required # richiede autenticazione
 def home():
-    playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+    playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
     return render_template("home.html", user=current_user, playlists=playlists)
