@@ -1,41 +1,37 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="..\..\static\css\style.css">
+
 <style>
-    body {background-color: #1DB954;}
-    h1 {color:white; text-align: center; vertical-align: middle;}
-    p {color:white; text-align: center; vertical-align: middle;}
-    input[type=text]{
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 10px;
-        size: 50;
-        text-align: center;
+    h1 {
+        color:#1ed760; 
+        text-align: center; 
         vertical-align: middle;
     }
-    input[type=password]{
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 10px;
-        size: 50;
-        text-align: center;
-        vertical-align: middle;
-    }
-    input[type=submit]{
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 10px;
-        size: 50;
-        text-align: center;
+    p {
+        text-align: center; 
         vertical-align: middle;
     }
 </style>
+
+<head>
+    <title>Spotifake</title>
+    <link rel="icon" type="image/x-icon" href="..\..\static\img\logo.png">
+</head>
+
 <body>
-    <h1> SPOTIFAKE </h1>
-    <p> 10 brani. <br>
-        Gratis su Spotifake. <br>
-    </p>
+    <div style="text-align:center;">
+        <img src="..\..\static\img\logo.png" style="width:15%;">
+        <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
+    </div>
     <form action="/login", method="POST", style="text-align: center;">
-        <input name="user", type="text", placeholder="Email"> <br>
-        <input name="pass", type="password", placeholder="Password"> <br>
+        <dl>
+            <dt> <input name="user", type="text", placeholder="Email"> </dt>
+            <dt> <input name="pass", type="password", placeholder="Password"> </dt>
+        </dl>
         <input type="submit", value="ACCEDI">
     </form>
     <form action="/subscribe", style="text-align: center;">

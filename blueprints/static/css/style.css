@@ -45,3 +45,30 @@ th{
     font-family: Gotham_Light;
     font-size: 1.5vw;
 }
+input[type=text]{
+    font-family: Gotham_Light;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    size: 50;
+    text-align: center;
+    vertical-align: middle;
+}
+input[type=password]{
+    font-family: Gotham_Light;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    size: 50;
+    text-align: center;
+    vertical-align: middle;
+}
+input[type=submit]{
+    font-family: Gotham_Regular;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    size: 50;
+    text-align: center;
+    vertical-align: middle;
+}
