@@ -21,7 +21,7 @@ def playlist():
 def create_playlist():
     if request.method == 'POST':
         user = session.query(Users).filter(Users.Email == current_user.Email).first()
-        user.playlists.append(Playlists(Name = request.form["name"]))
+        user.playlists.append(Playlists(request.form["name"]))
         session.commit()
         playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
         return redirect(url_for("playlist_bp.show_songs", playlist=request.form["name"]))

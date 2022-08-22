@@ -100,6 +100,9 @@ class Record_Houses(Base):
     
     def __repr__(self):
         return "<Record_Houses(Name='%s')>" % (self.Name)
+    
+    def __init__(self, name):
+        self.Name = name
 
 class Albums(Base):
     __tablename__ = "Albums"
@@ -117,6 +120,12 @@ class Albums(Base):
     def __repr__(self):
         return "<Albums(Name='%s', ReleaseDate='%s', Duration='%s', Id='%d', Record_House='%s')>" % (self.Name, self.ReleaseDate, self.Duration, self.Id, self.Record_House)
 
+    def __init__(self, name, date, duration, record_house):
+        self.Name=name
+        self.ReleaseDate=date
+        self.Duration=duration
+        self.record_house=record_house
+
 class Playlists(Base):
     __tablename__ = "Playlists"
 
@@ -128,6 +137,9 @@ class Playlists(Base):
     
     def __repr__(self):
         return "<Playlists(Name='%s', Id='%d')>" % (self.Name, self.Id)
+    
+    def __init__(self, name):
+        self.Name=name
 
 class Actions(Base):
     __tablename__ = "Actions"
@@ -139,6 +151,9 @@ class Actions(Base):
     
     def __repr__(self):
         return "<Actions(Name='%s', Id='%d')>" % (self.Name, self.Id)
+    
+    def __init__(self, name):
+        self.Name=name
 
 ### Definizione tabelle delle associazioni ###
 
