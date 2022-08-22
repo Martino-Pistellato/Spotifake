@@ -2,22 +2,21 @@
 
 {% block content %}
 <div class="w3-container"> <h1>Scegli che canzoni aggiungere </h1> </div>
-<dl>
-
-    <table>
-        <th style="width: 5%">Titolo</th>
-        <th style="width: 5%">Genere</th>
-        <th style="width: 5%">Durata</th>
+<div>
+    <table style="width:98%; padding-left:2%;"> 
+        <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
+            <th style="width:30%; text-align:left;"> TITOLO </th>
+            <th style="width:30%;"> GENERE </th>
+            <th style="width:30%; text-align:right;"> DURATA </th>
+        </tr>
+        <tr>
+            {% for s in songs %}
+            <td> {{s.Name}} </td>
+            <td style="text-align:center;"> {{s.Genre}} </td>
+            <td style="text-align:right;"> {{s.Duration}} </td>
+            {% endfor %}
+        </tr>
     </table>
-    {% for s in songs %}
-    <div style="display:inline-block; width:35%;">
-        <img src="..\static\img\gallery.png" style="width:5%;">
-        <td style="width: 5%">{{s.Name}}</td>
-        <td style="width: 5%">{{s.Genre}}</td>
-        <td style="width: 5%">{{s.Duration}}</td>
-    </div>
-   
-    {% endfor %}
-</dl>
+</div>
 {% endblock %}
 
