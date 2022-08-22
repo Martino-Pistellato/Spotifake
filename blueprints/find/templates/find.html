@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+<script>
+    function myFunction() {
+        // Declare variables
+        var input, filter, dl, dt, a, i;
+        input = document.getElementById("mySearch");
+        filter = input.value.toUpperCase();
+        dl = document.getElementById("myMenu");
+        dt = dl.getElementsByTagName("dt");
+    
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < dt.length; i++) {
+            a = dt[i].getElementsByTagName("a")[0];
+            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                dt[i].style.display = "";
+            } else {
+                dt[i].style.display = "none";
+            }
+        }
+    }
+</script>
+
+{% block content %}
+<div style="text-align:center;">
+    <input type="text" id="mySearch" onkeyup="myFunction()" placeholder="Search..." title="Type in a song" style="width:90%;">
+</div>
+<dl id="myMenu" style="width:98%; padding-left:2%;">
+    {% for s in songs %}
+    <dt><img src="..\static\img\gallery.png" style="width:3%;"> <a href="#">{{s.Name}}</a></dt>
+    {% endfor %}
+</dl>
+{% endblock %}
