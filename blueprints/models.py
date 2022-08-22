@@ -47,6 +47,10 @@ class Users(Base, UserMixin):
     def get_id(self):
         return self.Email
     
+    def add_song_if_artist(self, song):
+        self.songs.append(song)
+        session.commit()
+    
             
   
 class Profiles(Base):
@@ -77,6 +81,15 @@ class Songs(Base):
     
     def __repr__(self):
         return "<Songs(Name='%s', Duration='%s', Genre='%s', Id='%d')>" % (self.Name, self.Duration, self.Genre, self.Id)
+
+    def __init__(self, name, duration, genre):
+        self.Name = name
+        self.Duration = duration
+        self.Genre = genre
+
+    def create_song(self):
+        session.add(self)
+        session.commit()
 
 class Record_Houses(Base):
     __tablename__ = "Record_Houses"

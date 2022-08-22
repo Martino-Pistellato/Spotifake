@@ -29,6 +29,7 @@ def create_app():
         from .find import routes
         from .lib import routes
         from .stats import routes
+        from .song import routes
         
         # Register Blueprints
         app.register_blueprint(home.routes.home_bp)
@@ -39,6 +40,7 @@ def create_app():
         app.register_blueprint(find.routes.find_bp)
         app.register_blueprint(lib.routes.library_bp)
         app.register_blueprint(stats.routes.stats_bp)
+        app.register_blueprint(song.routes.song_bp)
 
         # Create Database
         db.create_all()

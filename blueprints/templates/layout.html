@@ -32,11 +32,19 @@
                 <td align="center"><a href="{{ url_for('library_bp.library') }}"><img src="..\static\img\library.png" style="width:60%;"></a></td>
                 <td><a href="{{ url_for('library_bp.library') }}">Libreria</a></td> 
             </tr>
+            <tr>
+                <td align="center"><a href="{{ url_for('song_bp.show_my_songs') }}"><img src="..\static\img\gallery.png" style="width:60%;"></a></td>
+                <td><a href="{{ url_for('song_bp.show_my_songs') }}">Le tue canzoni</a></td> 
+            </tr>
             <tr> 
                 <td align="center"><a href="{{ url_for('playlist_bp.playlist') }}"><img src="..\static\img\add.png" style="width:60%;"></a></td>
                 <td><a href="{{ url_for('playlist_bp.playlist') }}">Crea playlist</a></td>
             </tr>
             {% if user.Profile == 'Artist' %}
+            <tr>
+                <td align="center"><a href="{{ url_for('song_bp.upload_song') }}"><img src="..\static\img\add.png" style="width:60%;"></a></td>
+                <td><a href="{{ url_for('song_bp.upload_song') }}">Carica canzone</a></td> 
+            </tr>
             <tr>
                 <td align="center"><a href="{{ url_for('album_bp.album') }}"><img src="..\static\img\add.png" style="width:60%;"></a></td>
                 <td><a href="{{ url_for('album_bp.album') }}">Crea album</a></td> 
@@ -52,7 +60,7 @@
             {% for p in playlists %}
             <dl>
                 <dt> 
-                    <a href="{{ url_for('playlist_bp.show_playlist', playlist=p.Name )}}"> {{p.Name}} </a> 
+                    <a href="{{ url_for('playlist_bp.show_playlist', playlist=p.Name )}}"> <img src="..\static\img\gallery.png", style="width: 10%;"> {{p.Name}} </a> 
                 </dt>
             </dl>
             {% endfor %}
