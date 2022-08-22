@@ -1,12 +1,8 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div class="w3-container"> 
-    <h1>{{playlist}} 
-        <p>
-            Scegli che canzoni aggiungere
-        </p>
-    </h1> 
+<div class="w3-container", style="display:inline;"> 
+    <h1>{{playlist}} <a href="{{ url_for('playlist_bp.show_songs', playlist = playlist) }}"><img src="..\static\img\add.png", style="width: 5%;"> </a>  </h1> 
 </div>
 <div>
     <table style="width:98%; padding-left:2%;"> 
@@ -17,13 +13,11 @@
         </tr>
         <tr>
             {% for s in songs %}
-            <td style="text-align:center;"> {{s.Name}} </td>
+            <td> {{s.Name}} </td>
             <td style="text-align:center;"> {{s.Genre}} </td>
             <td style="text-align:right;"> {{s.Duration}} </td>
-            <a href="{{ url_for('playlist_bp.add_songs', song_id = s.Id, playlist = playlist) }}"><img src="..\static\img\add.png", style="width: 5%;">
             {% endfor %}
         </tr>
     </table>
 </div>
 {% endblock %}
-
