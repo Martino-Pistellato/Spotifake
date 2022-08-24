@@ -2,7 +2,7 @@
 
 {% block content %}
     <div style="display:inline-block; width:30%;">
-        <img src="..\static\img\gallery.png" style="width:100%;">
+        <img src="..\..\static\img\gallery.png" style="width:100%;">
     </div>
     <div style="display:inline-block;">
         <h1>{{album.Name}}</h1>
@@ -34,7 +34,7 @@
     <dl>
         {% for a in albums %}
         <dt style="display:inline;"> 
-            <a href="{{ url_for('album_bp.album') }}?album={{a}}">
+            <a href="{{ url_for('album_bp.album',album=a,user=user,playlists=playlists)}}">
                 <figure style="display:inline-block; width:15%;">
                     <img src="..\static\img\gallery.png" style="width:100%;">
                     <figcaption style="text-align:center;"> {{a.Name}} </figcaption>

@@ -60,7 +60,7 @@
             {% for p in playlists %}
             <dl>
                 <dt> 
-                    <a href="{{ url_for('playlist_bp.show_playlist', playlist=p.Name )}}"> <img src="..\static\img\gallery.png", style="width: 10%;"> {{p.Name}} </a> 
+                    <a href="{{ url_for('playlist_bp.show_playlist', playlist=p.Name )}}"> {{p.Name}} </a> 
                 </dt>
             </dl>
             {% endfor %}
@@ -71,7 +71,5 @@
     <div style="margin-left:20%">
         <div class="w3-container"></div>
         {% block content %} {% endblock %}
-
-        
     </div>
 </body>

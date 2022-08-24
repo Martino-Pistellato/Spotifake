@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+
+<style>
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #2b2a2a;
+    }
+    
+    li {
+        float: left;
+    }
+    
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 1vw 1.2vw;
+        text-decoration: none;
+    }
+    
+    li a:hover{
+        border-radius: 10vw;
+        background-color: #1ed760;
+    }
+</style>
+
+{% block content %}
+<ul>
+    <li><a href="{{url_for('library_bp.library',user=user,playlists=playlists)}}">Playlist</a></li>
+    <li><a href="{{url_for('library_bp.album',user=user,playlists=playlists)}}">Album</a></li>
+    <li><a href="{{url_for('library_bp.artists',user=user,playlists=playlists)}}">Artists</a></li>
+    <li style="border-radius: 10vw; background-color: #1ed760;">Songs</li>
+</ul>
+
+<div>
+    <table style="width:98%; padding-left:2%;"> 
+        <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
+            <th style="width:25%; text-align:left;"> TITOLO </th>
+            <th style="width:25%;"> GENERE </th>
+            <th style="width:25%;"> ALBUM </th>
+            <th style="width:25%; text-align:right;"> DURATA </th>
+        </tr>
+        <tr>
+            {% for s in songs %}
+            <td> {{s.Name}} </td>
+            <td style="text-align:center;"> {{s.Genre}} </td>
+            <td style="text-align:center;"> {{s.albums}} </td>
+            <td style="text-align:right;"> {{s.Duration}} </td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+{% endblock %}
