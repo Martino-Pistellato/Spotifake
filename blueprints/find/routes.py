@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
 from flask import current_app as app
-
+from flask_login import *
+from blueprints import *
 
 # Blueprint Configuration
 find_bp = Blueprint(
@@ -11,4 +12,6 @@ find_bp = Blueprint(
 
 @find_bp.route('/find')
 def find():
-    render_template("find.html")
+    playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email))) 
+    songs = session.query(Songs)
+    return render_template("find.html", user = current_user, playlists = playlists, songs=songs)

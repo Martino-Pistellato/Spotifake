@@ -17,7 +17,8 @@ def album(album):
     albums = conn.execute(select([Albums]).where(Albums.artist == album.artist))
     conn.close()
     n_songs = songs.__sizeof__
-    render_template("album.html", 
+    render_template("album.html",
+                    user = current_user, 
                     album = album,
                     songs = songs,
                     albums = albums,
