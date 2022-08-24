@@ -36,12 +36,15 @@ def show_songs(playlist):
     
     return render_template("add_songs.html", songs = songs, user=current_user, playlist = playlist, playlists=playlists)
 
-@playlist_bp.route('/show_playlist/<string:playlist>', methods=['GET', 'POST'])
+@playlist_bp.route('/show_playlist/<playlist>', methods=['GET', 'POST'])
 @login_required
 def show_playlist(playlist):
-    playlists_id =session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)
-    pl_id = session.query(Playlists.Id).filter(Playlists.Name == playlist, Playlists.Id.in_(playlists_id))
-    songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)))
+    #playlists_id =session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)
+    #pl_id = session.query(Playlists.Id).filter(Playlists.Name == playlist, Playlists.Id.in_(playlists_id))
+    #songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)))
+    
+    songs = session.query(PlaylistsSongs).filter(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist.Id))
+    
     playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
     
     return render_template("show_playlist.html", songs = songs, user=current_user, playlist=playlist, playlists=playlists)
