@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="w3-container"> <h1>Aggiorna le informazioni del tuo brano </h1> </div>
+    <div style="display:inline-block; width:35%;">
+        <img src="..\static\img\gallery.png" style="width:100%;">
+    </div>
+    <div style="display:inline-block; width:35%;">
+        <form action="/update_songs/{{id}}" method="POST"> 
+            <input type="text", name="name" placeholder="Nome playlist", value="{{name}}">
+            <input type="time", step="2" name="duration" placeholder="Durata", value="{{duration}}">
+            <input type="text", name="genre" placeholder="Genere", value="{{genre}}">
+            <input type="submit", value="Aggiorna">
+    </div>
+    
+
+{% endblock %}
