@@ -2,27 +2,25 @@
 
 {% block content %}
 <div class="w3-container"> 
-    <h1>{{playlist}} 
-        <p>
-            Scegli che canzoni aggiungere
-        </p>
-    </h1> 
+    <h1> {{playlist}} </h1> 
+    <p> Scegli che canzoni aggiungere </p>
 </div>
 <div>
-    <table style="width:98%; padding-left:2%;"> 
+    <table style="width:99%; padding-left:1%;"> 
         <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
-            <th style="width:30%; text-align:left;"> TITOLO </th>
-            <th style="width:30%;"> GENERE </th>
-            <th style="width:30%; text-align:right;"> DURATA </th>
+            <th style="width:32%; text-align:left;"> TITOLO </th>
+            <th style="width:32%;"> GENERE </th>
+            <th style="width:32%; text-align:right; padding-right:1%;"> DURATA </th>
+            <th style="width:4%;"> </th>
         </tr>
+        {% for s in songs %}
         <tr>
-            {% for s in songs %}
-            <td style="text-align:center;"> {{s.Name}} </td>
+            <td style="text-align:left;"> {{s.Name}} </td>
             <td style="text-align:center;"> {{s.Genre}} </td>
-            <td style="text-align:right;"> {{s.Duration}} </td>
-            <a href="{{ url_for('playlist_bp.add_songs', song_id = s.Id, playlist = playlist) }}"><img src="..\static\img\add.png", style="width: 5%;">
-            {% endfor %}
+            <td style="text-align:right; padding-right:1%;"> {{s.Duration}} </td>
+            <td><a href="{{ url_for('playlist_bp.add_songs',song_id=s.Id, playlist=playlist)}}"><img src="..\static\img\add.png", style="width:100%;"></a></td>
         </tr>
+        {% endfor %}
     </table>
 </div>
 {% endblock %}
