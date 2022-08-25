@@ -18,18 +18,18 @@ def library():
     
 @library_bp.route('/albums/<user>/<playlists>')
 @login_required
-def library(user, playlists):
+def albums(user, playlists):
     #albums = session.query(Albums).filter(Albums.Id.in_()) -- è possibile avere degli album salvati?
     return render_template("albums.html", playlists=playlists, user=user)
 
 @library_bp.route('/artists/<user>/<playlists>')
 @login_required
-def library(user, playlists):
+def artists(user, playlists):
     #artists = session.query(Users).filter(Users.Email.in_()) -- è possibile avere degli artisti salvati?
     return render_template("artists.html", playlists=playlists, user=user)
     
 @library_bp.route('/songs/<user>/<playlists>')
 @login_required
-def library(user, playlists):
+def songs(user, playlists):
     #songs = session.query(Songs).filter(Songs.Id.in_()) -- è possibile avere delle canzoni salvate?
     return render_template("songs.html", playlists=playlists, user=user)

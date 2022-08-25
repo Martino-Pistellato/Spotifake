@@ -60,7 +60,7 @@
             {% for p in playlists %}
             <dl>
                 <dt> 
-                    <a href="{{ url_for('playlist_bp.show_playlist', playlist=p.Name )}}"> {{p.Name}} </a> 
+                    <a href="{{ url_for('playlist_bp.show_playlist', playlist=p )}}"> {{p.Name}} </a> 
                 </dt>
             </dl>
             {% endfor %}
