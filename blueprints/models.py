@@ -25,7 +25,7 @@ class Users(Base, UserMixin):
     
     songs = relationship('Songs', secondary = 'ArtistsSongs', back_populates="artist" )
     playlists = relationship('Playlists', secondary = 'PlaylistsUsers', back_populates="users" )
-    albums = relationship('Albums', secondary = 'ArtistsAlbums', back_populates="artist" )
+    albums = relationship('Albums')
     profile = relationship('Profiles', back_populates="users" )
     
     def __repr__(self):
@@ -51,8 +51,11 @@ class Users(Base, UserMixin):
         self.songs.append(song)
         session.commit()
     
+    def add_album_if_artist(self, album):
+        self.albums.append(album)
+        session.commit()
+    
             
-  
 class Profiles(Base):
     __tablename__ = "Profiles"
     
@@ -96,7 +99,7 @@ class Record_Houses(Base):
 
     Name = Column(String, primary_key = True)
 
-    albums = relationship('Albums', back_populates="record_house" )
+    albums = relationship('Albums')
     
     def __repr__(self):
         return "<Record_Houses(Name='%s')>" % (self.Name)
@@ -112,19 +115,28 @@ class Albums(Base):
     Duration = Column(Time)
     Id = Column(Integer, primary_key = True)
     Record_House = Column(String, ForeignKey('Record_Houses.Name', ondelete="CASCADE", onupdate="CASCADE"))
+    Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
     
-    artist = relationship('Users', secondary = 'ArtistsAlbums', back_populates="albums" )
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
-    record_house = relationship('Record_Houses', back_populates="albums" )
+    
     
     def __repr__(self):
         return "<Albums(Name='%s', ReleaseDate='%s', Duration='%s', Id='%d', Record_House='%s')>" % (self.Name, self.ReleaseDate, self.Duration, self.Id, self.Record_House)
 
-    def __init__(self, name, date, duration, record_house):
+    def __init__(self, name, date, duration, record_house, artist):
         self.Name=name
         self.ReleaseDate=date
         self.Duration=duration
-        self.record_house=record_house
+        self.Record_House=record_house
+        self.Artist = artist
+    
+    def create_album(self):
+        session.add(self)
+        session.commit()
+    
+    def add_song_to_album(self, song):
+        self.songs.append(song)
+        session.commit()
 
 class Playlists(Base):
     __tablename__ = "Playlists"
@@ -166,14 +178,14 @@ class ArtistsSongs(Base):
     def __repr__(self):
         return "<ArtistsSongs(song_id='%d', artist_email='%s')>" % (self.song_id, self.artist_email)  
 
-class ArtistsAlbums(Base):    
-    __tablename__ = "ArtistsAlbums"
+#class ArtistsAlbums(Base):    
+#    __tablename__ = "ArtistsAlbums"
     
-    album_id = Column(Integer, ForeignKey('Albums.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-    artist_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+#    album_id = Column(Integer, ForeignKey('Albums.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+#    artist_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
-    def __repr__(self):
-        return "<ArtistsAlbums(album_id='%d', artist_email='%s')>" % (self.album_id, self.artist_email)  
+#    def __repr__(self):
+#        return "<ArtistsAlbums(album_id='%d', artist_email='%s')>" % (self.album_id, self.artist_email)  
 
 class AlbumsSongs(Base):    
     __tablename__ = "AlbumsSongs"
@@ -219,6 +231,8 @@ Base.metadata.create_all(engine)
 session.add(Profiles('Free'))
 session.add(Profiles('Premium'))
 session.add(Profiles('Artist'))
+
+session.add(Record_Houses('Bloody'))
 
 session.commit()
 

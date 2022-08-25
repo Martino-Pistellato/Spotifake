@@ -1,47 +1,17 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div style="display:inline-block; width:30%;">
-        <img src="..\..\static\img\gallery.png" style="width:100%;">
+    <div class="w3-container"> <h1>Dai un nome al tuo album </h1> </div>
+    <div style="display:inline-block; width:35%;">
+        <img src="..\static\img\gallery.png" style="width:100%;">
     </div>
-    <div style="display:inline-block;">
-        <h1>{{album.Name}}</h1>
-        <ul>
-            <li style="display:inline;">{{album.artist}} - </li>
-            <li style="display:inline;"> {{n_songs}} - </li>
-            <li style="display:inline;"> {{album.Duration}} </li>
-        </ul>
+    <div style="display:inline-block; width:35%;">
+        <form id="album_name", action="/create_album" method="POST"> 
+            <input type="text", name="name" placeholder="Nome album">
+            <input type="text", name="record_h" placeholder="Casa produttrice">
+            <input type="date", name="date" placeholder="Data di rilascio">
+            <input type="submit", value="Salva">
     </div>
-
-    <div>
-        <table style="width:98%; padding-left:2%;"> 
-            <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
-                <th style="width:30%; text-align:left;"> TITOLO </th>
-                <th style="width:30%;"> GENERE </th>
-                <th style="width:30%; text-align:right;"> DURATA </th>
-            </tr>
-            <tr>
-                {% for s in songs %}
-                <td> {{s.Name}} </td>
-                <td style="text-align:center;"> {{s.Genre}} </td>
-                <td style="text-align:right;"> {{s.Duration}} </td>
-                {% endfor %}
-            </tr>
-        </table>
-    </div>
-
-    <div class="w3-container"> <h2> Altro di {{album.artist}} </h2> </div>
-    <dl>
-        {% for a in albums %}
-        <dt style="display:inline;"> 
-            <a href="{{ url_for('album_bp.album',album=a)}}">
-                <figure style="display:inline-block; width:15%;">
-                    <img src="..\static\img\gallery.png" style="width:100%;">
-                    <figcaption style="text-align:center;"> {{a.Name}} </figcaption>
-                </figure>  
-            </a> 
-        </dt>
-        {% endfor %}
-    </dl>
+    
 
 {% endblock %}

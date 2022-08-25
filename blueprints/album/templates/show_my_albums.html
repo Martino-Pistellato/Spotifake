@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="w3-container"> <h1>I tuoi album </h1> </div>
+    <dl>
+    {% for a in albums %}
+        <dt style="display:inline;"> 
+            <a href="{{ url_for('album_bp.show_album', album_name=a.Name, artist=user.Email) }}">
+                <figure style="display:inline-block; width:15%;">
+                    <img src="..\static\img\gallery.png" style="width:100%;">
+                    <figcaption style="text-align:center;"> {{a.Name}} </figcaption>
+                </figure>  
+            </a> 
+        </dt>
+    {% endfor %}
+    </dl>
+
+{% endblock %}

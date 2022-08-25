@@ -33,7 +33,7 @@ def create_song():
                 Users.add_song_if_artist(user, song)
                 playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
     
-                return render_template("upload_song.html", user = current_user, playlists = playlists)
+                return redirect(url_for("song_bp.show_my_songs"))
 
 @song_bp.route('/show_my_songs')
 @login_required # richiede autenticazione

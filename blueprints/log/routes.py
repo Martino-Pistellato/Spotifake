@@ -9,10 +9,7 @@ login_manager.init_app(app)
 
 @login_manager.user_loader # attenzione a questo !
 def get_user_by_email(email):
-    conn = engine.connect()
-    res = conn.execute(select([Users]).where(Users.Email == email))
-    user = res.fetchone()
-    conn.close()
+    user = session.query(Users).filter(Users.Email == email).first()
     return Users(user.Email, user.Name, user.BirthDate, user.Country, user.Gender, user.Password, user.Profile)
 
 # Blueprint Configuration
