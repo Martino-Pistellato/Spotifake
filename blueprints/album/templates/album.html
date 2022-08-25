@@ -34,7 +34,7 @@
     <dl>
         {% for a in albums %}
         <dt style="display:inline;"> 
-            <a href="{{ url_for('album_bp.album',album=a,user=user,playlists=playlists)}}">
+            <a href="{{ url_for('album_bp.album',album=a)}}">
                 <figure style="display:inline-block; width:15%;">
                     <img src="..\static\img\gallery.png" style="width:100%;">
                     <figcaption style="text-align:center;"> {{a.Name}} </figcaption>

@@ -44,7 +44,7 @@ def show_my_songs():
     
         return render_template("show_my_songs.html", songs = songs, user = current_user, playlists = playlists)
 
-@song_bp.route('/edit_songs/<int:song_id>')
+@song_bp.route('/edit_songs/<song_id>')
 @login_required # richiede autenticazione
 def edit_songs(song_id):
     if (current_user.Profile == 'Artist'):
@@ -53,7 +53,7 @@ def edit_songs(song_id):
         
         return render_template("edit_song.html", user=current_user, playlists=playlists, name=song.Name, duration=song.Duration, genre=song.Genre, id=song_id)
 
-@song_bp.route('/update_songs/<int:song_id>', methods=['GET', 'POST'])
+@song_bp.route('/update_songs/<song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def update_songs(song_id):
     if (current_user.Profile == 'Artist'):
@@ -63,13 +63,15 @@ def update_songs(song_id):
             genre = request.form["genre"]
             if (name is not None and duration is not None and genre is not None):
                 session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre})
+                playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
                 session.commit()
-                return redirect(url_for("song_bp.show_my_songs"))
+                return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists))
 
 @song_bp.route('/delete_songs/<int:song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def delete_songs(song_id):
     if (current_user.Profile == 'Artist'):
         session.query(Songs).filter(Songs.Id == song_id).delete()
+        playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
         session.commit()
-        return redirect(url_for("song_bp.show_my_songs"))
+        return redirect(url_for("song_bp.show_my_songs", user = current_user, playlists=playlists))

@@ -20,10 +20,11 @@ def profile():
 def update():
     return render_template("update_info.html", user = current_user)
 
-@profile_bp.route('/update_info/<string:Email>', methods=['GET', 'POST']) 
+@profile_bp.route('/update_info/<Email>', methods=['GET', 'POST']) 
 @login_required
 def update_info(Email): 
     if request.method == 'POST':
         session.query(Users).filter(Users.Email == Email).update({Users.Name : request.form["name"]})
+        playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
         session.commit()
-        return redirect(url_for('profile_bp.profile'))
+        return redirect(url_for('profile_bp.profile', user=current_user, playlists=playlists))
