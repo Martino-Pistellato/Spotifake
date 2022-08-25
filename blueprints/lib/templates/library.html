@@ -38,7 +38,7 @@
 <dl>
     {% for p in playlists %}
     <dt style="display:inline;"> 
-        <a href="{{url_for('playlist_bp.show_playlist',user=user,playlists=playlists,playlist=p)}}">
+        <a href="{{url_for('playlist_bp.show_playlist',playlist=p)}}">
             <figure style="display:inline-block; width:20%;">
                 <img src="..\static\img\gallery.png" style="width:100%;">
                 <figcaption style="text-align:center;"> {{p.Name}} </figcaption>
