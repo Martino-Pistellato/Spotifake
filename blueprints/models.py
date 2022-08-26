@@ -47,6 +47,10 @@ class Users(Base, UserMixin):
     def get_id(self):
         return self.Email
     
+    def add_playlist(self, playlist):
+        self.playlists.append(playlist)
+        session.commit()
+    
     def add_song_if_artist(self, song):
         self.songs.append(song)
         session.commit()
@@ -93,6 +97,14 @@ class Songs(Base):
     def create_song(self):
         session.add(self)
         session.commit()
+    
+    def delete_song(song_id):
+        session.query(Songs).filter(Songs.Id == song_id).delete()
+        session.commit()
+
+    def update_song(song_id, name, duration, genre):
+        session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre})
+        session.commit()
 
 class Record_Houses(Base):
     __tablename__ = "Record_Houses"
@@ -137,6 +149,11 @@ class Albums(Base):
     def add_song_to_album(self, song):
         self.songs.append(song)
         session.commit()
+    
+    def update_album(album_id, name, releaseDate, duration, record_h, artist):
+        session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Artist' : artist})
+        session.commit()
+        
 
 class Playlists(Base):
     __tablename__ = "Playlists"
@@ -152,6 +169,10 @@ class Playlists(Base):
     
     def __init__(self, name):
         self.Name=name
+    
+    def add_song_to_playlist(self, song):
+        self.songs.append(song)
+        session.commit()
 
 class Actions(Base):
     __tablename__ = "Actions"

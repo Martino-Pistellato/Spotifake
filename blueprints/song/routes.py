@@ -31,8 +31,7 @@ def create_song():
                 Songs.create_song(song)
                 user = session.query(Users).filter(Users.Email == current_user.Email).first()
                 Users.add_song_if_artist(user, song)
-                playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
-    
+                
                 return redirect(url_for("song_bp.show_my_songs"))
 
 @song_bp.route('/show_my_songs')
@@ -62,16 +61,12 @@ def update_songs(song_id):
             duration = request.form["duration"]
             genre = request.form["genre"]
             if (name is not None and duration is not None and genre is not None):
-                session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre})
-                playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
-                session.commit()
-                return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists))
+                Songs.update_song(song_id, name, duration ,genre)
+                return redirect(url_for("song_bp.show_my_songs"))
 
 @song_bp.route('/delete_songs/<int:song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def delete_songs(song_id):
     if (current_user.Profile == 'Artist'):
-        session.query(Songs).filter(Songs.Id == song_id).delete()
-        playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
-        session.commit()
-        return redirect(url_for("song_bp.show_my_songs", user = current_user, playlists=playlists))
+        Songs.delete_song(song_id)
+        return redirect(url_for("song_bp.show_my_songs"))
