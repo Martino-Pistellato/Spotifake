@@ -3,6 +3,8 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, validates
 from flask_login import UserMixin, current_user
+from sqlalchemy import exc
+from flask import Blueprint, render_template, request, redirect, url_for
 
 engine = create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")
 metadata = MetaData()
@@ -43,9 +45,14 @@ class Users(Base, UserMixin):
         self.Profile = profile
 
     def create_user(self):
-        session.add(self)
-        session.commit()
-    
+        try:
+            session.add(self)
+            session.commit()
+        except exc.SQLAlchemyError as err:
+            session.rollback()  
+            print(err.orig.diag.message_primary) 
+        
+
     def get_id(self):
         return self.Email
     
