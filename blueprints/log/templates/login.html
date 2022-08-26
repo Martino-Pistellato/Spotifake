@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,23 +22,42 @@
     <title>Spotifake</title>
     <link rel="icon" type="image/x-icon" href="..\..\static\img\logo.png">
 </head>
-
 <body>
-    <div style="text-align:center;">
-        <img src="..\..\static\img\logo.png" style="width:15%;">
-        <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
-    </div>
-    <form action="/login", method="POST", style="text-align: center;">
-        <dl>
-            <dt> <input name="user", type="text", placeholder="Email"> </dt>
-            <dt> <input name="pass", type="password", placeholder="Password"> </dt>
-        </dl>
-        <input type="submit", value="ACCEDI">
+  <div class="form-wrapper">
+    <h2 class="title">Sign Up</h2>
+
+    <form method="POST" action="{{ url_for('login_bp.login') }}">
+      {{ form.csrf_token }}
+
+      <fieldset class="form-field">
+        {{ form.email.label }} 
+        {{ form.email }}
+        {% if form.email.errors %}
+          <ul class="errors">
+            {% for error in form.email.errors %}
+              <li class="error">
+                <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="form-field">
+        {{ form.password.label }} 
+        {{ form.password }}
+        {% if form.password.errors %}
+          <ul class="errors">
+            {% for error in form.password.errors %}
+              <li class="error">
+                <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+      {{ form.submit }}
     </form>
-    <form action="/subscribe", style="text-align: center;">
-        <input type="submit", value="ISCRIVITI">
-    </form>
+  </div>
 </body>
-</html>
-
-

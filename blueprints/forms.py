@@ -1,21 +1,6 @@
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import (
-    StringField,
-    TextAreaField,
-    SubmitField,
-    PasswordField,
-    DateField,
-    SelectField
-)
-from wtforms.validators import (
-    DataRequired,
-    Email,
-    EqualTo,
-    Length,
-    URL
-)
-
-#pip install flask-wtf
+from wtforms import StringField, SubmitField, PasswordField, DateField, SelectField
+from wtforms.validators import DataRequired, Email, Length
 
 class subscribeForm(FlaskForm):
     name = StringField(
@@ -64,6 +49,24 @@ class subscribeForm(FlaskForm):
     birthday = DateField(
         'Your Birthday',
         [DataRequired()]
+    )
+    
+    submit = SubmitField('Submit')
+    
+class loginForm(FlaskForm):
+    email = StringField(
+        'Email',
+        [
+            Email(message='Not a valid email address.'),
+            DataRequired()
+        ]
+    )
+    password = PasswordField(
+        'Password',
+        [
+            DataRequired(message="Please enter a password."),
+            Length(min=8, message=('Too short'))
+        ]
     )
     
     submit = SubmitField('Submit')
