@@ -15,7 +15,7 @@ album_bp = Blueprint(
 @login_required
 def album():
     if(current_user.Profile == 'Artist'):
-        playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)        
         return render_template("album.html", user=current_user, playlists=playlists)
 
 

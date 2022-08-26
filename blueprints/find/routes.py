@@ -12,6 +12,6 @@ find_bp = Blueprint(
 
 @find_bp.route('/find')
 def find():
-    playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email))) 
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     songs = session.query(Songs)
     return render_template("find.html", user = current_user, playlists = playlists, songs=songs)
