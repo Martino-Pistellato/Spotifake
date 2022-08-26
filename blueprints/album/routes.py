@@ -42,7 +42,7 @@ def show_songs_addable_album(album_name):
         all_my_songs = session.query(Songs.Id).filter(Songs.Artist == current_user.Email)
         my_songs_in_album = session.query(Songs.Id).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id)))
         my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs))
-        playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         
         return render_template("show_songs_album.html", album=album_name, user=current_user, playlists=playlists, songs=my_songs)
 
@@ -66,7 +66,7 @@ def add_songs_to_album(song_id, album_name):
 def show_my_albums():
     if(current_user.Profile == 'Artist'):
        albums = session.query(Albums).filter(Albums.Artist == current_user.Email)
-       playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
+       playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
        
        return render_template("show_my_albums.html", user=current_user, playlists=playlists, albums=albums)
 
@@ -78,7 +78,7 @@ def show_album(album_name, artist):
     artist_name = session.query(Users.Name).filter(Users.Email == artist).first()
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id)))
     albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album.Id)
-    playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     n_songs = songs.__sizeof__
     
     return render_template("show_album.html",

@@ -13,7 +13,7 @@ playlist_bp = Blueprint(
 @playlist_bp.route('/playlist')
 @login_required
 def playlist():
-    playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     return render_template("playlist.html", user=current_user, playlists=playlists)
 
 @playlist_bp.route('/create_playlist', methods=['GET', 'POST'])
@@ -34,7 +34,7 @@ def show_songs_addable(playlist_name):
     if(current_user.Profile == 'Free'):
         songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)), Songs.Is_Restricted==False)
    
-    playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)     
     
     return render_template("add_songs.html", songs = songs, user = current_user, playlist = playlist_name, playlists = playlists)
 
@@ -46,7 +46,7 @@ def show_playlist_content(playlist_name):
     
     #songs = session.query(PlaylistsSongs).filter(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist.Id))
     
-    playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     
     return render_template("show_playlist_content.html", songs = songs, user = current_user, playlist = playlist_name, playlists = playlists)
 
