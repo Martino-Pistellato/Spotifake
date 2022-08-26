@@ -72,3 +72,13 @@ input[type=submit]{
     text-align: center;
     vertical-align: middle;
 }
+button{
+    background-color:#1ed760; 
+    border:none; 
+    border-radius:10vw;
+    color: rgb(249, 248, 241);
+    padding: 0.8vw 1.2vw;
+}
+button:hover{
+    background-color:#16a748;
+}
