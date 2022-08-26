@@ -29,8 +29,7 @@ def create_playlist():
 @playlist_bp.route('/show_songs_addable/<playlist_name>', methods=['GET', 'POST'])
 @login_required
 def show_songs_addable(playlist_name):
-    playlists_id =session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)
-    pl_id = session.query(Playlists.Id).filter(Playlists.Name == playlist_name, Playlists.Id.in_(playlists_id))
+    pl_id = session.query(Playlists.Id).filter(Playlists.User==current_user.Email, Playlists.Name == playlist_name)
     songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)))
     if(current_user.Profile == 'Free'):
         songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)), Songs.Is_Restricted==False)
@@ -42,8 +41,7 @@ def show_songs_addable(playlist_name):
 @playlist_bp.route('/show_playlist_content/<playlist_name>', methods=['GET', 'POST'])
 @login_required
 def show_playlist_content(playlist_name):
-    playlists_id =session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)
-    pl_id = session.query(Playlists.Id).filter(Playlists.Name == playlist_name, Playlists.Id.in_(playlists_id))
+    pl_id = session.query(Playlists.Id).filter(Playlists.User==current_user.Email, Playlists.Name == playlist_name)
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)))
     
     #songs = session.query(PlaylistsSongs).filter(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist.Id))
@@ -57,8 +55,7 @@ def show_playlist_content(playlist_name):
 @login_required
 def add_songs(playlist, song_id):
     song = session.query(Songs).filter(Songs.Id == song_id).first()
-    playlist = session.query(Playlists).filter(and_(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)), Playlists.Name == playlist)).first()
-    
+    playlist = session.query(Playlists).filter(Playlists.User==current_user.Email, Playlists.Name == playlist).first()
     Playlists.add_song_to_playlist(playlist, song)
    
     return redirect(url_for("playlist_bp.show_songs_addable", playlist_name=playlist.Name))

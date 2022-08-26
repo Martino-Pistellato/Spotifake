@@ -39,7 +39,7 @@ def create_album():
 def show_songs_addable_album(album_name):
     if(current_user.Profile == 'Artist'):
         album = session.query(Albums).filter(and_(Albums.Name == album_name, Albums.Artist == current_user.Email)).first()
-        all_my_songs = session.query(Songs.Id).filter(Songs.Id.in_(session.query(ArtistsSongs.song_id).filter(ArtistsSongs.artist_email == current_user.Email)))
+        all_my_songs = session.query(Songs.Id).filter(Songs.Artist == current_user.Email)
         my_songs_in_album = session.query(Songs.Id).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id)))
         my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs))
         playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
@@ -55,7 +55,8 @@ def add_songs_to_album(song_id, album_name):
         album = session.query(Albums).filter(Albums.Name == album_name).first()
         Albums.add_song_to_album(album, song)
 
-
+        #SISTEMARE DURATA DELL'ALBUM!!!
+        
         Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration, album.Record_House, album.Artist)
 
         return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
