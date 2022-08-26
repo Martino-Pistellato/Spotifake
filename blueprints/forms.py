@@ -21,7 +21,7 @@ class subscribeForm(FlaskForm):
     name = StringField(
         'Name',
         [
-            DataRequired(essage="Please choose a name.")
+            DataRequired(message="Please choose a name.")
         ]
     )
     email = StringField(
@@ -36,12 +36,6 @@ class subscribeForm(FlaskForm):
         [
             DataRequired(message="Please enter a password."),
             Length(min=8, message=('Too short'))
-        ]
-    )
-    confirmPassword = PasswordField(
-        'Repeat Password',
-        [
-            EqualTo(password, message='Passwords must match.')
         ]
     )
     profile = SelectField(
@@ -64,7 +58,7 @@ class subscribeForm(FlaskForm):
     country = StringField(
         'Country',
         [
-            DataRequired(essage="Please choose a country.")
+            DataRequired(message="Please choose a country.")
         ]
     )
     birthday = DateField(

@@ -29,17 +29,6 @@ class Users(Base, UserMixin):
     albums = relationship('Albums')
    # profile = relationship('Profiles', back_populates="users" )
 
-    @validates('Name')
-    def validates_name(self, key, Name):
-        if Name == '':
-            raise ValueError('Campo "Nome Utente" non compilato')
-        return Name
-    
-    @validates('Country')
-    def validates_name(self, key, Country):
-        if Country == '':
-            raise ValueError('Campo "Paese" non compilato')
-        return Country
     
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)

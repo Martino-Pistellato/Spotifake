@@ -1,13 +1,9 @@
-{% extends 'layout.html' %}
 
-
-
-{% block content %}
 
 <div class="form-wrapper">
   <h2 class="title">Sign Up</h2>
 
-  <form method="POST" action="{{ url_for('subscribe') }}">
+  <form method="POST" action="{{ url_for('login_bp.subscribe') }}">
     {{ form.csrf_token }}
 
     <fieldset class="form-field">
@@ -44,20 +40,6 @@
       {% if form.password.errors %}
         <ul class="errors">
           {% for error in form.password.errors %}
-            <li class="error">
-              <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    </fieldset>
-
-    <fieldset class="form-field">
-      {{ form.confirmPassword.label }} 
-      {{ form.confirmPassword }}
-      {% if form.confirmPassword.errors %}
-        <ul class="errors">
-          {% for error in form.confirmPassword.errors %}
             <li class="error">
               <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
             </li>
@@ -128,4 +110,3 @@
   </form>
 </div>
 
-{% endblock %}

@@ -3,7 +3,7 @@ from flask import current_app as app
 from flask_login import *
 from sqlalchemy import exc
 from blueprints import *
-from forms import subscribeForm
+from ..forms import subscribeForm
 
 login_manager=LoginManager()
 login_manager.init_app(app)
