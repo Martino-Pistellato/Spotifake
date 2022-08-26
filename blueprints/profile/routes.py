@@ -25,6 +25,6 @@ def update():
 def update_info(Email): 
     if request.method == 'POST':
         session.query(Users).filter(Users.Email == Email).update({Users.Name : request.form["name"]})
-        playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         session.commit()
         return redirect(url_for('profile_bp.profile', user=current_user, playlists=playlists))

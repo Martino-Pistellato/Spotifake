@@ -14,7 +14,7 @@ song_bp = Blueprint(
 @login_required # richiede autenticazione
 def upload_song():
     if (current_user.Profile == 'Artist'):
-        playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     
         return render_template("upload_song.html", user = current_user, playlists = playlists)
 
@@ -40,8 +40,8 @@ def create_song():
 @login_required # richiede autenticazione
 def show_my_songs():
     if (current_user.Profile == 'Artist'):
-        songs = session.query(Songs).filter(Songs.Id.in_(session.query(ArtistsSongs.song_id).filter(ArtistsSongs.artist_email == current_user.Email)))
-        playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+        songs = session.query(Songs).filter(Songs.Artist == current_user.Email)
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     
         return render_template("show_my_songs.html", songs = songs, user = current_user, playlists = playlists)
 
@@ -50,7 +50,7 @@ def show_my_songs():
 def edit_songs(song_id):
     if (current_user.Profile == 'Artist'):
         song = session.query(Songs).filter(Songs.Id == song_id).first()
-        playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         
         return render_template("edit_song.html", user=current_user, playlists=playlists, name=song.Name, duration=song.Duration, genre=song.Genre, id=song_id, restriction=song.Is_Restricted)
 
@@ -67,6 +67,7 @@ def update_songs(song_id, restr):
                 if(restriction is not None):
                     restr = not restr
                 Songs.update_song(song_id, name, duration, genre, restr)
+                
                 return redirect(url_for("song_bp.show_my_songs"))
 
 @song_bp.route('/delete_songs/<int:song_id>', methods=['GET', 'POST'])
@@ -74,4 +75,5 @@ def update_songs(song_id, restr):
 def delete_songs(song_id):
     if (current_user.Profile == 'Artist'):
         Songs.delete_song(song_id)
+        
         return redirect(url_for("song_bp.show_my_songs"))
