@@ -1,43 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layout.html' %}
 
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="..\..\static\css\style.css">
 
-<style>
-    h1 {
-        color:#1ed760; 
-        text-align: center; 
-        vertical-align: middle;
-    }
-    p {
-        text-align: center; 
-        vertical-align: middle;
-    }
-</style>
 
-<head>
-    <title>Spotifake</title>
-    <link rel="icon" type="image/x-icon" href="..\..\static\img\logo.png">
-</head>
+{% block content %}
 
-<body>
-    <div style="text-align:center;">
-        <img src="..\..\static\img\logo.png" style="width:15%;">
-        <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
-    </div>
-    <form action="/create_new_user", method="POST", style="text-align: center;">
-        <dl>
-            <dt> <input name="email", type="text", placeholder="Email"> </dt>
-            <dt> <input name="pass", type="password", placeholder="Password"> </dt>
-            <dt> <input name="nome", type="text", placeholder="Nome Utente"> </dt>
-            <dt> <input name="data", type="date", placeholder="Data di Nascita"> </dt>
-            <dt> <input name="paese", type="text", placeholder="Paese"> </dt>
-            <dt> <input name="sesso", type="text", placeholder="Sesso"> </dt>
-            <dt> <input name="profilo", type="text", placeholder="Profilo"> </dt>
-            <dt> <input type="submit", value="ISCRIVITI"> </dt>
-        </dl>
-    </form>
-</body>    
-</html>
+<div class="form-wrapper">
+  <h2 class="title">Sign Up</h2>
+
+  <form method="POST" action="{{ url_for('subscribe') }}">
+    {{ form.csrf_token }}
+
+    <fieldset class="form-field">
+      {{ form.name.label }} 
+      {{ form.name }}
+      {% if form.name.errors %}
+        <ul class="errors">
+          {% for error in form.name.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+      {{ form.email.label }} 
+      {{ form.email }}
+      {% if form.email.errors %}
+        <ul class="errors">
+          {% for error in form.email.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+      {{ form.password.label }} 
+      {{ form.password }}
+      {% if form.password.errors %}
+        <ul class="errors">
+          {% for error in form.password.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+      {{ form.confirmPassword.label }} 
+      {{ form.confirmPassword }}
+      {% if form.confirmPassword.errors %}
+        <ul class="errors">
+          {% for error in form.confirmPassword.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+      {{ form.profile.label }} 
+      {{ form.profile }}
+      <i class="fas fa-caret-down"></i>
+      {% if form.profile.errors %}
+        <ul class="errors">
+          {% for error in form.profile.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+      {{ form.gender.label }} 
+      {{ form.gender }}
+      {% if form.gender.errors %}
+        <ul class="errors">
+          {% for error in form.gender.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+      {{ form.country.label }} 
+      {{ form.country }}
+      {% if form.country.errors %}
+        <ul class="errors">
+          {% for error in form.country.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    <fieldset class="form-field">
+      {{ form.birthday.label }} 
+      {{ form.birthday }}
+      {% if form.birthday.errors %}
+        <ul class="errors">
+          {% for error in form.birthday.errors %}
+            <li class="error">
+              <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </fieldset>
+
+    {{ form.submit }}
+
+  </form>
+</div>
+
+{% endblock %}

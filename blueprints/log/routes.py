@@ -3,6 +3,7 @@ from flask import current_app as app
 from flask_login import *
 from sqlalchemy import exc
 from blueprints import *
+from forms import subscribeForm
 
 login_manager=LoginManager()
 login_manager.init_app(app)
@@ -23,9 +24,22 @@ login_bp = Blueprint(
 def login_home():
     return render_template("login.html")
 
-@login_bp.route('/subscribe')
+@login_bp.route('/subscribe', methods=["GET", "POST"])
 def subscribe():
-    return render_template("subscribe.html")
+#    return render_template("subscribe.html")
+    form = subscribeForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email.data
+        encrypted_pwd = bcrypt.generate_password_hash(form.password.data).decode('UTF-8')
+        profile = form.profile.data
+        gender = form.gender.data
+        country = form.country.data
+        birthday = form.birthday.data
+        res = Users(email, name, birthday, country, gender, encrypted_pwd, profile)
+        Users.create_user(res)
+        return redirect(url_for('login_bp.login_home'))
+    return render_template('subscribe.html',form=form)
 
 @login_bp.route('/create_new_user', methods=['GET', 'POST'])
 def create_new_user():
