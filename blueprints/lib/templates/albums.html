@@ -30,7 +30,7 @@
 {% block content %}
 <ul>
     <li><a href="{{url_for('library_bp.library',user=user,playlists=playlists)}}">Playlist</a></li>
-    <li style="border-radius: 10vw; background-color: #1ed760;">Album</li>
+    <li style="border-radius: 10vw; background-color: #1ed760;"><a>Album</a></li>
     <li><a href="{{url_for('library_bp.artists',user=user,playlists=playlists)}}">Artists</a></li>
     <li><a href="{{url_for('library_bp.songs',user=user,playlists=playlists)}}">Songs</a></li>
 </ul>
