@@ -14,10 +14,11 @@ session = Session()
 
 class Users(Base, UserMixin):
     __tablename__ = "Users"
+   
     
     Email = Column(String, CheckConstraint(column('Email').like('%@%')), primary_key = True) 
     Name = Column(String)
-    BirthDate = Column(Date)
+    BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2022' )))
     Country = Column(String)
     Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F'))) 
     Profile = Column(String, ForeignKey('Profiles.Name', ondelete="CASCADE", onupdate="CASCADE"))
