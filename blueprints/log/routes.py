@@ -38,11 +38,9 @@ def create_new_user():
             sesso = request.form["sesso"]
             encrypted_pwd = bcrypt.generate_password_hash(request.form["pass"]).decode('UTF-8')
             profilo = request.form["profilo"]
-            if(email is not None and nome is not None and data is not None and paese is not None and sesso is not None and encrypted_pwd is not None):
-                res = Users(email, nome, data, paese, sesso, encrypted_pwd, profilo) 
-                Users.create_user(res)
-                return redirect(url_for('login_bp.login_home'))
-            return redirect(url_for('login_bp.subscribe'))
+            res = Users(email, nome, data, paese, sesso, encrypted_pwd, profilo) 
+            Users.create_user(res)
+            return redirect(url_for('login_bp.login_home'))
     except exc.SQLAlchemyError as err:
         session.rollback()   
         return redirect(url_for('login_bp.subscribe')) 

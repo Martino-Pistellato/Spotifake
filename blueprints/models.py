@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, validates
 from flask_login import UserMixin, current_user
 
 engine = create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")
@@ -17,17 +17,29 @@ class Users(Base, UserMixin):
    
     
     Email = Column(String, CheckConstraint(column('Email').like('%@%')), primary_key = True) 
-    Name = Column(String)
-    BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2022' )))
-    Country = Column(String)
-    Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F'))) 
-    Profile = Column(String, ForeignKey('Profiles.Name', ondelete="CASCADE", onupdate="CASCADE"))
+    Name = Column(String, nullable = False)
+    BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2022' )), nullable = False)
+    Country = Column(String, nullable = False)
+    Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F')), nullable = False) 
+    Profile = Column(String, ForeignKey('Profiles.Name', ondelete="CASCADE", onupdate="CASCADE"), nullable = False)
     Password = Column(String, nullable = False)
     
     songs = relationship('Songs')
     playlists = relationship('Playlists')
     albums = relationship('Albums')
    # profile = relationship('Profiles', back_populates="users" )
+
+    @validates('Name')
+    def validates_name(self, key, Name):
+        if Name == '':
+            raise ValueError('Campo "Nome Utente" non compilato')
+        return Name
+    
+    @validates('Country')
+    def validates_name(self, key, Country):
+        if Country == '':
+            raise ValueError('Campo "Paese" non compilato')
+        return Country
     
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
@@ -78,11 +90,11 @@ class Profiles(Base):
 class Songs(Base):
     __tablename__ = "Songs"
     
-    Name = Column(String)
+    Name = Column(String, nullable = False)
     Duration = Column(Time)
     Genre = Column(String)
     Id = Column(Integer, primary_key = True)
-    Is_Restricted = Column(Boolean)
+    Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
     
     

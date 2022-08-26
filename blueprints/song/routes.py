@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 from flask import current_app as app
 from flask_login import *
+from sqlalchemy import exc
 from blueprints.models import *
 
 # Blueprint Configuration
@@ -22,19 +23,22 @@ def upload_song():
 @login_required # richiede autenticazione
 def create_song():
     if (current_user.Profile == 'Artist'):
-        if request.method == 'POST':
-            name = request.form["name"]
-            duration = request.form["duration"]
-            genre = request.form["genre"]
-            restriction = request.form["restriction"]
-            if (name is not None and duration is not None and genre is not None and restriction is not None):
+        try:
+            if request.method == 'POST':
+                name = request.form["name"]
+                duration = request.form["duration"]
+                genre = request.form["genre"]
+                restriction = request.form["restriction"]
                 rest = restriction == "Sì"
                 song = Songs(name, duration, genre, rest, current_user.Email)
                 Songs.create_song(song)
                 user = session.query(Users).filter(Users.Email == current_user.Email).first()
                 Users.add_song_if_artist(user, song)
-                
+                    
                 return redirect(url_for("song_bp.show_my_songs"))
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            return redirect(url_for("song_bp.upload_song"))
 
 @song_bp.route('/show_my_songs')
 @login_required # richiede autenticazione
@@ -57,18 +61,21 @@ def edit_songs(song_id):
 @song_bp.route('/update_songs/<song_id>/<restr>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def update_songs(song_id, restr):
-    if (current_user.Profile == 'Artist'):
-        if request.method == 'POST':
-            name = request.form["name"]
-            duration = request.form["duration"]
-            genre = request.form["genre"]
-            restriction = request.form["restriction"]
-            if (name is not None and duration is not None and genre is not None):
+    try:
+        if (current_user.Profile == 'Artist'):
+            if request.method == 'POST':
+                name = request.form["name"]
+                duration = request.form["duration"]
+                genre = request.form["genre"]
+                restriction = request.form["restriction"]
                 if(restriction is not None):
                     restr = not restr
                 Songs.update_song(song_id, name, duration, genre, restr)
-                
+                    
                 return redirect(url_for("song_bp.show_my_songs"))
+    except exc.SQLAlchemyError as err:
+        session.rollback()
+        return redirect(url_for("song_bp.edit_songs", song_id=song_id))
 
 @song_bp.route('/delete_songs/<int:song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
