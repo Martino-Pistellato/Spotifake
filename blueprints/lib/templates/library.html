@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 
+{% block content %}
 <style>
     ul {
         list-style-type: none;
@@ -27,7 +28,6 @@
     }
 </style>
 
-{% block content %}
 <ul>
     <li style="border-radius: 10vw; background-color: #1ed760;"><a>Playlist</a></li>
     <li><a href="{{url_for('library_bp.albums')}}">Album</a></li>

@@ -26,8 +26,10 @@ def create_song():
             name = request.form["name"]
             duration = request.form["duration"]
             genre = request.form["genre"]
-            if (name is not None and duration is not None and genre is not None):
-                song = Songs(name, duration, genre)
+            restriction = request.form["restriction"]
+            if (name is not None and duration is not None and genre is not None and restriction is not None):
+                rest = restriction == "Sì"
+                song = Songs(name, duration, genre, rest, current_user.Email)
                 Songs.create_song(song)
                 user = session.query(Users).filter(Users.Email == current_user.Email).first()
                 Users.add_song_if_artist(user, song)
@@ -50,18 +52,21 @@ def edit_songs(song_id):
         song = session.query(Songs).filter(Songs.Id == song_id).first()
         playlists = session.query(Playlists.Name).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
         
-        return render_template("edit_song.html", user=current_user, playlists=playlists, name=song.Name, duration=song.Duration, genre=song.Genre, id=song_id)
+        return render_template("edit_song.html", user=current_user, playlists=playlists, name=song.Name, duration=song.Duration, genre=song.Genre, id=song_id, restriction=song.Is_Restricted)
 
-@song_bp.route('/update_songs/<song_id>', methods=['GET', 'POST'])
+@song_bp.route('/update_songs/<song_id>/<restr>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
-def update_songs(song_id):
+def update_songs(song_id, restr):
     if (current_user.Profile == 'Artist'):
         if request.method == 'POST':
             name = request.form["name"]
             duration = request.form["duration"]
             genre = request.form["genre"]
+            restriction = request.form["restriction"]
             if (name is not None and duration is not None and genre is not None):
-                Songs.update_song(song_id, name, duration ,genre)
+                if(restriction is not None):
+                    restr = not restr
+                Songs.update_song(song_id, name, duration, genre, restr)
                 return redirect(url_for("song_bp.show_my_songs"))
 
 @song_bp.route('/delete_songs/<int:song_id>', methods=['GET', 'POST'])

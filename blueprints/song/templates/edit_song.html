@@ -6,10 +6,17 @@
         <img src="..\static\img\gallery.png" style="width:100%;">
     </div>
     <div style="display:inline-block; width:35%;">
-        <form action="/update_songs/{{id}}" method="POST"> 
+        <form action="/update_songs/{{id}}/{{restriction}}" method="POST"> 
             <input type="text", name="name" placeholder="Nome playlist", value="{{name}}">
             <input type="time", step="2" name="duration" placeholder="Durata", value="{{duration}}">
             <input type="text", name="genre" placeholder="Genere", value="{{genre}}">
+            {% if restriction %}
+            <p>Vuoi togliere questo brano dall'elenco dei contenuti Premium?</p>
+            {% else %}
+            <p>Vuoi aggiungere questo brano dall'elenco dei contenuti Premium?</p>
+            {% endif %}
+            <input type="radio", name="restriction", value="Sì">
+            <label>Sì</label><br>
             <input type="submit", value="Aggiorna">
     </div>
     

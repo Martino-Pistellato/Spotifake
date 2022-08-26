@@ -54,7 +54,9 @@ def add_songs_to_album(song_id, album_name):
         song = session.query(Songs).filter(Songs.Id == song_id).first()
         album = session.query(Albums).filter(Albums.Name == album_name).first()
         Albums.add_song_to_album(album, song)
-        Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration+song.Duration, album.Record_House, album.Artist)
+
+
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration, album.Record_House, album.Artist)
 
         return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
 

@@ -32,6 +32,9 @@ def show_songs_addable(playlist_name):
     playlists_id =session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)
     pl_id = session.query(Playlists.Id).filter(Playlists.Name == playlist_name, Playlists.Id.in_(playlists_id))
     songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)))
+    if(current_user.Profile == 'Free'):
+        songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl_id)), Songs.Is_Restricted==False)
+   
     playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsUsers.playlist_id).filter(PlaylistsUsers.user_email==current_user.Email)))          
     
     return render_template("add_songs.html", songs = songs, user = current_user, playlist = playlist_name, playlists = playlists)

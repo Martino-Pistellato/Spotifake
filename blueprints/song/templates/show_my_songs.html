@@ -10,16 +10,16 @@
                     <img src="..\static\img\gallery.png" style="width:100%;">
                     <figcaption style="text-align:center;"> {{s.Name}} </figcaption>
                 </figure>
-                <a href="{{ url_for('song_bp.edit_songs', song_id=s.Id) }}"> 
-                    <figure style="display:inline-block; width:15%;">
-                        <img src="..\static\img\edit.png" style="width:70%;">
-                        <figcaption style="text-align:center; display: inline-block;"> Modifica informazioni </figcaption>
-                    </figure>
-                </a>
                 <a href="{{ url_for('song_bp.delete_songs', song_id=s.Id) }}">
                     <figure style="display:inline-block; width:15%;">
                         <img src="..\static\img\cancel.png" style="width:70%;">
                         <figcaption style="text-align:center; display: inline-block;"> Elimina brano </figcaption>
+                    </figure>
+                </a>
+                <a href="{{ url_for('song_bp.edit_songs', song_id=s.Id) }}"> 
+                    <figure style="display:inline-block; width:15%;">
+                        <img src="..\static\img\edit.png" style="width:70%;">
+                        <figcaption style="text-align:center; display: inline-block;"> Modifica informazioni </figcaption>
                     </figure>
                 </a>
             </div>

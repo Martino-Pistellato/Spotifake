@@ -23,10 +23,10 @@ class Users(Base, UserMixin):
     Profile = Column(String, ForeignKey('Profiles.Name', ondelete="CASCADE", onupdate="CASCADE"))
     Password = Column(String, nullable = False)
     
-    songs = relationship('Songs', secondary = 'ArtistsSongs', back_populates="artist" )
-    playlists = relationship('Playlists', secondary = 'PlaylistsUsers', back_populates="users" )
+    songs = relationship('Songs')
+    playlists = relationship('Playlists')
     albums = relationship('Albums')
-    profile = relationship('Profiles', back_populates="users" )
+   # profile = relationship('Profiles', back_populates="users" )
     
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
@@ -65,8 +65,8 @@ class Profiles(Base):
     
     Name = Column(String, CheckConstraint(or_(column('Name') == 'Free', column('Name') == 'Premium', column('Name') == 'Artist')), primary_key = True)
     
-    actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles" )
-    users = relationship('Users', back_populates="profile" ) #cascade="all, delete, delete-orphan"
+   # actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles" )
+    users = relationship('Users') #cascade="all, delete, delete-orphan"
     
     def __repr__(self):
         return "<Profiles(Name='%s')>" % (self.Name)
@@ -81,18 +81,22 @@ class Songs(Base):
     Duration = Column(Time)
     Genre = Column(String)
     Id = Column(Integer, primary_key = True)
+    Is_Restricted = Column(Boolean)
+    Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
     
-    artist = relationship('Users', secondary = 'ArtistsSongs', back_populates="songs")
+    
     playlists = relationship('Playlists', secondary = 'PlaylistsSongs', back_populates="songs")
     albums = relationship('Albums', secondary = 'AlbumsSongs', back_populates="songs" )
 
     def __repr__(self):
         return "<Songs(Name='%s', Duration='%s', Genre='%s', Id='%d')>" % (self.Name, self.Duration, self.Genre, self.Id)
 
-    def __init__(self, name, duration, genre):
+    def __init__(self, name, duration, genre, restriction, artist):
         self.Name = name
         self.Duration = duration
         self.Genre = genre
+        self.Is_Restricted = restriction
+        self.Artist = artist
 
     def create_song(self):
         session.add(self)
@@ -102,8 +106,8 @@ class Songs(Base):
         session.query(Songs).filter(Songs.Id == song_id).delete()
         session.commit()
 
-    def update_song(song_id, name, duration, genre):
-        session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre})
+    def update_song(song_id, name, duration, genre, restriction):
+        session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre, 'Is_Restricted':restriction})
         session.commit()
 
 class Record_Houses(Base):
@@ -160,8 +164,9 @@ class Playlists(Base):
 
     Name = Column(String)
     Id = Column(Integer, primary_key = True)
-    
-    users = relationship('Users', secondary = 'PlaylistsUsers', back_populates="playlists" )
+    User = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
+
+    #users = relationship('Users', secondary = 'PlaylistsUsers', back_populates="playlists" )
     songs = relationship('Songs', secondary = 'PlaylistsSongs', back_populates="playlists" )
     
     def __repr__(self):
@@ -174,30 +179,17 @@ class Playlists(Base):
         self.songs.append(song)
         session.commit()
 
-class Actions(Base):
-    __tablename__ = "Actions"
-
-    Name = Column(String)
-    Id = Column(Integer, primary_key = True)
-    
-    profiles = relationship('Profiles', secondary = 'ProfilesActions', back_populates="actions" )
-    
-    def __repr__(self):
-        return "<Actions(Name='%s', Id='%d')>" % (self.Name, self.Id)
-    
-    def __init__(self, name):
-        self.Name=name
 
 ### Definizione tabelle delle associazioni ###
 
-class ArtistsSongs(Base):    
-    __tablename__ = "ArtistsSongs"
+#class ArtistsSongs(Base):    
+#    __tablename__ = "ArtistsSongs"
+#    
+#    song_id = Column(Integer, ForeignKey('Songs.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+#    artist_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
-    song_id = Column(Integer, ForeignKey('Songs.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-    artist_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-    
-    def __repr__(self):
-        return "<ArtistsSongs(song_id='%d', artist_email='%s')>" % (self.song_id, self.artist_email)  
+#    def __repr__(self):
+#        return "<ArtistsSongs(song_id='%d', artist_email='%s')>" % (self.song_id, self.artist_email)  
 
 #class ArtistsAlbums(Base):    
 #    __tablename__ = "ArtistsAlbums"
@@ -226,23 +218,16 @@ class PlaylistsSongs(Base):
     def __repr__(self):
         return "<PlaylistsSongs(playlist_id='%d', song_id='%d')>" % (self.playlist_id, self.song_id) 
     
-class PlaylistsUsers(Base):    
-    __tablename__ = "PlaylistsUsers"
+#class PlaylistsUsers(Base):    
+#    __tablename__ = "PlaylistsUsers"
     
-    playlist_id = Column(Integer, ForeignKey('Playlists.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-    user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+#    playlist_id = Column(Integer, ForeignKey('Playlists.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+#    user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
-    def __repr__(self):
-        return "<PlaylistsUsers(playlist_id='%d', user_email='%s')>" % (self.playlist_id, self.user_email) 
+#    def __repr__(self):
+#        return "<PlaylistsUsers(playlist_id='%d', user_email='%s')>" % (self.playlist_id, self.user_email) 
 
-class ProfilesActions(Base):    
-    __tablename__ = "ProfilesActions"
-    
-    profile_name = Column(String, ForeignKey('Profiles.Name', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-    action_id = Column(Integer, ForeignKey('Actions.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-    
-    def __repr__(self):
-        return "<ProfilesActions(profile_name='%s', action_id='%d')>" % (self.profile_name, self.action_id)
+
 
 ####################################################################################
 
@@ -254,6 +239,7 @@ session.add(Profiles('Premium'))
 session.add(Profiles('Artist'))
 
 session.add(Record_Houses('Bloody'))
+
 
 session.commit()
 

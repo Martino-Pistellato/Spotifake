@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="w3-container"> <h1>Le tue playlist </h1> </div>
+    <div class="w3-container"> <h1>Le tue playlist <a href="{{ url_for('playlist_bp.playlist') }}"> <img src="..\static\img\add.png", style="width:5% ;"> </a></h1> </div>
     <dl>
     {% for p in playlists %}
         <dt style="display:inline;"> 
