@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="..\..\static\css\style.css">
+
+<style>
+    h1 {
+        color:#1ed760; 
+        text-align: center; 
+        vertical-align: middle;
+    }
+    p {
+        text-align: center; 
+        vertical-align: middle;
+    }
+</style>
+
+<head>
+    <title>Spotifake</title>
+    <link rel="icon" type="image/x-icon" href="..\..\static\img\logo.png">
+</head>
+
+<body>
+    <div style="text-align:center;">
+        <img src="..\..\static\img\logo.png" style="width:15%;">
+        <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
+    </div>
+    <form action="/create_new_user", method="POST", style="text-align: center;">
+        <dl>
+            <dt> <input name="email", type="text", placeholder="Email"> </dt>
+            <dt> <input name="pass", type="password", placeholder="Password"> </dt>
+            <dt> <input name="nome", type="text", placeholder="Nome Utente"> </dt>
+            <dt> <input name="data", type="date", placeholder="Data di Nascita"> </dt>
+            <dt> <input name="paese", type="text", placeholder="Paese"> </dt>
+            <dt> <input name="sesso", type="text", placeholder="Sesso"> </dt>
+            <dt> <input name="profilo", type="text", placeholder="Profilo"> </dt>
+            <dt> <input type="submit", value="ISCRIVITI"> </dt>
+        </dl>
+    </form>
+</body>    
+</html>
