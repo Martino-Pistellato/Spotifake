@@ -29,16 +29,16 @@
 
 {% block content %}
 <ul>
-    <li><a href="{{url_for('library_bp.library',user=user,playlists=playlists)}}">Playlist</a></li>
-    <li><a href="{{url_for('library_bp.albums',user=user,playlists=playlists)}}">Album</a></li>
+    <li><a href="{{url_for('library_bp.library')}}">Playlist</a></li>
+    <li><a href="{{url_for('library_bp.albums')}}">Album</a></li>
     <li style="border-radius: 10vw; background-color: #1ed760;"><a>Artists</a></li>
-    <li><a href="{{url_for('library_bp.songs',user=user,playlists=playlists)}}">Songs</a></li>
+    <li><a href="{{url_for('library_bp.songs')}}">Songs</a></li>
 </ul>
 
 <dl>
     {% for a in artists %}
     <dt style="display:inline;"> 
-        <a href="{{url_for('#',user=user,playlists=playlists)}}">
+        <a href="{{url_for('#')}}">
             <figure style="display:inline-block; width:20%;">
                 <img src="..\static\img\profile.png" style="width:100%;">
                 <figcaption style="text-align:center;"> {{a.Name}} </figcaption>

@@ -30,15 +30,15 @@
 {% block content %}
 <ul>
     <li style="border-radius: 10vw; background-color: #1ed760;"><a>Playlist</a></li>
-    <li><a href="{{url_for('library_bp.albums',user=user,playlists=playlists)}}">Album</a></li>
-    <li><a href="{{url_for('library_bp.artists',user=user,playlists=playlists)}}">Artists</a></li>
-    <li><a href="{{url_for('library_bp.songs',user=user,playlists=playlists)}}">Songs</a></li>
+    <li><a href="{{url_for('library_bp.albums')}}">Album</a></li>
+    <li><a href="{{url_for('library_bp.artists')}}">Artists</a></li>
+    <li><a href="{{url_for('library_bp.songs')}}">Songs</a></li>
 </ul>
 
 <dl>
     {% for p in playlists %}
     <dt style="display:inline;"> 
-        <a href="{{url_for('playlist_bp.show_playlist',playlist=p)}}">
+        <a href="{{url_for('playlist_bp.show_playlist_content',playlist_name=p.Name)}}">
             <figure style="display:inline-block; width:20%;">
                 <img src="..\static\img\gallery.png" style="width:100%;">
                 <figcaption style="text-align:center;"> {{p.Name}} </figcaption>
