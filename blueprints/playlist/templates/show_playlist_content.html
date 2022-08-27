@@ -2,17 +2,22 @@
 
 {% block content %}
 <div class="w3-container", style="display:inline;"> 
-    <h1>{{playlist}} 
-        <a href="{{ url_for('playlist_bp.show_songs_addable', playlist_name = playlist) }}"><img src="..\static\img\add.png", style="width: 5%;"> </a>  
-        <a href="{{ url_for('playlist_bp.delete_playlists', pl_id=p.Id) }}">
+    <h1>{{playlist.Name}} 
+        <a href="{{ url_for('playlist_bp.show_songs_addable', playlist_name = playlist.Name) }}">
             <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\cancel.png" style="width:70%;">
+                <img src="..\static\img\add.png" style="width:55%;">
+                <figcaption style="text-align:center; display: inline-block;"> Aggiungi brani </figcaption>
+            </figure> 
+        </a>  
+        <a href="{{ url_for('playlist_bp.delete_playlists', pl_id=playlist.Id) }}">
+            <figure style="display:inline-block; width:15%;">
+                <img src="..\static\img\cancel.png" style="width:55%;">
                 <figcaption style="text-align:center; display: inline-block;"> Elimina playlist </figcaption>
             </figure>
         </a>
-        <a href="{{ url_for('playlist_bp.edit_playlists', pl_id=p.Id) }}"> 
+        <a href="{{ url_for('playlist_bp.edit_playlists', pl_id=playlist.Id) }}"> 
             <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\edit.png" style="width:70%;">
+                <img src="..\static\img\edit.png" style="width:55%;">
                 <figcaption style="text-align:center; display: inline-block;"> Modifica informazioni </figcaption>
             </figure>
         </a> 

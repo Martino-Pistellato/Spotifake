@@ -21,6 +21,12 @@ login_bp = Blueprint(
 )
 
 
+@login_manager.user_loader # attenzione a questo !
+def get_user_by_email(email):
+    user = session.query(Users).filter(Users.Email == email).first()
+    return Users(user.Email, user.Name, user.BirthDate, user.Country, user.Gender, user.Password, user.Profile)
+
+
 @login_bp.route('/', methods=["GET", "POST"])
 def login():
     form = loginForm()
