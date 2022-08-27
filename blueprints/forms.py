@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, DateField, SelectField, TimeField
 from wtforms.validators import DataRequired, Email, Length
 
+
 class subscribeForm(FlaskForm):
     name = StringField(
         'Nome',
@@ -106,4 +107,25 @@ class upload_SongForm(FlaskForm):
     
     submit = SubmitField('Submit')
     
+class upload_AlbumForm(FlaskForm):
+    name = StringField(
+        'Nome',
+        [
+            DataRequired(message="Indica il nome dell'album")
+        ]
+    )
+    releaseDate = DateField(
+        'Data di pubblicazione',
+        [
+            DataRequired(message="Indica la data di pubblicazione")
+        ]
+    )
+    recordHouse = SelectField(
+        'Casa discografica',
+        [
+            DataRequired(message="Indica la casa discografica")
+        ]
+    )
+    
+    submit = SubmitField('Submit')
     
