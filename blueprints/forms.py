@@ -1,10 +1,11 @@
-from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, SubmitField, PasswordField, DateField, SelectField
+from email.policy import default
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, PasswordField, DateField, SelectField, TimeField
 from wtforms.validators import DataRequired, Email, Length
 
 class subscribeForm(FlaskForm):
     name = StringField(
-        'Name',
+        'Nome',
         [
             DataRequired(message="Indica un nome utente")
         ]
@@ -24,7 +25,7 @@ class subscribeForm(FlaskForm):
         ]
     )
     profile = SelectField(
-        'Profile',
+        'Profilo',
         [DataRequired(message="Scegli con che tipo di account vuoi registrarti")],
         choices=[
             ('Free', 'Free'),
@@ -33,7 +34,7 @@ class subscribeForm(FlaskForm):
         ]
     )
     gender = SelectField(
-        'Gender',
+        'Sesso',
         [DataRequired(message="Indica il tuo sesso")],
         choices=[
             ('M', 'M'),
@@ -41,7 +42,7 @@ class subscribeForm(FlaskForm):
         ]
     )
     country = StringField(
-        'Country',
+        'Paese',
         [
             DataRequired(message="Seleziona una nazione")
         ]
@@ -71,3 +72,36 @@ class loginForm(FlaskForm):
     
     submit = SubmitField('Submit')
     subscribe = SubmitField('Subscribe')
+    
+class upload_SongForm(FlaskForm):
+    name = StringField(
+        'Nome',
+        [
+            DataRequired(message="Indica il nome della canzone")
+        ]
+    )
+    time = TimeField(
+        'Durata',
+        [
+            DataRequired(message="Indica la durata della canzone")
+        ],
+        default='00:00:00'
+    )
+    genre = StringField(
+        'Genere',
+        [
+            DataRequired(message="Indica il genere della canzone")
+        ]
+    )
+    type = SelectField(
+        'Visibilità',
+        [DataRequired(message="Indica quali account possono vedere la canzone")],
+        choices=[
+            ('Free', 'Free'),
+            ('Premium', 'Premium')
+        ]
+    )
+    
+    submit = SubmitField('Submit')
+    
+    

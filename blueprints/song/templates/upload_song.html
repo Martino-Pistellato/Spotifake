@@ -5,18 +5,68 @@
     <div style="display:inline-block; width:35%;">
         <img src="..\static\img\gallery.png" style="width:100%;">
     </div>
-    <div style="display:inline-block; width:35%;">
-        <form id="song_info", action="/create_song" method="POST"> 
-            <input type="text", name="name" placeholder="Nome brano">
-            <input type="time", step="1" name="duration" placeholder="Durata", value="00:00:00">
-            <input type="text", name="genre" placeholder="Genere">
-            <p>E' un contenuto Premium?</p>
-            <input type="radio", name="restriction", value="Sì">
-            <label>Sì</label><br>
-            <input type="radio", name="restriction", value="No">
-            <label>No</label><br>
-            <input type="submit", value="Carica">
-    </div>
-    
+    <div style="display:inline-block; width:35%;" class="form-wrapper">
+        <form method="POST" action="{{ url_for('song_bp.upload_song') }}">
+            {{ form.csrf_token }}
+      
+            <fieldset class="form-field
+              {{ form.name.label }} 
+              {{ form.name }}
+              {% if form.name.errors %}
+                <ul class="errors">
+                  {% for error in form.name.errors %}
+                    <li class="error">
+                      <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </fieldset>
+      
+            <fieldset class="form-field">
+              {{ form.time.label }} 
+              {{ form.time }}
+              {% if form.time.errors %}
+                <ul class="errors">
+                  {% for error in form.time.errors %}
+                    <li class="error">
+                      <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </fieldset>
+      
+            <fieldset class="form-field">
+              {{ form.genre.label }} 
+              {{ form.genre }}
+              {% if form.genre.errors %}
+                <ul class="errors">
+                  {% for error in form.genre.errors %}
+                    <li class="error">
+                      <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </fieldset>
+      
+            <fieldset class="form-field">
+              {{ form.type.label }} 
+              {{ form.type }}
+              <i class="fas fa-caret-down"></i>
+              {% if form.type.errors %}
+                <ul class="errors">
+                  {% for error in form.type.errors %}
+                    <li class="error">
+                      <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </fieldset>
 
+            {{ form.submit }}
+          </form>
+    </div>
 {% endblock %}
