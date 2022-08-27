@@ -3,6 +3,7 @@ from flask import current_app as app
 from blueprints.models import *
 from flask_login import *
 from ..forms import upload_AlbumForm
+import time
 
 
 # Blueprint Configuration
@@ -68,10 +69,15 @@ def add_songs_to_album(song_id, album_name):
         song = session.query(Songs).filter(Songs.Id == song_id).first()
         album = session.query(Albums).filter(Albums.Name == album_name).first()
         Albums.add_song_to_album(album, song)
-
-        #SISTEMARE DURATA DELL'ALBUM!!!
+        st = song.Duration
+        at = album.Duration
         
-        Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration, album.Record_House, album.Artist, album.Is_Restricted)
+        x = 0
+        x = (at.hour + st.hour)*3600
+        x += (at.minute + st.minute*60)
+        x += at.second + st.second
+        
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate, time.strftime('%H:%M:%S', time.gmtime(x)), album.Record_House, album.Artist, album.Is_Restricted)
 
         return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
 
