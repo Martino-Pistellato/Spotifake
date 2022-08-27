@@ -15,6 +15,7 @@ song_bp = Blueprint(
 @song_bp.route('/upload_song')
 @login_required # richiede autenticazione
 def upload_song():
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     if (current_user.Profile == 'Artist'):
         form = upload_SongForm()
         if form.validate_on_submit():
@@ -31,14 +32,15 @@ def upload_song():
             user = session.query(Users).filter(Users.Email == current_user.Email).first()
             Users.add_song_if_artist(user, song)
             
-            return redirect(url_for("song_bp.show_my_songs"))    
-        return render_template('upload_song.html',form=form)
+            return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists))    
+        return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     return redirect(url_for("home_bp.home"))
 
 @song_bp.route('/edit_songs/<song_id>')
 @login_required # richiede autenticazione
 def edit_songs(song_id):
     if (current_user.Profile == 'Artist'):
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         song = session.query(Songs).filter(Songs.Id == song_id).first()
         if song.Is_Restricted == True:
             restriction = 'Premium'
@@ -58,9 +60,8 @@ def edit_songs(song_id):
                 
             Songs.update_song(song_id, name, time, genre, restriction)
             
-            return redirect(url_for("song_bp.show_my_songs")) 
+            return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists)) 
         
-        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         return render_template("edit_song.html", user=current_user, playlists=playlists, name=song.Name, duration=song.Duration, genre=song.Genre, id=song_id, restriction=song.Is_Restricted, form=form)
     return redirect(url_for("home_bp.home"))
 
