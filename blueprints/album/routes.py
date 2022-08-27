@@ -22,7 +22,6 @@ def album():
 @album_bp.route('/create_album', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def create_album():
-<<<<<<< HEAD
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     if (current_user.Profile == 'Artist'):
         form = upload_AlbumForm()
@@ -55,21 +54,7 @@ def create_album():
 #                user = session.query(Users).filter(Users.Email == current_user.Email).first()
 #                Users.add_album_if_artist(user, album)
 #                return redirect(url_for("album_bp.show_songs_addable_album", album_name=name))
-=======
-    if(current_user.Profile == 'Artist'):
-        if request.method == 'POST':
-            name = request.form["name"]
-            record_house = request.form["record_h"]
-            date = request.form["date"]
-            restr = request.form["restriction"]
-            if (name is not None and date is not None and record_house is not None and restr is not None):
-                restr = restr == "Sì"
-                album = Albums(name, date, '00:00:00', record_house, current_user.Email, restr)
-                Albums.create_album(album)
-                user = session.query(Users).filter(Users.Email == current_user.Email).first()
-                Users.add_album_if_artist(user, album)
-                return redirect(url_for("album_bp.show_songs_addable_album", album_name=name))
->>>>>>> 4899731153af5efbb1a3660b167fd2f4d4b1d3e9
+
 
 @album_bp.route('/show_songs_addable_album/<album_name>', methods=['GET', 'POST'])
 @login_required
