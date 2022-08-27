@@ -5,19 +5,19 @@
     <h1>{{playlist.Name}} 
         <a href="{{ url_for('playlist_bp.show_songs_addable', playlist_name = playlist.Name) }}">
             <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\add.png" style="width:55%;">
+                <img src="..\static\img\add.png" style="width:35%;">
                 <figcaption style="text-align:center; display: inline-block;"> Aggiungi brani </figcaption>
             </figure> 
         </a>  
-        <a href="{{ url_for('playlist_bp.delete_playlists', pl_id=playlist.Id) }}">
+        <a href="{{ url_for('playlist_bp.delete_playlist', pl_id=playlist.Id) }}">
             <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\cancel.png" style="width:55%;">
+                <img src="..\static\img\cancel.png" style="width:35%;">
                 <figcaption style="text-align:center; display: inline-block;"> Elimina playlist </figcaption>
             </figure>
         </a>
-        <a href="{{ url_for('playlist_bp.edit_playlists', pl_id=playlist.Id) }}"> 
+        <a href="{{ url_for('playlist_bp.edit_playlist', pl_id=playlist.Id) }}"> 
             <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\edit.png" style="width:55%;">
+                <img src="..\static\img\edit.png" style="width:35%;">
                 <figcaption style="text-align:center; display: inline-block;"> Modifica informazioni </figcaption>
             </figure>
         </a> 
@@ -35,11 +35,13 @@
             <td> {{s.Name}} </td>
             <td style="text-align:center;"> {{s.Genre}} </td>
             <td style="text-align:right;"> {{s.Duration}} </td>
+            <td>
             <a href="{{ url_for('playlist_bp.remove_song', song_id=s.Id, pl_id=playlist.Id) }}">
                 <figure style="display:inline-block; width:15%;">
-                    <img src="..\static\img\cancel.png" style="width:70%;">
+                    <img src="..\static\img\cancel.png" style="width:100%;">
                     <figcaption style="text-align:center; display: inline-block;"> Rimuovi brano </figcaption>
                 </figure>
+            </td>
             </a>
             {% endfor %}
         </tr>

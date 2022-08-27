@@ -140,6 +140,7 @@ class Albums(Base):
     Duration = Column(Time)
     Id = Column(Integer, primary_key = True)
     Record_House = Column(String, ForeignKey('Record_Houses.Name', ondelete="CASCADE", onupdate="CASCADE"))
+    Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
@@ -148,12 +149,13 @@ class Albums(Base):
     def __repr__(self):
         return "<Albums(Name='%s', ReleaseDate='%s', Duration='%s', Id='%d', Record_House='%s')>" % (self.Name, self.ReleaseDate, self.Duration, self.Id, self.Record_House)
 
-    def __init__(self, name, date, duration, record_house, artist):
+    def __init__(self, name, date, duration, record_house, artist, restr):
         self.Name=name
         self.ReleaseDate=date
         self.Duration=duration
         self.Record_House=record_house
         self.Artist = artist
+        self.Is_Restricted = restr
     
     def create_album(self):
         session.add(self)
