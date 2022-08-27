@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask import current_app as app
 from blueprints.models import *
 from flask_login import *
+from ..forms import upload_AlbumForm
 
 
 # Blueprint Configuration
@@ -18,21 +19,41 @@ def album():
         playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)        
         return render_template("album.html", user=current_user, playlists=playlists)
 
-
 @album_bp.route('/create_album', methods=['GET', 'POST'])
-@login_required
+@login_required # richiede autenticazione
 def create_album():
-    if(current_user.Profile == 'Artist'):
-        if request.method == 'POST':
-            name = request.form["name"]
-            record_house = request.form["record_h"]
-            date = request.form["date"]
-            if (name is not None and date is not None and record_house is not None):
-                album = Albums(name, date, '00:00:00', record_house, current_user.Email)
-                Albums.create_album(album)
-                user = session.query(Users).filter(Users.Email == current_user.Email).first()
-                Users.add_album_if_artist(user, album)
-                return redirect(url_for("album_bp.show_songs_addable_album", album_name=name))
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+    if (current_user.Profile == 'Artist'):
+        form = upload_AlbumForm()
+        form.recordHouse.choices = [(rh.Id, rh.Name) for rh in session.query(Record_Houses)]
+        
+        if form.validate_on_submit():
+            name = form.name.data
+            date = form.releaseDate.data
+            rec_h = form.recordHouse.data
+            
+            album = Albums(name, date, '00:00:00', rec_h, current_user.Email)
+            Songs.create_song(album)
+            user = session.query(Users).filter(Users.Email == current_user.Email).first()
+            Users.add_album_if_artist(user, album)
+            
+            return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists))    
+        return render_template('create_album.html',form=form, user=current_user, playlists=playlists)
+    return redirect(url_for("home_bp.home"))
+
+#@login_required
+#def create_album():
+#    if(current_user.Profile == 'Artist'):
+#        if request.method == 'POST':
+#            name = request.form["name"]
+#            record_house = request.form["record_h"]
+#            date = request.form["date"]
+#            if (name is not None and date is not None and record_house is not None):
+#                album = Albums(name, date, '00:00:00', record_house, current_user.Email)
+#                Albums.create_album(album)
+#                user = session.query(Users).filter(Users.Email == current_user.Email).first()
+#                Users.add_album_if_artist(user, album)
+#                return redirect(url_for("album_bp.show_songs_addable_album", album_name=name))
 
 @album_bp.route('/show_songs_addable_album/<album_name>', methods=['GET', 'POST'])
 @login_required
