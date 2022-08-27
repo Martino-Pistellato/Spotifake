@@ -17,7 +17,7 @@ album_bp = Blueprint(
 def album():
     if(current_user.Profile == 'Artist'):
         playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)        
-        return render_template("album.html", user=current_user, playlists=playlists)
+        return render_template("create_album.html", user=current_user, playlists=playlists)
 
 @album_bp.route('/create_album', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
@@ -25,7 +25,7 @@ def create_album():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     if (current_user.Profile == 'Artist'):
         form = upload_AlbumForm()
-        form.recordHouse.choices = [(rh.Id, rh.Name) for rh in session.query(Record_Houses)]
+        form.recordHouse.choices = [(rh.Name) for rh in session.query(Record_Houses)]
         
         if form.validate_on_submit():
             name = form.name.data
