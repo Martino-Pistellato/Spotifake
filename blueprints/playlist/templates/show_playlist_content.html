@@ -35,6 +35,12 @@
             <td> {{s.Name}} </td>
             <td style="text-align:center;"> {{s.Genre}} </td>
             <td style="text-align:right;"> {{s.Duration}} </td>
+            <a href="{{ url_for('playlist_bp.remove_song', song_id=s.Id, pl_id=playlist.Id) }}">
+                <figure style="display:inline-block; width:15%;">
+                    <img src="..\static\img\cancel.png" style="width:70%;">
+                    <figcaption style="text-align:center; display: inline-block;"> Rimuovi brano </figcaption>
+                </figure>
+            </a>
             {% endfor %}
         </tr>
     </table>

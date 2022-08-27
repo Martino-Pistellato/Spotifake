@@ -6,11 +6,11 @@
         <img src="..\static\img\gallery.png" style="width:100%;">
     </div>
     <div style="display:inline-block; width:35%;" class="form-wrapper">
-        <form method="POST" action="{{ url_for('song_bp.edit_song') }}">
+        <form method="POST" action="{{ url_for('song_bp.edit_song', song_id = id) }}">
             {{ form.csrf_token }}
       
-            <fieldset class="form-field
-              {{ name }} 
+            <fieldset class="form-field">
+              {{ form.name.label }} 
               {{ form.name }}
               {% if form.name.errors %}
                 <ul class="errors">
@@ -24,7 +24,7 @@
             </fieldset>
       
             <fieldset class="form-field">
-              {{ duration }} 
+              {{ form.time.label }} 
               {{ form.time }}
               {% if form.time.errors %}
                 <ul class="errors">
@@ -38,7 +38,7 @@
             </fieldset>
       
             <fieldset class="form-field">
-              {{ genre }} 
+              {{ form.genre.label }} 
               {{ form.genre }}
               {% if form.genre.errors %}
                 <ul class="errors">
