@@ -20,9 +20,6 @@ login_bp = Blueprint(
     static_folder='static'
 )
 
-@login_bp.route('/')
-def login_home():
-    return render_template("login.html")
 
 @login_bp.route('/', methods=["GET", "POST"])
 def login():
@@ -33,13 +30,12 @@ def login():
         
         real_user = session.query(Users).filter(Users.Email == email).first()
         if(real_user is not None and bcrypt.check_password_hash(real_user.Password, pwd)):  
-            user = get_user_by_email(request.form["user"])
+            user = get_user_by_email(email)
             login_user(user) # chiamata a Flask - Login
             return redirect(url_for('home_bp.home'))    
         else:
             return render_template('login.html',form=form)
     return render_template('login.html',form=form)
-
 
 @login_bp.route('/subscribe', methods=["GET", "POST"])
 def subscribe():
@@ -52,23 +48,11 @@ def subscribe():
         gender = form.gender.data
         country = form.country.data
         birthday = form.birthday.data
-        res = Users(email, name, birthday, country, gender, encrypted_pwd, profile)
-        Users.create_user(res)
-        return redirect(url_for('login_bp.login_home'))
+        user = Users(email, name, birthday, country, gender, encrypted_pwd, profile)
+        Users.create_user(user)
+        return redirect(url_for('login_bp.login'))
     return render_template('subscribe.html',form=form)
 
-@login_bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        real_user = session.query(Users).filter(Users.Email == request.form["user"]).first()
-        if(real_user is not None and bcrypt.check_password_hash(real_user.Password, request.form["pass"]) ):  
-            user = get_user_by_email(request.form["user"])
-            login_user(user) # chiamata a Flask - Login
-            return redirect(url_for('home_bp.home'))    
-        else:
-            return redirect(url_for('login_bp.login_home'))
-    else:
-        return redirect(url_for('login_bp.login_home'))
 
 @login_bp.route('/logout')
 @login_required # richiede autenticazione

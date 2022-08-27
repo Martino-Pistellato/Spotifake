@@ -187,7 +187,14 @@ class Playlists(Base):
     def add_song_to_playlist(self, song):
         self.songs.append(song)
         session.commit()
-
+    
+    def delete_playlist(pl_id):
+        session.query(Playlists).filter(Playlists.Id == pl_id).delete()
+        session.commit()
+    
+    def update_playlist(pl_id, name):
+        session.query(Playlists).filter(Playlists.Id == pl_id).update({'Name':name})
+        session.commit()
 
 ### Definizione tabelle delle associazioni ###
 

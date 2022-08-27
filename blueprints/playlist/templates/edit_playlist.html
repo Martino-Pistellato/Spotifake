@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="w3-container"> <h1>Aggiorna le informazioni della tua playlist </h1> </div>
+    <div style="display:inline-block; width:35%;">
+        <img src="..\static\img\gallery.png" style="width:100%;">
+    </div>
+    <div style="display:inline-block; width:35%;">
+        <form action="/update_playlist/{{id}}" method="POST"> 
+            <input type="text", name="name" placeholder="Nome playlist", value="{{name}}">
+            <input type="submit", value="Aggiorna">
+    </div>
+    
+
+{% endblock %}

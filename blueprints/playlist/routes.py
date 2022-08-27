@@ -60,3 +60,26 @@ def add_songs(playlist, song_id):
    
     return redirect(url_for("playlist_bp.show_songs_addable", playlist_name=playlist.Name))
 
+@playlist_bp.route('/delete_playlists/<pl_id>', methods=['GET', 'POST'])
+@login_required # richiede autenticazione
+def delete_playlists(pl_id):
+    Playlists.delete_playlist(pl_id)
+
+    return redirect(url_for("library_bp.library"))
+
+@playlist_bp.route('/edit_playlists/<pl_id>', methods=['GET', 'POST'])
+@login_required # richiede autenticazione
+def edit_playlists(pl_id):
+    pl = session.query(Playlists).filter(Playlists.Id == pl_id).first()
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        
+    return render_template("edit_playlist.html", user=current_user, playlists=playlists, name=pl.Name, id=pl_id)
+
+@playlist_bp.route('/update_playlist/<pl_id>', methods=['GET', 'POST'])
+@login_required # richiede autenticazione
+def update_playlists(pl_id):
+    if request.method == 'POST':
+        name = request.form["name"]
+        Playlists.update_playlist(pl_id, name)
+                    
+        return redirect(url_for("library_bp.library"))

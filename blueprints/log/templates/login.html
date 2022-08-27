@@ -58,6 +58,10 @@
       </fieldset>
 
       {{ form.submit }}
+      
+    </form>
+    <form method="POST" action="{{ url_for('login_bp.subscribe') }}">
+      {{ form.subscribe }}
     </form>
   </div>
 </body>
