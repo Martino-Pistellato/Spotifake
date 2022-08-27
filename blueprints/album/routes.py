@@ -62,7 +62,7 @@ def add_songs_to_album(song_id, album_name):
 
         #SISTEMARE DURATA DELL'ALBUM!!!
         
-        Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration, album.Record_House, album.Artist)
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration, album.Record_House, album.Artist, album.Is_Restricted)
 
         return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
 

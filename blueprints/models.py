@@ -67,7 +67,14 @@ class Users(Base, UserMixin):
     def add_album_if_artist(self, album):
         self.albums.append(album)
         session.commit()
+
+    def delete_user(user_email):
+        session.query(Users).filter(Users.Email == user_email).delete()
+        session.commit()
     
+    def update_user(email, name):
+        session.query(Users).filter(Users.Email == email).update({'Name': name})
+        session.commit()
             
 class Profiles(Base):
     __tablename__ = "Profiles"
@@ -165,8 +172,16 @@ class Albums(Base):
         self.songs.append(song)
         session.commit()
     
-    def update_album(album_id, name, releaseDate, duration, record_h, artist):
-        session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Artist' : artist})
+    def remove_song(self, song_id):
+        session.query(AlbumsSongs).filter(AlbumsSongs.album_id == self.Id, AlbumsSongs.song_id == song_id).delete()
+        session.commit()
+    
+    def delete_album(album_id):
+        session.query(Albums).filter(Albums.Id == album_id).delete()
+        session.commit()
+    
+    def update_album(album_id, name, releaseDate, duration, record_h, artist, restr):
+        session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Artist' : artist, 'Is_Restricted': restr})
         session.commit()
         
 
