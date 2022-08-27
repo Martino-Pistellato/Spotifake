@@ -12,7 +12,7 @@ song_bp = Blueprint(
     static_folder='static'
 )
 
-@song_bp.route('/upload_song')
+@song_bp.route('/upload_song', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def upload_song():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -25,8 +25,7 @@ def upload_song():
             if form.type.data == 'Premium':
                 restriction = True
             else:
-                restriction = False
-                
+                restriction = False  
             song = Songs(name, time, genre, restriction, current_user.Email)
             Songs.create_song(song)
             user = session.query(Users).filter(Users.Email == current_user.Email).first()
@@ -36,9 +35,9 @@ def upload_song():
         return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     return redirect(url_for("home_bp.home"))
 
-@song_bp.route('/edit_songs/<song_id>')
+@song_bp.route('/edit_song/<song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
-def edit_songs(song_id):
+def edit_song(song_id):
     if (current_user.Profile == 'Artist'):
         playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         song = session.query(Songs).filter(Songs.Id == song_id).first()
@@ -46,28 +45,27 @@ def edit_songs(song_id):
             restriction = 'Premium'
         else:
             restriction = 'Free'
-        form = upload_SongForm(name=song.Name, time=song.Duration, genre=song.Genre, restriction = restriction)
+        form = upload_SongForm(name=song.Name, time=song.Duration, genre=song.Genre, type = restriction)
         
         if form.validate_on_submit():
             name = form.name.data
             time = form.time.data
             genre = form.genre.data
-            
             if form.type.data == 'Premium':
                 restriction = True
             else:
-                restriction = False
-                
+                restriction = False  
+              
             Songs.update_song(song_id, name, time, genre, restriction)
             
             return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists)) 
         
-        return render_template("edit_song.html", user=current_user, playlists=playlists, name=song.Name, duration=song.Duration, genre=song.Genre, id=song_id, restriction=song.Is_Restricted, form=form)
+        return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
     return redirect(url_for("home_bp.home"))
 
-@song_bp.route('/delete_songs/<song_id>', methods=['GET', 'POST'])
+@song_bp.route('/delete_song/<song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
-def delete_songs(song_id):
+def delete_song(song_id):
     if (current_user.Profile == 'Artist'):
         Songs.delete_song(song_id)
         return redirect(url_for("song_bp.show_my_songs"))

@@ -188,6 +188,10 @@ class Playlists(Base):
         self.songs.append(song)
         session.commit()
     
+    def remove_song(self, song_id):
+        session.query(PlaylistsSongs).filter(PlaylistsSongs.playlist_id == self.Id, PlaylistsSongs.song_id == song_id).delete()
+        session.commit()
+    
     def delete_playlist(pl_id):
         session.query(Playlists).filter(Playlists.Id == pl_id).delete()
         session.commit()

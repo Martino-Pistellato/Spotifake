@@ -86,7 +86,9 @@ class upload_SongForm(FlaskForm):
         [
             DataRequired(message="Indica la durata della canzone")
         ],
-        default='00:00:00'
+        format='%H:%M:%S',
+        render_kw={"step": "1"}
+        #default=00:00:00
     )
     genre = StringField(
         'Genere',

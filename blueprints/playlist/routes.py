@@ -83,3 +83,11 @@ def update_playlists(pl_id):
         Playlists.update_playlist(pl_id, name)
                     
         return redirect(url_for("library_bp.library"))
+
+@playlist_bp.route('/remove_song/<song_id>/<pl_id>', methods=['GET', 'POST'])
+@login_required # richiede autenticazione
+def remove_song(song_id, pl_id):
+    playlist = session.query(Playlists).filter(Playlists.Id == pl_id).first()
+    Playlists.remove_song(playlist, song_id)
+
+    return redirect(url_for("playlist_bp.show_playlist_content", playlist_name = playlist.Name))
