@@ -126,6 +126,14 @@ class upload_AlbumForm(FlaskForm):
             DataRequired(message="Indica la casa discografica")
         ]
     )
+    type = SelectField(
+        'Visibilità',
+        [DataRequired(message="Indica quali account possono vedere la canzone")],
+        choices=[
+            ('Free', 'Free'),
+            ('Premium', 'Premium')
+        ]
+    )
     
     submit = SubmitField('Submit')
     

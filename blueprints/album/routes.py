@@ -31,30 +31,19 @@ def create_album():
             name = form.name.data
             date = form.releaseDate.data
             rec_h = form.recordHouse.data
-            
-            album = Albums(name, date, '00:00:00', rec_h, current_user.Email)
-            Songs.create_song(album)
+            if form.type.data == 'Premium':
+                restriction = True
+            else:
+                restriction = False
+                
+            album = Albums(name, date, '00:00:00', rec_h, current_user.Email, restriction)
+            Albums.create_album(album)
             user = session.query(Users).filter(Users.Email == current_user.Email).first()
             Users.add_album_if_artist(user, album)
             
             return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists))    
         return render_template('create_album.html',form=form, user=current_user, playlists=playlists)
     return redirect(url_for("home_bp.home"))
-
-#@login_required
-#def create_album():
-#    if(current_user.Profile == 'Artist'):
-#        if request.method == 'POST':
-#            name = request.form["name"]
-#            record_house = request.form["record_h"]
-#            date = request.form["date"]
-#            if (name is not None and date is not None and record_house is not None):
-#                album = Albums(name, date, '00:00:00', record_house, current_user.Email)
-#                Albums.create_album(album)
-#                user = session.query(Users).filter(Users.Email == current_user.Email).first()
-#                Users.add_album_if_artist(user, album)
-#                return redirect(url_for("album_bp.show_songs_addable_album", album_name=name))
-
 
 @album_bp.route('/show_songs_addable_album/<album_name>', methods=['GET', 'POST'])
 @login_required

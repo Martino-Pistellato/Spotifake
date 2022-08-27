@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="w3-container"> <h1>I tuoi album <a href="{{ url_for('album_bp.album') }}"> <img src="..\static\img\add.png", style="width:5% ;"> </a></h1> </div>
+    <div class="w3-container"> <h1>I tuoi album <a href="{{ url_for('album_bp.create_album') }}"> <img src="..\static\img\add.png", style="width:5% ;"> </a></h1> </div>
     <dl>
     {% for a in albums %}
         <dt style="display:inline;"> 
