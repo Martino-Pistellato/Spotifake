@@ -22,6 +22,7 @@ def album():
 @album_bp.route('/create_album', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def create_album():
+<<<<<<< HEAD
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     if (current_user.Profile == 'Artist'):
         form = upload_AlbumForm()
@@ -54,6 +55,21 @@ def create_album():
 #                user = session.query(Users).filter(Users.Email == current_user.Email).first()
 #                Users.add_album_if_artist(user, album)
 #                return redirect(url_for("album_bp.show_songs_addable_album", album_name=name))
+=======
+    if(current_user.Profile == 'Artist'):
+        if request.method == 'POST':
+            name = request.form["name"]
+            record_house = request.form["record_h"]
+            date = request.form["date"]
+            restr = request.form["restriction"]
+            if (name is not None and date is not None and record_house is not None and restr is not None):
+                restr = restr == "Sì"
+                album = Albums(name, date, '00:00:00', record_house, current_user.Email, restr)
+                Albums.create_album(album)
+                user = session.query(Users).filter(Users.Email == current_user.Email).first()
+                Users.add_album_if_artist(user, album)
+                return redirect(url_for("album_bp.show_songs_addable_album", album_name=name))
+>>>>>>> 4899731153af5efbb1a3660b167fd2f4d4b1d3e9
 
 @album_bp.route('/show_songs_addable_album/<album_name>', methods=['GET', 'POST'])
 @login_required
@@ -62,7 +78,10 @@ def show_songs_addable_album(album_name):
         album = session.query(Albums).filter(and_(Albums.Name == album_name, Albums.Artist == current_user.Email)).first()
         all_my_songs = session.query(Songs.Id).filter(Songs.Artist == current_user.Email)
         my_songs_in_album = session.query(Songs.Id).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id)))
-        my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs))
+        my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs), Songs.Is_Restricted == False)
+        if(album.Is_Restricted == True):
+            my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs))
+       
         playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         
         return render_template("show_songs_album.html", album=album_name, user=current_user, playlists=playlists, songs=my_songs)
@@ -78,7 +97,7 @@ def add_songs_to_album(song_id, album_name):
 
         #SISTEMARE DURATA DELL'ALBUM!!!
         
-        Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration, album.Record_House, album.Artist)
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate, album.Duration, album.Record_House, album.Artist, album.Is_Restricted)
 
         return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
 

@@ -67,7 +67,14 @@ class Users(Base, UserMixin):
     def add_album_if_artist(self, album):
         self.albums.append(album)
         session.commit()
+
+    def delete_user(user_email):
+        session.query(Users).filter(Users.Email == user_email).delete()
+        session.commit()
     
+    def update_user(email, name):
+        session.query(Users).filter(Users.Email == email).update({'Name': name})
+        session.commit()
             
 class Profiles(Base):
     __tablename__ = "Profiles"
@@ -140,6 +147,7 @@ class Albums(Base):
     Duration = Column(Time)
     Id = Column(Integer, primary_key = True)
     Record_House = Column(String, ForeignKey('Record_Houses.Name', ondelete="CASCADE", onupdate="CASCADE"))
+    Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
@@ -148,12 +156,13 @@ class Albums(Base):
     def __repr__(self):
         return "<Albums(Name='%s', ReleaseDate='%s', Duration='%s', Id='%d', Record_House='%s')>" % (self.Name, self.ReleaseDate, self.Duration, self.Id, self.Record_House)
 
-    def __init__(self, name, date, duration, record_house, artist):
+    def __init__(self, name, date, duration, record_house, artist, restr):
         self.Name=name
         self.ReleaseDate=date
         self.Duration=duration
         self.Record_House=record_house
         self.Artist = artist
+        self.Is_Restricted = restr
     
     def create_album(self):
         session.add(self)
@@ -163,8 +172,16 @@ class Albums(Base):
         self.songs.append(song)
         session.commit()
     
-    def update_album(album_id, name, releaseDate, duration, record_h, artist):
-        session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Artist' : artist})
+    def remove_song(self, song_id):
+        session.query(AlbumsSongs).filter(AlbumsSongs.album_id == self.Id, AlbumsSongs.song_id == song_id).delete()
+        session.commit()
+    
+    def delete_album(album_id):
+        session.query(Albums).filter(Albums.Id == album_id).delete()
+        session.commit()
+    
+    def update_album(album_id, name, releaseDate, duration, record_h, artist, restr):
+        session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Artist' : artist, 'Is_Restricted': restr})
         session.commit()
         
 

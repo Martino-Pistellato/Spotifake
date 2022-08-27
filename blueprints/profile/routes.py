@@ -13,18 +13,23 @@ profile_bp = Blueprint(
 @profile_bp.route('/profile')
 @login_required # richiede autenticazione
 def profile():
-    return render_template("profile.html", user = current_user)
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        
+    return render_template("profile.html", user = current_user, playlists=playlists)
 
 @profile_bp.route('/update')
 @login_required
 def update():
-    return render_template("update_info.html", user = current_user)
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        
+    return render_template("update_info.html", user = current_user, playlists=playlists)
 
 @profile_bp.route('/update_info/<Email>', methods=['GET', 'POST']) 
 @login_required
 def update_info(Email): 
     if request.method == 'POST':
-        session.query(Users).filter(Users.Email == Email).update({Users.Name : request.form["name"]})
-        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-        session.commit()
-        return redirect(url_for('profile_bp.profile', user=current_user, playlists=playlists))
+        name = request.form["name"]
+        if(name is not None):
+            Users.update_user(Email, name)
+            return redirect(url_for('profile_bp.profile'))
+    return redirect(url_for("profile_bp.update"))
