@@ -1,5 +1,22 @@
 {% extends 'layout.html' %}
 
+
+
+{% block content %}
+
+<div style="text-align:center;">
+    <input type="text" id="mySearch" onkeyup="myFunction()" placeholder="Search..." title="Type in a song" style="width:90%;">
+</div>
+<dl id="myMenu" style="width:98%; padding-left:2%;">
+    {% for s in songs %}
+        <dt><img src="..\static\img\gallery.png" style="width:3%;"> <a href="#">{{s.Name}}</a></dt>
+    {% endfor %}
+    <hr style="height:2px;border-width:0;color:white; border-color: white; background-color: white;">
+    {% for a in albums %}
+        <dt><img src="..\static\img\gallery.png" style="width:3%;"> <a href="#">{{a.Name}}</a></dt>
+    {% endfor %}
+</dl>
+
 <script>
     function myFunction() {
         // Declare variables
@@ -21,13 +38,6 @@
     }
 </script>
 
-{% block content %}
-<div style="text-align:center;">
-    <input type="text" id="mySearch" onkeyup="myFunction()" placeholder="Search..." title="Type in a song" style="width:90%;">
-</div>
-<dl id="myMenu" style="width:98%; padding-left:2%;">
-    {% for s in songs %}
-    <dt><img src="..\static\img\gallery.png" style="width:3%;"> <a href="#">{{s.Name}}</a></dt>
-    {% endfor %}
-</dl>
 {% endblock %}
+
+

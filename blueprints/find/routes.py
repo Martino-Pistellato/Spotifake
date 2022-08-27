@@ -14,4 +14,5 @@ find_bp = Blueprint(
 def find():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     songs = session.query(Songs)
-    return render_template("find.html", user = current_user, playlists = playlists, songs=songs)
+    albums = session.query(Albums)
+    return render_template("find.html", user = current_user, playlists = playlists, albums=albums, songs=songs)

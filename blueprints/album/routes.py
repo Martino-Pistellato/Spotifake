@@ -42,7 +42,7 @@ def create_album():
             user = session.query(Users).filter(Users.Email == current_user.Email).first()
             Users.add_album_if_artist(user, album)
             
-            return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists))    
+            return redirect(url_for("album_bp.show_songs_addable_album", album_name = name))    
         return render_template('create_album.html',form=form, user=current_user, playlists=playlists)
     return redirect(url_for("home_bp.home"))
 
@@ -77,7 +77,7 @@ def add_songs_to_album(song_id, album_name):
         x += (at.minute + st.minute*60)
         x += at.second + st.second
         
-        Albums.update_album(album.Id, album.Name, album.ReleaseDate, time.strftime('%H:%M:%S', time.gmtime(x)), album.Record_House, album.Artist, album.Is_Restricted)
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, time.strftime('%H:%M:%S', time.gmtime(x)), album.Is_Restricted)
 
         return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
 
@@ -90,23 +90,61 @@ def show_my_albums():
        
        return render_template("show_my_albums.html", user=current_user, playlists=playlists, albums=albums)
 
+@album_bp.route('/delete_album/<album_id>')
+@login_required
+def delete_album(album_id):
+    if (current_user.Profile == 'Artist'):
+        Albums.delete_album(album_id)
+        return redirect(url_for("album_bp.show_my_albums"))
+    return redirect(url_for("home_bp.home"))
+
+@album_bp.route('/edit_album/<album_id>', methods=['GET', 'POST'])
+@login_required # richiede autenticazione
+def edit_album(album_id):
+    if (current_user.Profile == 'Artist'):
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        album = session.query(Albums).filter(Albums.Id == album_id).first()
+        if album.Is_Restricted == True:
+            restriction = 'Premium'
+        else:
+            restriction = 'Free'
+
+        form = upload_AlbumForm(name=album.Name, releaseDate=album.ReleaseDate, recordHouse=album.Record_House, type = restriction)
+        form.recordHouse.choices = [(rh.Name) for rh in session.query(Record_Houses)]
+
+        if form.validate_on_submit():
+            name = form.name.data
+            releaseDate = form.releaseDate.data
+            recordHouse = form.recordHouse.data
+            if form.type.data == 'Premium':
+                restriction = True
+            else:
+                restriction = False
+            
+            Albums.update_album(album_id, name, releaseDate, recordHouse, album.Duration, restriction)
+            
+            return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists)) 
+        
+        return render_template("edit_album.html", user=current_user, playlists=playlists, id=album_id, form=form)
+    return redirect(url_for("home_bp.home"))
+
 
 @album_bp.route('/show_album/<album_name>/<artist>')
 @login_required
 def show_album(album_name, artist):
     album = session.query(Albums).filter(Albums.Name == album_name, Albums.Artist == artist).first()
-    artist_name = session.query(Users.Name).filter(Users.Email == artist).first()
-    songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id)))
-    albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album.Id)
+    artist_user = session.query(Users).filter(Users.Email == artist).first()
+    songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id))).all()
+    albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album.Id).all()
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    n_songs = songs.__sizeof__
+    n_songs = len(songs)
     
-    return render_template("show_album.html",
-                    user = current_user, 
-                    album = album,
-                    songs = songs,
-                    albums = albums,
-                    n_songs = n_songs,
-                    playlists = playlists,
-                    artist_name = artist_name
-    )
+    return render_template("show_album.html", user = current_user, album = album, songs = songs, albums = albums, n_songs = n_songs, playlists = playlists, artist_name = artist_user.Name)
+
+@album_bp.route('/remove_song_from_album/<song_id>/<album_name>', methods=['GET', 'POST'])
+@login_required
+def remove_song_from_album(song_id, album_name):
+    if(current_user.Profile == 'Artist'):
+        album = session.query(Albums).filter(Albums.Name == album_name, Albums.Artist == current_user.Email).first()
+        Albums.remove_song(album, song_id)
+    return redirect(url_for("album_bp.show_album", album_name=album.Name, artist=current_user.Email))

@@ -180,8 +180,8 @@ class Albums(Base):
         session.query(Albums).filter(Albums.Id == album_id).delete()
         session.commit()
     
-    def update_album(album_id, name, releaseDate, duration, record_h, artist, restr):
-        session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Artist' : artist, 'Is_Restricted': restr})
+    def update_album(album_id, name, releaseDate, record_h, duration, restr):
+        session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Is_Restricted': restr})
         session.commit()
         
 
@@ -268,15 +268,16 @@ class PlaylistsSongs(Base):
 
 ####################################################################################
 
-Base.metadata.drop_all(bind=engine)
+#Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(engine)
 
-session.add(Profiles('Free'))
-session.add(Profiles('Premium'))
-session.add(Profiles('Artist'))
+#session.add(Profiles('Free'))
+#session.add(Profiles('Premium'))
+#session.add(Profiles('Artist'))
 
-session.add(Record_Houses('Bloody'))
+#session.add(Record_Houses('Bloody'))
+#session.add(Record_Houses('Universal'))
+#session.add(Record_Houses('Soffro'))
 
-
-session.commit()
+#session.commit()
 

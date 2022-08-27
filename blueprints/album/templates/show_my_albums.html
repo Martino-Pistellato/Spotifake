@@ -10,7 +10,19 @@
                     <img src="..\static\img\gallery.png" style="width:100%;">
                     <figcaption style="text-align:center;"> {{a.Name}} </figcaption>
                 </figure>  
-            </a> 
+            </a>
+            <a href="{{ url_for('album_bp.delete_album', album_id=a.Id) }}">
+                <figure style="display:inline-block; width:15%;">
+                    <img src="..\static\img\cancel.png" style="width:35%;">
+                    <figcaption style="text-align:center; display: inline-block;"> Elimina album </figcaption>
+                </figure>
+            </a>
+            <a href="{{ url_for('album_bp.edit_album', album_id=a.Id) }}"> 
+                <figure style="display:inline-block; width:15%;">
+                    <img src="..\static\img\edit.png" style="width:35%;">
+                    <figcaption style="text-align:center; display: inline-block;"> Modifica informazioni </figcaption>
+                </figure>
+            </a>
         </dt>
     {% endfor %}
     </dl>
