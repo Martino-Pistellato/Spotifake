@@ -1,31 +1,33 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+    <table style="width:98%; padding-left:2%;">
+        <tr>
+            <td style="width:40%;"> <h1> Le tue canzoni </h1> </td>
+            <td> <a href="{{url_for('song_bp.upload_song')}}"> 
+                <img src="..\static\img\add.png" style="width:10% ;"> 
+            </a> </td>
+        </tr>
+    </table>
+
     <div class="w3-container"> <h1>Le tue canzoni <a href="{{ url_for('song_bp.upload_song') }}"> <img src="..\static\img\add.png", style="width:5% ;"> </a></h1> </div>
     <dl>
-    {% for s in songs %}
-        <dt style="display:inline;"> 
-            <div style="display: inline-block;">
+        {% for s in songs %}
+            <dt style="display:inline;"> 
                 <figure style="display:inline-block; width:15%;">
-                    <img src="..\static\img\gallery.png" style="width:100%;">
-                    <figcaption style="text-align:center;"> {{s.Name}} </figcaption>
+                    <img src="static\img\gallery.png" style="width:100%;">
+                    <figcaption style="text-align:center;">
+                        {{s.Name}}  
+                        <a href="{{url_for('song_bp.delete_song',song_id=s.Id)}}">
+                            <img src="static\img\cancel.png" style="width:30%;">
+                        </a>
+                        <a href="{{url_for('song_bp.edit_song',song_id=s.Id)}}">
+                            <img src="static\img\edit.png" style="width:30%;">
+                        </a> 
+                    </figcaption>
                 </figure>
-                <a href="{{ url_for('song_bp.delete_song', song_id=s.Id) }}">
-                    <figure style="display:inline-block; width:15%;">
-                        <img src="..\static\img\cancel.png" style="width:70%;">
-                        <figcaption style="text-align:center; display: inline-block;"> Elimina brano </figcaption>
-                    </figure>
-                </a>
-                <a href="{{ url_for('song_bp.edit_song', song_id=s.Id) }}"> 
-                    <figure style="display:inline-block; width:15%;">
-                        <img src="..\static\img\edit.png" style="width:70%;">
-                        <figcaption style="text-align:center; display: inline-block;"> Modifica informazioni </figcaption>
-                    </figure>
-                </a>
-            </div>
-           
-        </dt>
-    {% endfor %}
+            </dt>
+        {% endfor %}
     </dl>
 
 {% endblock %}
