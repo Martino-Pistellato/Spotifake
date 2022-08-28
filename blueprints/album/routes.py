@@ -4,6 +4,8 @@ from blueprints.models import *
 from flask_login import *
 from ..forms import upload_AlbumForm
 import time
+from datetime import timedelta
+import datetime
 
 
 # Blueprint Configuration
@@ -72,12 +74,17 @@ def add_songs_to_album(song_id, album_name):
         st = song.Duration
         at = album.Duration
         
-        x = 0
-        x = (at.hour + st.hour)*3600
-        x += (at.minute + st.minute*60)
-        x += at.second + st.second
-        
-        Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, time.strftime('%H:%M:%S', time.gmtime(x)), album.Is_Restricted)
+        #x = 0
+        #x = (at.hour + st.hour)*3600
+        #x += (at.minute + st.minute)*60
+        #x += at.second + st.second
+        #time.strftime('%H:%M:%S', time.gmtime(x))
+
+        start = datetime.datetime(1, 1, 1, hour=at.hour, minute=at.minute, second=at.second)
+        add = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+        end = start + add
+     
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted)
 
         return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
 
@@ -146,5 +153,17 @@ def show_album(album_name, artist):
 def remove_song_from_album(song_id, album_name):
     if(current_user.Profile == 'Artist'):
         album = session.query(Albums).filter(Albums.Name == album_name, Albums.Artist == current_user.Email).first()
+        song = session.query(Songs).filter(Songs.Id == song_id).first()
+        st = song.Duration
+        at = album.Duration
+
+        start = datetime.datetime(1, 1, 1, hour=at.hour, minute=at.minute, second=at.second)
+        minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+        end = start - minus
+
         Albums.remove_song(album, song_id)
+
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted)
+
+
     return redirect(url_for("album_bp.show_album", album_name=album.Name, artist=current_user.Email))
