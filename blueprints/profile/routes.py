@@ -33,3 +33,11 @@ def update_info(Email):
             Users.update_user(Email, name)
             return redirect(url_for('profile_bp.profile'))
     return redirect(url_for("profile_bp.update"))
+
+@profile_bp.route('/delete_profile')
+@login_required
+def delete_profile():
+    email = current_user.Email
+    logout_user()
+    Users.delete_user(email)
+    return redirect(url_for("login_bp.login"))

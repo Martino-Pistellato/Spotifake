@@ -8,12 +8,14 @@
     <input type="text" id="mySearch" onkeyup="myFunction()" placeholder="Search..." title="Type in a song" style="width:90%;">
 </div>
 <dl id="myMenu" style="width:98%; padding-left:2%;">
+    <h1 style="text-align: center;">Brani</h1>
     {% for s in songs %}
-        <dt><img src="..\static\img\gallery.png" style="width:3%;"> <a href="#">{{s.Name}}</a></dt>
+        <dt><img src="..\static\img\gallery.png" style="width:3%;">{{s.Name}}<a href="#"><img src="..\static\img\add.png" style="width:5%;"></a></dt>
     {% endfor %}
     <hr style="height:2px;border-width:0;color:white; border-color: white; background-color: white;">
+    <h2 style="text-align: center;">Album</h2>
     {% for a in albums %}
-        <dt><img src="..\static\img\gallery.png" style="width:3%;"> <a href="#">{{a.Name}}</a></dt>
+        <dt><img src="..\static\img\gallery.png" style="width:3%;">{{a.Name}}<a href="#"><img src="..\static\img\add.png" style="width:5%;"></a></dt>
     {% endfor %}
 </dl>
 

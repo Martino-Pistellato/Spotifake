@@ -17,7 +17,7 @@ session = Session()
 class Users(Base, UserMixin):
     __tablename__ = "Users"
    
-    
+
     Email = Column(String, CheckConstraint(column('Email').like('%@%')), primary_key = True) 
     Name = Column(String, nullable = False)
     BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2022' )), nullable = False)
@@ -31,6 +31,11 @@ class Users(Base, UserMixin):
     albums = relationship('Albums')
    # profile = relationship('Profiles', back_populates="users" )
 
+    #Possibile sistema di like (vogliamo anche che da un oggetto piaciuto si possa risalire agli utenti?)
+
+    #liked_albums = relationship('Albums', secondary='UsersAlbums')
+    #liked_songs =  relationship('Songs', secondary='UsersSongs')
+    #liked_artists = relationship('Artists', secondary='UsersArtists')
     
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
