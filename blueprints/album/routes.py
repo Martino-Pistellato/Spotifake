@@ -39,7 +39,7 @@ def create_album():
             else:
                 restriction = False
                 
-            album = Albums(name, date, '00:00:00', rec_h, current_user.Email, restriction)
+            album = Albums(name, date, rec_h, current_user.Email, restriction)
             Albums.create_album(album)
             user = session.query(Users).filter(Users.Email == current_user.Email).first()
             Users.add_album_if_artist(user, album)
@@ -167,3 +167,14 @@ def remove_song_from_album(song_id, album_name):
 
 
     return redirect(url_for("album_bp.show_album", album_name=album.Name, artist=current_user.Email))
+
+@album_bp.route('/add_to_liked/<album_id>')
+@login_required # richiede autenticazione
+def add_to_liked(album_id):
+    album = session.query(Albums).filter(Albums.Id == album_id).first()
+    user = session.query(Users).filter(Users.Email == current_user.Email).first()
+
+    Users.add_album_to_liked(user, album)
+    Albums.update_likes(album.N_Likes + 1, album_id)
+
+    return redirect(url_for("find_bp.find"))

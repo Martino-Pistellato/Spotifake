@@ -78,3 +78,14 @@ def show_my_songs():
     
         return render_template("show_my_songs.html", songs = songs, user = current_user, playlists = playlists)
     return redirect(url_for("home_bp.home"))
+
+@song_bp.route('/add_to_liked/<song_id>')
+@login_required # richiede autenticazione
+def add_to_liked(song_id):
+    song = session.query(Songs).filter(Songs.Id == song_id).first()
+    user = session.query(Users).filter(Users.Email == current_user.Email).first()
+
+    Users.add_song_to_liked(user, song)
+    Songs.update_likes(song.N_Likes + 1, song_id)
+
+    return redirect(url_for("find_bp.find"))

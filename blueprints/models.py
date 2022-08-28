@@ -33,9 +33,9 @@ class Users(Base, UserMixin):
 
     #Possibile sistema di like (vogliamo anche che da un oggetto piaciuto si possa risalire agli utenti?)
 
-    #liked_albums = relationship('Albums', secondary='UsersAlbums')
-    #liked_songs =  relationship('Songs', secondary='UsersSongs')
-    #liked_artists = relationship('Artists', secondary='UsersArtists')
+    liked_albums = relationship('Albums', secondary='UsersAlbums', back_populates="liked_users")
+    liked_songs =  relationship('Songs', secondary='UsersSongs', back_populates="liked_users")
+    #liked_artists = relationship('Artists', secondary='UsersArtists', back_populates='liked_users')
     
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
@@ -80,6 +80,14 @@ class Users(Base, UserMixin):
     def update_user(email, name):
         session.query(Users).filter(Users.Email == email).update({'Name': name})
         session.commit()
+    
+    def add_song_to_liked(self, song):
+        self.liked_songs.append(song)
+        session.commit()
+    
+    def add_album_to_liked(self, album):
+        self.liked_albums.append(album)
+        session.commit()
             
 class Profiles(Base):
     __tablename__ = "Profiles"
@@ -104,8 +112,9 @@ class Songs(Base):
     Id = Column(Integer, primary_key = True)
     Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
+    N_Likes = Column(Integer)
     
-    
+    liked_users = relationship('Users', secondary= 'UsersSongs', back_populates="liked_songs")
     playlists = relationship('Playlists', secondary = 'PlaylistsSongs', back_populates="songs")
     albums = relationship('Albums', secondary = 'AlbumsSongs', back_populates="songs" )
 
@@ -118,6 +127,7 @@ class Songs(Base):
         self.Genre = genre
         self.Is_Restricted = restriction
         self.Artist = artist
+        self.N_Likes = 0
 
     def create_song(self):
         session.add(self)
@@ -130,6 +140,11 @@ class Songs(Base):
     def update_song(song_id, name, duration, genre, restriction):
         session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre, 'Is_Restricted':restriction})
         session.commit()
+    
+    def update_likes(like, song_id):
+        session.query(Songs).filter(Songs.Id == song_id).update({'N_Likes':like})
+        session.commit()
+
 
 class Record_Houses(Base):
     __tablename__ = "Record_Houses"
@@ -154,20 +169,23 @@ class Albums(Base):
     Record_House = Column(String, ForeignKey('Record_Houses.Name', ondelete="CASCADE", onupdate="CASCADE"))
     Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
+    N_Likes = Column(Integer)
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
+    liked_users = relationship('Users', secondary= 'UsersAlbums', back_populates="liked_albums")
     
     
     def __repr__(self):
         return "<Albums(Name='%s', ReleaseDate='%s', Duration='%s', Id='%d', Record_House='%s')>" % (self.Name, self.ReleaseDate, self.Duration, self.Id, self.Record_House)
 
-    def __init__(self, name, date, duration, record_house, artist, restr):
+    def __init__(self, name, date, record_house, artist, restr):
         self.Name=name
         self.ReleaseDate=date
-        self.Duration=duration
+        self.Duration='00:00:00'
         self.Record_House=record_house
         self.Artist = artist
         self.Is_Restricted = restr
+        self.N_Likes = 0
     
     def create_album(self):
         session.add(self)
@@ -188,7 +206,10 @@ class Albums(Base):
     def update_album(album_id, name, releaseDate, record_h, duration, restr):
         session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Is_Restricted': restr})
         session.commit()
-        
+
+    def update_likes(like, album_id):
+        session.query(Albums).filter(Albums.Id == album_id).update({'N_Likes':like})
+        session.commit()   
 
 class Playlists(Base):
     __tablename__ = "Playlists"
@@ -224,23 +245,23 @@ class Playlists(Base):
 
 ### Definizione tabelle delle associazioni ###
 
-#class ArtistsSongs(Base):    
-#    __tablename__ = "ArtistsSongs"
-#    
-#    song_id = Column(Integer, ForeignKey('Songs.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-#    artist_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+class UsersSongs(Base):    
+    __tablename__ = "UsersSongs"
     
-#    def __repr__(self):
-#        return "<ArtistsSongs(song_id='%d', artist_email='%s')>" % (self.song_id, self.artist_email)  
+    song_id = Column(Integer, ForeignKey('Songs.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+    user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+    
+    def __repr__(self):
+        return "<UsersSongs(song_id='%d', user_email='%s')>" % (self.song_id, self.user_email)  
 
-#class ArtistsAlbums(Base):    
-#    __tablename__ = "ArtistsAlbums"
+class UsersAlbums(Base):    
+    __tablename__ = "UsersAlbums"
     
-#    album_id = Column(Integer, ForeignKey('Albums.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-#    artist_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+    album_id = Column(Integer, ForeignKey('Albums.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
+    user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
-#    def __repr__(self):
-#        return "<ArtistsAlbums(album_id='%d', artist_email='%s')>" % (self.album_id, self.artist_email)  
+    def __repr__(self):
+        return "<UsersAlbums(album_id='%d', user_email='%s')>" % (self.album_id, self.user_email)  
 
 class AlbumsSongs(Base):    
     __tablename__ = "AlbumsSongs"

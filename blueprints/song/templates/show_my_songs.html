@@ -1,15 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <table style="width:98%; padding-left:2%;">
-        <tr>
-            <td style="width:40%;"> <h1> Le tue canzoni </h1> </td>
-            <td> <a href="{{url_for('song_bp.upload_song')}}"> 
-                <img src="..\static\img\add.png" style="width:10% ;"> 
-            </a> </td>
-        </tr>
-    </table>
-
+   
     <div class="w3-container"> <h1>Le tue canzoni <a href="{{ url_for('song_bp.upload_song') }}"> <img src="..\static\img\add.png", style="width:5% ;"> </a></h1> </div>
     <dl>
         {% for s in songs %}
@@ -18,6 +10,8 @@
                     <img src="static\img\gallery.png" style="width:100%;">
                     <figcaption style="text-align:center;">
                         {{s.Name}}  
+                    </figcaption>
+                    <figcaption style="text-align:center;">
                         <a href="{{url_for('song_bp.delete_song',song_id=s.Id)}}">
                             <img src="static\img\cancel.png" style="width:30%;">
                         </a>

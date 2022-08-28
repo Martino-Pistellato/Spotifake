@@ -10,12 +10,15 @@
 <dl id="myMenu" style="width:98%; padding-left:2%;">
     <h1 style="text-align: center;">Brani</h1>
     {% for s in songs %}
-        <dt><img src="..\static\img\gallery.png" style="width:3%;">{{s.Name}}<a href="#"><img src="..\static\img\add.png" style="width:5%;"></a></dt>
+        <div style="display: inline-block;">
+            <dt><img src="..\static\img\gallery.png" style="width:3%;"><a href="#">{{s.Name}}</a></dt> 
+            <dt>{{s.Duration}} {{s.Genre}} {{s.Artist}}<a href="{{ url_for('song_bp.add_to_liked', song_id=s.Id) }}"><img src="..\static\img\add.png" style="width:5%; float: right;"></a></dt>
+    </div>
     {% endfor %}
-    <hr style="height:2px;border-width:0;color:white; border-color: white; background-color: white;">
-    <h2 style="text-align: center;">Album</h2>
+    <hr style="height:8px;border-width:0;color:white; border-color: white; background-color: white;">
+    <h1 style="text-align: center;">Album</h1>
     {% for a in albums %}
-        <dt><img src="..\static\img\gallery.png" style="width:3%;">{{a.Name}}<a href="#"><img src="..\static\img\add.png" style="width:5%;"></a></dt>
+        <dt><img src="..\static\img\gallery.png" style="width:3%;"><a href="#">{{a.Name}}</a></dt> <a href="{{ url_for('album_bp.add_to_liked', album_id=a.Id) }}"><img src="..\static\img\add.png" style="width:5%; float: right;"></a>
     {% endfor %}
 </dl>
 
