@@ -85,8 +85,16 @@ class Users(Base, UserMixin):
         self.liked_songs.append(song)
         session.commit()
     
+    def remove_song_from_liked(self, song_id):
+        session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id == song_id, Users_liked_Songs.user_email==self.Email).delete()
+        session.commit()
+    
     def add_album_to_liked(self, album):
         self.liked_albums.append(album)
+        session.commit()
+    
+    def remove_album_from_liked(self, album_id):
+        session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id == album_id, Users_liked_Albums.user_email==self.Email).delete()
         session.commit()
             
 class Profiles(Base):
@@ -245,7 +253,7 @@ class Playlists(Base):
 
 ### Definizione tabelle delle associazioni ###
 
-class UsersSongs(Base):    
+class Users_liked_Songs(Base):    
     __tablename__ = "UsersSongs"
     
     song_id = Column(Integer, ForeignKey('Songs.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
@@ -254,7 +262,7 @@ class UsersSongs(Base):
     def __repr__(self):
         return "<UsersSongs(song_id='%d', user_email='%s')>" % (self.song_id, self.user_email)  
 
-class UsersAlbums(Base):    
+class Users_liked_Albums(Base):    
     __tablename__ = "UsersAlbums"
     
     album_id = Column(Integer, ForeignKey('Albums.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
