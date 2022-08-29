@@ -2,20 +2,30 @@
 
 {% block content %}
 <style>
-    fieldset{
-      border: 0;
-      background-color: #212221;
-      border-radius: 4vw;
-      text-align: center; 
-      width: 60%;
-      margin: auto;
-    }
-    ul{
-      list-style-type: none;
-    }
-    form{
-      text-align: center;
-    }
+  fieldset{
+    border: 0;
+    background-color: #212221;
+    border-radius: 4vw;
+    text-align: center; 
+    width: 60%;
+    margin: auto;
+  }
+  ul{
+    list-style-type: none;
+  }
+  form{
+    text-align: center;
+  }
+  .submit_btn {
+    background-color:#1ed760; 
+    border:none; 
+    border-radius:10vw;
+    color: rgb(249, 248, 241);
+    padding: 0.8vw 1.2vw;
+  }
+  .submit_btn:hover {
+    background-color: #16a748;
+  }
 </style>
 
 <h1>Dai un nome alla tua playlist </h1>
@@ -44,7 +54,7 @@
             {% endif %}
           </fieldset>
           <br>
-          {{ form.submit }}
+          {{ form.submit(class_="submit_btn") }}
         </form>
       </td>
     </tr>

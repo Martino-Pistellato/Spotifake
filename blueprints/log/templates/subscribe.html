@@ -14,22 +14,32 @@
     text-align: center; 
     width: 60%;
     margin: auto;
-}
-ul{
+  }
+  ul{
     list-style-type: none;
-}
-form{
+  }
+  form{
     text-align: center;
-}
-    h1 {
-        color:#1ed760; 
-        text-align: center; 
-        vertical-align: middle;
-    }
-    p {
-        text-align: center; 
-        vertical-align: middle;
-    }
+  }
+  h1 {
+    color:#1ed760; 
+    text-align: center; 
+    vertical-align: middle;
+  }
+  p {
+    text-align: center; 
+    vertical-align: middle;
+  }
+  .submit_btn {
+    background-color:#1ed760; 
+    border:none; 
+    border-radius:10vw;
+    color: rgb(249, 248, 241);
+    padding: 0.8vw 1.2vw;
+  }
+  .submit_btn:hover {
+    background-color: #16a748;
+  }
 </style>
 
 <head>
@@ -146,7 +156,7 @@ form{
         {% endif %}
       </fieldset>
       <br>
-      {{ form.submit }}
+      {{ form.submit(class_="submit_btn") }}
     </form>
   </div>
 </body>

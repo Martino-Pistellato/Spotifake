@@ -16,6 +16,16 @@
   form{
     text-align: center;
   }
+  .submit_btn {
+    background-color:#1ed760; 
+    border:none; 
+    border-radius:10vw;
+    color: rgb(249, 248, 241);
+    padding: 0.8vw 1.2vw;
+  }
+  .submit_btn:hover {
+    background-color: #16a748;
+  }
 </style>
 
 <h1> Condividi il tuo brano con il mondo </h1> 
@@ -85,7 +95,7 @@
           {% endif %}
         </fieldset>
         <br>
-        {{ form.submit }}
+        {{ form.submit(class_="submit_btn") }}
       </form>
     </td>
   </tr>
