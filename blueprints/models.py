@@ -66,13 +66,8 @@ class Users(Base, UserMixin):
         session.commit()
     
     def add_song_if_artist(self, song):
-        try:
-            self.songs.append(song)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()
-            return redirect(url_for("song_bp.upload_song"))    
-
+        self.songs.append(song)
+        session.commit()
 
     def add_album_if_artist(self, album):
         self.albums.append(album)
@@ -143,24 +138,18 @@ class Songs(Base):
         self.N_Likes = 0
 
     def create_song(self):
-        #try:
-            session.add(self)
-            session.commit()
-        #except exc.SQLAlchemyError as err:
-        #    session.rollback()
-        #    return redirect(url_for("song_bp.upload_song"))    
+        session.add(self)
+        session.commit()
+          
 
     def delete_song(song_id):
         session.query(Songs).filter(Songs.Id == song_id).delete()
         session.commit()
 
     def update_song(song_id, name, duration, genre, restriction):
-        try:
-            session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre, 'Is_Restricted':restriction})
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()
-            return redirect(url_for("song_bp.edit_song", song_id=song_id))  
+        session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre, 'Is_Restricted':restriction})
+        session.commit()
+         
 
     def update_likes(like, song_id):
         session.query(Songs).filter(Songs.Id == song_id).update({'N_Likes':like})

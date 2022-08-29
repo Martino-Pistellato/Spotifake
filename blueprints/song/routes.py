@@ -16,21 +16,25 @@ def upload_song():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     if (current_user.Profile == 'Artist'):
         form = upload_SongForm()
-        if form.validate_on_submit():
-            name = form.name.data
-            time = form.time.data
-            genre = form.genre.data
-            if form.type.data == 'Premium':
-                restriction = True
-            else:
-                restriction = False  
-            song = Songs(name, time, genre, restriction, current_user.Email)
-            Songs.create_song(song)
-            user = session.query(Users).filter(Users.Email == current_user.Email).first()
-            Users.add_song_if_artist(user, song)
-            
-            return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists))    
-        return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
+        try:
+            if form.validate_on_submit():
+                name = form.name.data
+                time = form.time.data
+                genre = form.genre.data
+                if form.type.data == 'Premium':
+                    restriction = True
+                else:
+                    restriction = False  
+                song = Songs(name, time, genre, restriction, current_user.Email)
+                Songs.create_song(song)
+                user = session.query(Users).filter(Users.Email == current_user.Email).first()
+                Users.add_song_if_artist(user, song)
+                
+                return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists))    
+            return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     return redirect(url_for("home_bp.home"))
 
 @song_bp.route('/edit_song/<song_id>', methods=['GET', 'POST'])
@@ -45,20 +49,25 @@ def edit_song(song_id):
             restriction = 'Free'
         form = upload_SongForm(name=song.Name, time=song.Duration, genre=song.Genre, type = restriction)
         
-        if form.validate_on_submit():
-            name = form.name.data
-            time = form.time.data
-            genre = form.genre.data
-            if form.type.data == 'Premium':
-                restriction = True
-            else:
-                restriction = False  
-              
-            Songs.update_song(song_id, name, time, genre, restriction)
+        try:
+            if form.validate_on_submit():
+                name = form.name.data
+                time = form.time.data
+                genre = form.genre.data
+                if form.type.data == 'Premium':
+                    restriction = True
+                else:
+                    restriction = False  
+                
+                Songs.update_song(song_id, name, time, genre, restriction)
+                
+                return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists)) 
             
-            return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists)) 
-        
-        return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
+            return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
+            
     return redirect(url_for("home_bp.home"))
 
 @song_bp.route('/delete_song/<song_id>', methods=['GET', 'POST'])
