@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
+from datetime import timedelta
+import datetime
 
 # Blueprint Configuration
 playlist_bp = Blueprint(
@@ -57,6 +59,15 @@ def add_songs(playlist, song_id):
     song = session.query(Songs).filter(Songs.Id == song_id).first()
     playlist = session.query(Playlists).filter(Playlists.User==current_user.Email, Playlists.Name == playlist).first()
     Playlists.add_song_to_playlist(playlist, song)
+
+    st = song.Duration
+    pt = playlist.Duration
+
+    start = datetime.datetime(10, 10, 10, hour=pt.hour, minute=pt.minute, second=pt.second)
+    add = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+    end = start + add
+
+    Playlists.update_playlist(playlist.Name, end.time())
    
     return redirect(url_for("playlist_bp.show_songs_addable", playlist_name=playlist.Name))
 
@@ -79,8 +90,9 @@ def edit_playlist(pl_id):
 @login_required # richiede autenticazione
 def update_playlists(pl_id):
     if request.method == 'POST':
+        playlist=session.query(Playlists).filter(Playlists.Id == pl_id).first()
         name = request.form["name"]
-        Playlists.update_playlist(pl_id, name)
+        Playlists.update_playlist(pl_id, name, playlist.Duration)
                     
         return redirect(url_for("library_bp.library"))
 
@@ -89,5 +101,15 @@ def update_playlists(pl_id):
 def remove_song(song_id, pl_id):
     playlist = session.query(Playlists).filter(Playlists.Id == pl_id).first()
     Playlists.remove_song(playlist, song_id)
+    song=session.query(Songs).filter(Songs.Id == song_id).first()
+
+    st = song.Duration
+    pt = playlist.Duration
+
+    start = datetime.datetime(10, 10, 10, hour=pt.hour, minute=pt.minute, second=pt.second)
+    minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+    end = start + minus
+
+    Playlists.update_playlist(playlist.Name, end.time())
 
     return redirect(url_for("playlist_bp.show_playlist_content", playlist_name = playlist.Name))

@@ -3,8 +3,6 @@ from flask import current_app as app
 from blueprints.models import *
 from flask_login import *
 from ..forms import upload_AlbumForm
-import time
-from datetime import timedelta
 import datetime
 
 

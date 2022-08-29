@@ -115,12 +115,12 @@ class Songs(Base):
     __tablename__ = "Songs"
     
     Name = Column(String, nullable = False)
-    Duration = Column(Time, CheckConstraint(and_(column('Duration') > '00:00:00', column('Duration') < '00:30:00' )))
+    Duration = Column(Time, CheckConstraint(and_(column('Duration') >= '00:00:00', column('Duration') <= '00:30:00' )))
     Genre = Column(String)
     Id = Column(Integer, primary_key = True)
     Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
-    N_Likes = Column(Integer)
+    N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
     liked_users = relationship('Users', secondary= 'UsersSongs', back_populates="liked_songs")
     playlists = relationship('Playlists', secondary = 'PlaylistsSongs', back_populates="songs")
@@ -174,12 +174,12 @@ class Albums(Base):
 
     Name = Column(String)
     ReleaseDate = Column(Date)
-    Duration = Column(Time)
+    Duration = Column(Time, CheckConstraint(and_(column('Duration') >= '00:00:00', column('Duration') <= '01:30:00' )))
     Id = Column(Integer, primary_key = True)
     Record_House = Column(String, ForeignKey('Record_Houses.Name', ondelete="CASCADE", onupdate="CASCADE"))
     Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
-    N_Likes = Column(Integer)
+    N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
     liked_users = relationship('Users', secondary= 'UsersAlbums', back_populates="liked_albums")
@@ -226,6 +226,7 @@ class Playlists(Base):
 
     Name = Column(String)
     Id = Column(Integer, primary_key = True)
+    Duration = Column(Time)
     User = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
 
     #users = relationship('Users', secondary = 'PlaylistsUsers', back_populates="playlists" )
@@ -236,6 +237,7 @@ class Playlists(Base):
     
     def __init__(self, name):
         self.Name=name
+        self.Duration='00:00:00'
     
     def add_song_to_playlist(self, song):
         self.songs.append(song)
@@ -249,8 +251,8 @@ class Playlists(Base):
         session.query(Playlists).filter(Playlists.Id == pl_id).delete()
         session.commit()
     
-    def update_playlist(pl_id, name):
-        session.query(Playlists).filter(Playlists.Id == pl_id).update({'Name':name})
+    def update_playlist(pl_id, name, duration):
+        session.query(Playlists).filter(Playlists.Id == pl_id).update({'Name':name, 'Duration':duration})
         session.commit()
 
 ### Definizione tabelle delle associazioni ###
