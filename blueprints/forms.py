@@ -1,7 +1,7 @@
 from email.policy import default
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, DateField, SelectField, TimeField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms.validators import DataRequired, Email, Length, ValidationError
 
 
 class subscribeForm(FlaskForm):
@@ -73,7 +73,13 @@ class loginForm(FlaskForm):
     
     submit = SubmitField('Submit')
     subscribe = SubmitField('Subscribe')
-    
+
+
+def time_check(form, field):
+    t = field.data
+    if (t.hour > 0 or (t.minute >= 30 and t.second > 0)):
+        raise ValidationError('Un brano può avere una durata massima di 30 minuti')
+
 class upload_SongForm(FlaskForm):
     name = StringField(
         'Nome',
@@ -84,7 +90,7 @@ class upload_SongForm(FlaskForm):
     time = TimeField(
         'Durata',
         [
-            DataRequired(message="Indica la durata della canzone")
+            DataRequired(message="Indica la durata della canzone"), time_check
         ],
         format='%H:%M:%S',
         render_kw={"step": "1"}

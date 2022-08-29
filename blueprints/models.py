@@ -68,7 +68,7 @@ class Users(Base, UserMixin):
     def add_song_if_artist(self, song):
         self.songs.append(song)
         session.commit()
-    
+
     def add_album_if_artist(self, album):
         self.albums.append(album)
         session.commit()
@@ -115,7 +115,7 @@ class Songs(Base):
     __tablename__ = "Songs"
     
     Name = Column(String, nullable = False)
-    Duration = Column(Time)
+    Duration = Column(Time, CheckConstraint(and_(column('Duration') > '00:00:00', column('Duration') < '00:30:00' )))
     Genre = Column(String)
     Id = Column(Integer, primary_key = True)
     Is_Restricted = Column(Boolean, nullable = False)
@@ -140,7 +140,8 @@ class Songs(Base):
     def create_song(self):
         session.add(self)
         session.commit()
-    
+          
+
     def delete_song(song_id):
         session.query(Songs).filter(Songs.Id == song_id).delete()
         session.commit()
@@ -148,7 +149,8 @@ class Songs(Base):
     def update_song(song_id, name, duration, genre, restriction):
         session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre, 'Is_Restricted':restriction})
         session.commit()
-    
+         
+
     def update_likes(like, song_id):
         session.query(Songs).filter(Songs.Id == song_id).update({'N_Likes':like})
         session.commit()
