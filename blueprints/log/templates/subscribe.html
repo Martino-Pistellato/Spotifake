@@ -24,7 +24,12 @@
 </head>
 <body>
   <div class="form-wrapper">
-    <h2 class="title">Sign Up</h2>
+    <div style="text-align:center;">
+      <img src="..\..\static\img\logo.png" style="width:15%;">
+      <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
+  </div>
+
+  <h2 class="title" style="text-align:center;">Sign up</h2>
 
     <form method="POST" action="{{ url_for('login_bp.subscribe') }}">
       {{ form.csrf_token }}
@@ -36,13 +41,13 @@
           <ul class="errors">
             {% for error in form.name.errors %}
               <li class="error">
-                <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+                <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
               </li>
             {% endfor %}
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       <fieldset class="form-field">
         {{ form.email.label }} 
         {{ form.email }}
@@ -56,7 +61,7 @@
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       <fieldset class="form-field">
         {{ form.password.label }} 
         {{ form.password }}
@@ -70,11 +75,10 @@
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       <fieldset class="form-field">
         {{ form.profile.label }} 
         {{ form.profile }}
-        <i class="fas fa-caret-down"></i>
         {% if form.profile.errors %}
           <ul class="errors">
             {% for error in form.profile.errors %}
@@ -85,7 +89,7 @@
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       <fieldset class="form-field">
         {{ form.gender.label }} 
         {{ form.gender }}
@@ -93,31 +97,31 @@
           <ul class="errors">
             {% for error in form.gender.errors %}
               <li class="error">
-                <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+                <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
               </li>
             {% endfor %}
           </ul>
         {% endif %}
       </fieldset>
-
-      <fieldset class="form-field">
+      <br>
+      <<fieldset class="form-field">
         {{ form.country.label }} 
         {{ form.country }}
         {% if form.country.errors %}
           <ul class="errors">
             {% for error in form.country.errors %}
               <li class="error">
-                <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+                <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
               </li>
             {% endfor %}
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       <fieldset class="form-field">
         {{ form.birthday.label }} 
         {{ form.birthday }}
-        {% if form.birthday.errors %}
+        {% if form.birhtday.errors %}
           <ul class="errors">
             {% for error in form.birthday.errors %}
               <li class="error">
@@ -127,8 +131,9 @@
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       {{ form.submit }}
     </form>
   </div>
 </body>
+</html>

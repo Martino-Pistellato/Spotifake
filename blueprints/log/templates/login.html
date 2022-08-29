@@ -7,30 +7,31 @@
 <link rel="stylesheet" href="..\..\static\css\style.css">
 
 <style>
-    h1 {
-        color:#1ed760; 
-        text-align: center; 
-        vertical-align: middle;
-    }
-    p {
-        text-align: center; 
-        vertical-align: middle;
-    }
+  h1 {
+      color:#1ed760; 
+      text-align: center; 
+      vertical-align: middle;
+  }
+  p {
+      text-align: center; 
+      vertical-align: middle;
+  }
 </style>
 
 <head>
     <title>Spotifake</title>
     <link rel="icon" type="image/x-icon" href="..\..\static\img\logo.png">
 </head>
+
 <body>
   <div class="form-wrapper">
 
     <div style="text-align:center;">
-        <img src="static\img\logo.png" style="width:15%;">
+        <img src="..\..\static\img\logo.png" style="width:15%;">
         <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
     </div>
 
-    <h2 class="title" style="text-align:center;">Log in</h2>
+    <h2 class="title" style="text-align:center;">Login</h2>
 
     <form method="POST" action="{{ url_for('login_bp.login') }}">
       {{ form.csrf_token }}
@@ -62,9 +63,8 @@
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       {{ form.submit }}
-      
     </form>
     <form method="POST" action="{{ url_for('login_bp.subscribe') }}">
       {{ form.subscribe }}
