@@ -1,15 +1,35 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="w3-container"> <h1> Condividi il tuo album con il mondo </h1> </div>
-  <div style="display:inline-block; width:35%;">
-    <img src="..\static\img\gallery.png" style="width:100%;">
 
-    <div style="display:inline-block; width:35%;" class="form-wrapper">
+<style>
+  fieldset{
+    border: 0;
+    background-color: #212221;
+    border-radius: 4vw;
+    text-align: center; 
+    width: 60%;
+    margin: auto;
+  }
+  ul{
+    list-style-type: none;
+  }
+  form{
+    text-align: center;
+  }
+</style>
+
+<h1> Condividi il tuo album con il mondo </h1> 
+<table>
+  <tr>
+    <td style="vertical-align:top; width:40%;">
+      <img src="..\static\img\gallery.png" style="width:100%;">
+    </td>
+    <td style="width:60%;">
       <form method="POST" action="{{ url_for('album_bp.create_album') }}">
         {{ form.csrf_token }}
     
-        <fieldset class="form-field">
+        <fieldset class="form-field" >
           {{ form.name.label }} 
           {{ form.name }}
           {% if form.name.errors %}
@@ -22,7 +42,7 @@
             </ul>
           {% endif %}
         </fieldset>
-  
+        <br>
         <fieldset class="form-field">
           {{ form.releaseDate.label }} 
           {{ form.releaseDate }}
@@ -36,7 +56,7 @@
             </ul>
           {% endif %}
         </fieldset>
-  
+        <br>
         <fieldset class="form-field">
           {{ form.recordHouse.label }} 
           {{ form.recordHouse }}
@@ -50,7 +70,7 @@
             </ul>
           {% endif %}
         </fieldset>
-
+        <br>
         <fieldset class="form-field">
           {{ form.type.label }} 
           {{ form.type }}
@@ -64,9 +84,10 @@
             </ul>
           {% endif %}
         </fieldset>
-  
+        <br>
         {{ form.submit }}
       </form>
-    </div>
-  </div>
+    </td>
+  </tr>
+</table>  
 {% endblock %}

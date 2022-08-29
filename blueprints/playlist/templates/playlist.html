@@ -1,15 +1,52 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="w3-container"> <h1>Dai un nome alla tua playlist </h1> </div>
-    <div style="display:inline-block; width:35%;">
-        <img src="..\static\img\gallery.png" style="width:100%;">
-    </div>
-    <div style="display:inline-block; width:35%;">
-        <form id="playlist_name", action="/create_playlist" method="POST"> 
-            <input type="text", name="name" placeholder="Nome playlist">
-            <input type="submit", value="Salva">
-    </div>
-    
+<style>
+    fieldset{
+      border: 0;
+      background-color: #212221;
+      border-radius: 4vw;
+      text-align: center; 
+      width: 60%;
+      margin: auto;
+    }
+    ul{
+      list-style-type: none;
+    }
+    form{
+      text-align: center;
+    }
+</style>
 
+<h1>Dai un nome alla tua playlist </h1>
+<div style="display:inline-block; width:35%;">
+    <img src="..\static\img\gallery.png" style="width:100%;">
+</div>
+<table>
+    <tr>
+      <td style="vertical-align:top; width:40%;">
+        <img src="..\static\img\gallery.png" style="width:100%;">
+      </td>
+      <td style="width:60%;">
+        <form method="POST" action="{{ url_for('playlist_bp.create_playlist') }}">
+          {{ form.csrf_token }}
+          <fieldset class="form-field" >
+            {{ form.name.label }} 
+            {{ form.name }}
+            {% if form.name.errors %}
+              <ul class="errors">
+                {% for error in form.name.errors %}
+                  <li class="error">
+                    <i class="fas fa-exclamation"></i> <span class="error-message"> {{error}} </span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </fieldset>
+          <br>
+          {{ form.submit }}
+        </form>
+      </td>
+    </tr>
+  </table>  
 {% endblock %}
