@@ -61,15 +61,15 @@ def show_songs_addable_album(album_name):
        
         playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         
-        return render_template("show_songs_album.html", album=album_name, user=current_user, playlists=playlists, songs=my_songs)
+        return render_template("show_songs_album.html", album=album, user=current_user, playlists=playlists, songs=my_songs)
 
 
-@album_bp.route('/add_songs_to_album/<song_id>/<album_name>', methods=['GET', 'POST'])
+@album_bp.route('/add_songs_to_album/<song_id>/<album_id>', methods=['GET', 'POST'])
 @login_required
-def add_songs_to_album(song_id, album_name):
+def add_songs_to_album(song_id, album_id):
     if(current_user.Profile == 'Artist'):
         song = session.query(Songs).filter(Songs.Id == song_id).first()
-        album = session.query(Albums).filter(Albums.Name == album_name).first()
+        album = session.query(Albums).filter(Albums.Id == album_id).first()
         Albums.add_song_to_album(album, song)
         st = song.Duration
         at = album.Duration
@@ -80,13 +80,13 @@ def add_songs_to_album(song_id, album_name):
         #x += at.second + st.second
         #time.strftime('%H:%M:%S', time.gmtime(x))
 
-        start = datetime.datetime(1, 1, 1, hour=at.hour, minute=at.minute, second=at.second)
+        start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
         add = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
         end = start + add
      
         Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted)
 
-        return redirect(url_for("album_bp.show_songs_addable_album", album_name=album_name))
+        return redirect(url_for("album_bp.show_songs_addable_album", album_name=album.Name))
 
 @album_bp.route('/show_my_albums')
 @login_required
@@ -136,28 +136,28 @@ def edit_album(album_id):
     return redirect(url_for("home_bp.home"))
 
 
-@album_bp.route('/show_album/<album_name>/<artist>')
+@album_bp.route('/show_album/<album_id>/<artist>')
 @login_required
-def show_album(album_name, artist):
-    album = session.query(Albums).filter(Albums.Name == album_name, Albums.Artist == artist).first()
+def show_album(album_id, artist):
+    album = session.query(Albums).filter(Albums.Id == album_id).first()
     artist_user = session.query(Users).filter(Users.Email == artist).first()
-    songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id))).all()
-    albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album.Id).all()
+    songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album_id))).all()
+    albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album_id).all()
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     n_songs = len(songs)
     
     return render_template("show_album.html", user = current_user, album = album, songs = songs, albums = albums, n_songs = n_songs, playlists = playlists, artist_name = artist_user.Name)
 
-@album_bp.route('/remove_song_from_album/<song_id>/<album_name>', methods=['GET', 'POST'])
+@album_bp.route('/remove_song_from_album/<song_id>/<album_id>', methods=['GET', 'POST'])
 @login_required
-def remove_song_from_album(song_id, album_name):
+def remove_song_from_album(song_id, album_id):
     if(current_user.Profile == 'Artist'):
-        album = session.query(Albums).filter(Albums.Name == album_name, Albums.Artist == current_user.Email).first()
+        album = session.query(Albums).filter(Albums.Id == album_id).first()
         song = session.query(Songs).filter(Songs.Id == song_id).first()
         st = song.Duration
         at = album.Duration
 
-        start = datetime.datetime(1, 1, 1, hour=at.hour, minute=at.minute, second=at.second)
+        start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
         minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
         end = start - minus
 
@@ -166,7 +166,7 @@ def remove_song_from_album(song_id, album_name):
         Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted)
 
 
-    return redirect(url_for("album_bp.show_album", album_name=album.Name, artist=current_user.Email))
+    return redirect(url_for("album_bp.show_album", album_id=album.Id, artist=current_user.Email))
 
 @album_bp.route('/add_to_liked_albums/<album_id>')
 @login_required # richiede autenticazione

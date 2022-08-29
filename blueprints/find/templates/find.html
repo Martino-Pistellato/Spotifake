@@ -12,14 +12,14 @@
     {% for s in songs %}
         <div style="display: inline-block;">
             <dt><img src="..\static\img\gallery.png" style="width:3%;"><a href="#">{{s.Name}}</a></dt> 
-            <dt>{{s.Duration}} {{s.Genre}} {{s.Artist}}<a href="{{ url_for('song_bp.add_to_liked_songs', song_id=s.Id) }}"><img src="..\static\img\add.png" style="width:5%; float: right;"></a></dt>
+            <dt>{{s.Duration}} {{s.Genre}} {{s.Artist}}<a href="{{ url_for('song_bp.add_to_liked_songs', song_id=s.Id) }}"><img src="..\static\img\like.png" style="width:5%; float: right;"></a></dt>
     </div>
     {% endfor %}
     <hr style="height:8px;border-width:0;color:white; border-color: white; background-color: white;">
     <h1 style="text-align: center;">Album</h1>
     {% for a in albums %}
-        <dt><img src="..\static\img\gallery.png" style="width:3%;"><a href="#">{{a.Name}}</a></dt> 
-        <dt>{{a.Duration}} {{a.Record_House}} {{a.Artist}}<a href="{{ url_for('album_bp.add_to_liked_albums', album_id=a.Id) }}"><img src="..\static\img\add.png" style="width:5%; float: right;"></a></dt>
+        <dt><img src="..\static\img\gallery.png" style="width:3%;"><a href="{{ url_for('album_bp.show_album', album_id=a.Id) }}">{{a.Name}}</a></dt> 
+        <dt>{{a.Duration}} {{a.Record_House}} {{a.Artist}}<a href="{{ url_for('album_bp.add_to_liked_albums', album_id=a.Id) }}"><img src="..\static\img\like.png" style="width:5%; float: right;"></a></dt>
     {% endfor %}
 </dl>
 
