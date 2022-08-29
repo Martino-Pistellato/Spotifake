@@ -12,14 +12,14 @@
     {% for s in songs %}
         <div>
             <dt style="display: inline">
-                <img src="static\img\gallery.png" style="width:3%;"> <a href="#">s[0]</a> - {{s[1]}} - {{s[2]}}
+                <img src="static\img\gallery.png" style="width:3%;"> <a href="#">{{s[0]}}</a> - {{s[1]}} - {{s[2]}} 
                 {% if s[4] == False %}
                     <a href="{{url_for('song_bp.add_to_liked_songs',song_id=s[3])}}">
-                        <img src="static\img\like.png" style="width:3%; float: right;">
+                        <img src="static\img\like.png" style="width:5%; float: right; padding-right: 2%;">
                     </a>
                 {% else %}
                     <a href="{{url_for('song_bp.remove_from_liked_songs',song_id=s[3])}}">
-                        <img src="static\img\dislike.png" style="width:3%; float: right;">
+                        <img src="static\img\dislike.png" style="width:5%; float: right;padding-right: 2%;">
                     </a>
                 {% endif %}
             </dt>
@@ -32,14 +32,14 @@
     {% for a in albums %}
         <div>
             <dt style="display: inline">
-                <img src="static\img\gallery.png" style="width:3%;"> <a href="#">a[0]</a> - {{a[1]}} - {{a[2]}}
+                <img src="static\img\gallery.png" style="width:3%;"> <a href="#">{{a[0]}}</a> - {{a[1]}} - {{a[2]}}
                 {% if a[4] == False %}
-                    <a href="{{url_for('album_bp.add_to_liked',album_id=a[3])}}">
-                        <img src="static\img\like.png" style="width:3%; float: right;">
+                    <a href="{{url_for('album_bp.add_to_liked_albums',album_id=a[3])}}">
+                        <img src="static\img\like.png" style="width:5%; float: right; padding-right: 2%;">
                     </a>
                 {% else %}
-                    <a href="{{url_for('album_bp.remove_from_liked',album_id=a[3])}}">
-                        <img src="static\img\dislike.png" style="width:3%; float: right;">
+                    <a href="{{url_for('album_bp.remove_from_liked_albums',album_id=a[3])}}">
+                        <img src="static\img\dislike.png" style="width:5%; float: right; padding-right: 2%;">
                     </a>
                 {% endif %}
             </dt>

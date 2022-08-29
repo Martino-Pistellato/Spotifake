@@ -17,7 +17,7 @@ def get_user_by_email(email):
 login_bp = Blueprint(
     'login_bp', __name__,
     template_folder='templates',
-    static_folder='static'
+   
 )
 
 
@@ -64,4 +64,4 @@ def subscribe():
 @login_required # richiede autenticazione
 def logout():
     logout_user() # chiamata a Flask - Login
-    return redirect(url_for('login_bp.login_home'))
+    return redirect(url_for('login_bp.login'))

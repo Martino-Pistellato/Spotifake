@@ -4,9 +4,23 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="..\..\static\css\style.css">
-
+<link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    
 <style>
+  fieldset{
+    border: 0;
+    background-color: #212221;
+    border-radius: 4vw;
+    text-align: center; 
+    width: 60%;
+    margin: auto;
+}
+ul{
+    list-style-type: none;
+}
+form{
+    text-align: center;
+}
   h1 {
       color:#1ed760; 
       text-align: center; 

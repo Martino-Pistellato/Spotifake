@@ -2,11 +2,13 @@
 
 {% block content %}
 <div class="w3-container"> 
-    <h1>{{album.Name}} 
-        <p>
-            Scegli che canzoni aggiungere
-        </p>
-    </h1> 
+    <a href="{{ url_for('album_bp.show_album', album_id = album.Id, artist=album.Artist) }}"> 
+        <h1>{{album.Name}}
+            <p>
+                Scegli che canzoni aggiungere
+            </p>
+        </h1> 
+    </a>
 </div>
 <div>
     <table style="width:99%; padding-left:1%;"> 

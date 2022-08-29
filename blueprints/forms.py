@@ -60,7 +60,7 @@ class loginForm(FlaskForm):
         'Email',
         [
             Email(message='Indirizzo email non valido'),
-            DataRequired()
+            DataRequired(message="Inserisci l'indirizzo email")
         ]
     )
     password = PasswordField(
@@ -71,7 +71,7 @@ class loginForm(FlaskForm):
         ]
     )
     
-    submit = SubmitField('Submit')
+    submit = SubmitField('Login')
     subscribe = SubmitField('Subscribe')
 
 
