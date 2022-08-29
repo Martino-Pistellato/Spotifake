@@ -76,6 +76,19 @@ input[type=submit]{
 input[type=submit]:hover{
     background-color:#16a748;
 }
+button[type=submit]{
+    font-family: Gotham_Regular;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    size: 50;
+    text-align: center;
+    vertical-align: middle;
+    background-color:#1ed760; 
+}
+button[type=submit]:hover{
+    background-color:#16a748;
+}
 button{
     background-color:#1ed760; 
     border:none; 
@@ -100,3 +113,23 @@ ul{
 form{
     text-align: center;
 }
+.logout_btn {
+    background-color:#d71e31; 
+    border:none; 
+    border-radius:10vw;
+    color: rgb(249, 248, 241);
+    padding: 0.8vw 1.2vw;
+  }
+.logout_btn:hover {
+    background-color: #610202;
+  }
+.submit_btn {
+    background-color:#1ed760; 
+    border:none; 
+    border-radius:10vw;
+    color: rgb(249, 248, 241);
+    padding: 0.8vw 1.2vw;
+  }
+.submit_btn:hover {
+    background-color: #16a748;
+  }
