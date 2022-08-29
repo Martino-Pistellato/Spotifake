@@ -82,3 +82,17 @@ button{
 button:hover{
     background-color:#16a748;
 }
+fieldset{
+    border: 0;
+    background-color: #212221;
+    border-radius: 4vw;
+    text-align: center; 
+    width: 60%;
+    margin: auto;
+}
+ul{
+    list-style-type: none;
+}
+form{
+    text-align: center;
+}

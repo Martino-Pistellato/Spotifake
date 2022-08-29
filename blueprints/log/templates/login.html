@@ -24,7 +24,13 @@
 </head>
 <body>
   <div class="form-wrapper">
-    <h2 class="title">Sign Up</h2>
+
+    <div style="text-align:center;">
+        <img src="static\img\logo.png" style="width:15%;">
+        <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
+    </div>
+
+    <h2 class="title" style="text-align:center;">Log in</h2>
 
     <form method="POST" action="{{ url_for('login_bp.login') }}">
       {{ form.csrf_token }}
@@ -42,7 +48,7 @@
           </ul>
         {% endif %}
       </fieldset>
-
+      <br>
       <fieldset class="form-field">
         {{ form.password.label }} 
         {{ form.password }}
@@ -65,3 +71,4 @@
     </form>
   </div>
 </body>
+</html>

@@ -1,149 +1,74 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="static\css\style.css">
+
+<style>
+    h1 {
+        color:#1ed760; 
+        text-align: center; 
+        vertical-align: middle;
+    }
+    p {
+        text-align: center; 
+        vertical-align: middle;
+    }
+</style>
+
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="static/css/style.css">
     <title>Spotifake</title>
-    <link rel="icon" type="image/x-icon" href="static/img/logo.png">
+    <link rel="icon" type="image/x-icon" href="static\img\logo.png">
 </head>
 
 <body>
-    <!-- Sidebar Content -->
-    <div class="w3-sidebar w3-bar-block" style="width:20%; background-color: #1d1d1d;">
-        <table style="width:100%">
-            <tr> 
-              <td style="width:30%" align="center"><a href="#"><img src="static/img/profile.png" style="width:100%;"></a></td>
-              <td><a href="#">Gianni</a></td> 
-            </tr>
-            <tr>
-                <td align="center"><a href="#"><img src="static/img/home.png" style="width:60%;"></a></td>
-                <td><a href="#">Home</a></td> 
-            </tr>
-            <tr> 
-                <td align="center"><a href="#"><img src="static/img/search.png" style="width:60%;"></a></td>
-                <td><a href="#">Cerca</a></td> 
-            </tr>
-            <tr>
-                <td align="center"><a href="#"><img src="static/img/library.png" style="width:60%;"></a></td>
-                <td><a href="#">Libreria</a></td> 
-            </tr>
-            <tr> 
-                <td align="center"><a href="#"><img src="static/img/add.png" style="width:60%;"></a></td>
-                <td><a href="#">Crea playlist</a></td>
-            </tr>
-            <tr>
-                <td align="center"><a href="#"><img src="static/img/add.png" style="width:60%;"></a></td>
-                <td><a href="#">Carica brano</a></td> 
-            </tr>
-            <tr>
-                <td align="center"><a href="#"><img src="static/img/add.png" style="width:60%;"></a></td>
-                <td><a href="#">Crea album</a></td> 
-            </tr>
-            <tr>
-                <td align="center"><a href="#"><img src="static/img/gallery.png" style="width:60%;"></a></td>
-                <td><a href="#">Le tue canzoni</a></td> 
-            </tr>
-            <tr>
-                <td align="center"><a href="#"><img src="static/img/gallery.png" style="width:60%;"></a></td>
-                <td><a href="#">I tuoi album</a></td> 
-            </tr>
-            <tr> 
-                <td align="center"><a href="#"><img src="static/img/chart.png" style="width:60%;"></a></td>
-                <td><a href="#">Statistiche</a></td>
-            </tr>
-        </table>
-        <hr>
-        <div class="container">
-            <dl>
-                <dt> 
-                    <a href="#"> Playlist 1 </a> 
-                </dt>
-                <dt> 
-                    <a href="#"> Playlist 2 </a> 
-                </dt>
-                <dt> 
-                    <a href="#"> Playlist 3 </a> 
-                </dt>
-                <dt> 
-                    <a href="#"> Playlist 4 </a> 
-                </dt>
-                <dt> 
-                    <a href="#"> Playlist 5 </a> 
-                </dt>
-            </dl>
-        </div>
+  <div class="form-wrapper">
+
+    <div style="text-align:center;">
+        <img src="static\img\logo.png" style="width:15%;">
+        <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
     </div>
+
+    <h2 class="title" style="text-align:center;">Log in</h2>
+
+    <form method="POST" action="{{ url_for('login_bp.login') }}">
+      {{ form.csrf_token }}
+
+      <fieldset class="form-field">
+        {{ form.email.label }} 
+        {{ form.email }}
+        {% if form.email.errors %}
+          <ul class="errors">
+            {% for error in form.email.errors %}
+              <li class="error">
+                <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+      <br>
+      <fieldset class="form-field">
+        {{ form.password.label }} 
+        {{ form.password }}
+        {% if form.password.errors %}
+          <ul class="errors">
+            {% for error in form.password.errors %}
+              <li class="error">
+                <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+      {{ form.submit }}
       
-    <!-- Page Content -->
-    <div style="margin-left:20%">
-        <div class="w3-container"></div>
-
-        <div style="text-align:center;">
-            <input type="text" id="mySearch" onkeyup="myFunction()" placeholder="Search..." title="Type in a song" style="width:90%;">
-        </div>
-        <dl id="myMenu" style="width:98%; padding-left:2%;">
-            <h1 style="text-align: center;"> Brani </h1>
-            {% for s in songs %}
-                <div>
-                    <dt style="display: inline">
-                        <img src="static\img\gallery.png" style="width:3%;"> <a href="#">s[0]</a> - {{s[1]}} - {{s[2]}}
-                        {% if s[4] == False %}
-                            <a href="{{url_for('song_bp.add_to_liked_songs',song_id=s[3])}}">
-                                <img src="static\img\like.png" style="width:3%; float: right;">
-                            </a>
-                        {% else %}
-                            <a href="{{url_for('song_bp.remove_from_liked_songs',song_id=s[3])}}">
-                                <img src="static\img\dislike.png" style="width:3%; float: right;">
-                            </a>
-                        {% endif %}
-                    </dt>
-                </div>
-            {% endfor %}
-
-            <hr style="height:0.3vw;border-width:0; background-color: white;">
-                
-            <h1 style="text-align: center;"> Album </h1>
-            {% for a in albums %}
-                <div>
-                    <dt style="display: inline">
-                        <img src="static\img\gallery.png" style="width:3%;"> <a href="#">a[0]</a> - {{a[1]}} - {{a[2]}}
-                        {% if a[4] == False %}
-                            <a href="{{url_for('album_bp.add_to_liked',album_id=a[3])}}">
-                                <img src="static\img\like.png" style="width:3%; float: right;">
-                            </a>
-                        {% else %}
-                            <a href="{{url_for('album_bp.remove_from_liked',album_id=a[3])}}">
-                                <img src="static\img\dislike.png" style="width:3%; float: right;">
-                            </a>
-                        {% endif %}
-                    </dt>
-                </div>
-            {% endfor %}
-        </dl>
-        
-        <script>
-            function myFunction() {
-                // Declare variables
-                var input, filter, dl, dt, a, i;
-                input = document.getElementById("mySearch");
-                filter = input.value.toUpperCase();
-                dl = document.getElementById("myMenu");
-                dt = dl.getElementsByTagName("dt");
-            
-                // Loop through all list items, and hide those who don't match the search query
-                for (i = 0; i < dt.length; i++) {
-                    a = dt[i].getElementsByTagName("a")[0];
-                    if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                        dt[i].style.display = "";
-                    } else {
-                        dt[i].style.display = "none";
-                    }
-                }
-            }
-        </script>
-
-    </div>
+    </form>
+    <form method="POST" action="{{ url_for('login_bp.subscribe') }}">
+      {{ form.subscribe }}
+    </form>
+  </div>
 </body>
-</html>
