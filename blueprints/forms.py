@@ -111,7 +111,7 @@ class upload_SongForm(FlaskForm):
         ]
     )
     
-    submit = SubmitField('Submit')
+    submit = SubmitField('Salva')
     
 class upload_AlbumForm(FlaskForm):
     name = StringField(
@@ -141,5 +141,14 @@ class upload_AlbumForm(FlaskForm):
         ]
     )
     
-    submit = SubmitField('Submit')
+    submit = SubmitField('Salva')
     
+class upload_PlaylistForm(FlaskForm):
+    name = StringField(
+        'Nome',
+        [
+            DataRequired(message="Indica il nome della playlist")
+        ]
+    )
+    
+    submit = SubmitField('Salva')

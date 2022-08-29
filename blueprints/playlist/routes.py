@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
+from ..forms import upload_PlaylistForm
 
 # Blueprint Configuration
 playlist_bp = Blueprint(
@@ -19,12 +20,16 @@ def playlist():
 @playlist_bp.route('/create_playlist', methods=['GET', 'POST'])
 @login_required
 def create_playlist():
-    if request.method == 'POST':
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+    form = upload_PlaylistForm()
+    
+    if form.validate_on_submit():
         user = session.query(Users).filter(Users.Email == current_user.Email).first()
-        playlist = Playlists(request.form["name"])
+        playlist = Playlists(form.name.data)
         Users.add_playlist(user, playlist)
         
-        return redirect(url_for("playlist_bp.show_songs_addable", playlist_name=request.form["name"]))
+        return redirect(url_for("playlist_bp.show_songs_addable", playlist_name=playlist.Name))
+    return render_template('playlist.html', form=form, user=current_user, playlists=playlists)
 
 @playlist_bp.route('/show_songs_addable/<playlist_name>', methods=['GET', 'POST'])
 @login_required
@@ -70,19 +75,16 @@ def delete_playlist(pl_id):
 @playlist_bp.route('/edit_playlist/<pl_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def edit_playlist(pl_id):
-    pl = session.query(Playlists).filter(Playlists.Id == pl_id).first()
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-        
-    return render_template("edit_playlist.html", user=current_user, playlists=playlists, name=pl.Name, id=pl_id)
-
-@playlist_bp.route('/update_playlist/<pl_id>', methods=['GET', 'POST'])
-@login_required # richiede autenticazione
-def update_playlists(pl_id):
-    if request.method == 'POST':
-        name = request.form["name"]
-        Playlists.update_playlist(pl_id, name)
+    pl = session.query(Playlists).filter(Playlists.Id == pl_id).first()
+    form = upload_PlaylistForm(name=pl.Name)
+    
+    if form.validate_on_submit():
+        Playlists.update_playlist(pl_id, form.name.data)
                     
         return redirect(url_for("library_bp.library"))
+        
+    return render_template("edit_playlist.html", user=current_user, playlists=playlists, name=pl.Name, id=pl_id, form=form)
 
 @playlist_bp.route('/remove_song/<song_id>/<pl_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
