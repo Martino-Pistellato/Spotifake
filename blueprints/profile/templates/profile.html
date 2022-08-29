@@ -1,6 +1,18 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+<style>
+    .logout_btn {
+        background-color:#d71e31; 
+        border:none; 
+        border-radius:10vw;
+        color: rgb(249, 248, 241);
+        padding: 0.8vw 1.2vw;
+      }
+    .logout_btn:hover {
+        background-color: #610202;
+      }
+</style>
 <table style="width:100%;">
     <tr>
         <td style="padding-left:1%;"> <h1>Il tuo profilo </h1> </td>
@@ -21,6 +33,7 @@
     <a href="{{ url_for('profile_bp.update') }}">
         <button id="button">Modifica nome</button>
     </a>
+    <br>
     <a href="{{ url_for('profile_bp.delete_profile') }}">
         <button class="logout_btn">Cancella profilo</button>
     </a>
