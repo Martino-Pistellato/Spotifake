@@ -30,8 +30,8 @@
                 <td><a href="{{ url_for('library_bp.library') }}">Libreria</a></td> 
             </tr>
             <tr> 
-                <td align="center"><a href="{{ url_for('playlist_bp.playlist') }}"><img src="{{url_for('static', filename='img/add.png')}}" style="width:60%;"></a></td>
-                <td><a href="{{ url_for('playlist_bp.playlist') }}">Crea playlist</a></td>
+                <td align="center"><a href="{{ url_for('playlist_bp.create_playlist') }}"><img src="{{url_for('static', filename='img/add.png')}}" style="width:60%;"></a></td>
+                <td><a href="{{ url_for('playlist_bp.create_playlist') }}">Crea playlist</a></td>
             </tr>
             {% if user.Profile == 'Artist' %}
             <tr>
