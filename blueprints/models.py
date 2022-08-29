@@ -33,8 +33,8 @@ class Users(Base, UserMixin):
 
     #Possibile sistema di like (vogliamo anche che da un oggetto piaciuto si possa risalire agli utenti?)
 
-    liked_albums = relationship('Albums', secondary='UsersAlbums', back_populates="liked_users")
-    liked_songs =  relationship('Songs', secondary='UsersSongs', back_populates="liked_users")
+    liked_albums = relationship('Albums', secondary='Users_liked_Albums', back_populates="liked_users")
+    liked_songs =  relationship('Songs', secondary='Users_liked_Songs', back_populates="liked_users")
     #liked_artists = relationship('Artists', secondary='UsersArtists', back_populates='liked_users')
     
     def __repr__(self):
@@ -122,7 +122,7 @@ class Songs(Base):
     Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
-    liked_users = relationship('Users', secondary= 'UsersSongs', back_populates="liked_songs")
+    liked_users = relationship('Users', secondary= 'Users_liked_Songs', back_populates="liked_songs")
     playlists = relationship('Playlists', secondary = 'PlaylistsSongs', back_populates="songs")
     albums = relationship('Albums', secondary = 'AlbumsSongs', back_populates="songs" )
 
@@ -182,7 +182,7 @@ class Albums(Base):
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
-    liked_users = relationship('Users', secondary= 'UsersAlbums', back_populates="liked_albums")
+    liked_users = relationship('Users', secondary= 'Users_liked_Albums', back_populates="liked_albums")
     
     
     def __repr__(self):
@@ -258,7 +258,7 @@ class Playlists(Base):
 ### Definizione tabelle delle associazioni ###
 
 class Users_liked_Songs(Base):    
-    __tablename__ = "UsersSongs"
+    __tablename__ = "Users_liked_Songs"
     
     song_id = Column(Integer, ForeignKey('Songs.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
@@ -267,7 +267,7 @@ class Users_liked_Songs(Base):
         return "<UsersSongs(song_id='%d', user_email='%s')>" % (self.song_id, self.user_email)  
 
 class Users_liked_Albums(Base):    
-    __tablename__ = "UsersAlbums"
+    __tablename__ = "Users_liked_Albums"
     
     album_id = Column(Integer, ForeignKey('Albums.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)

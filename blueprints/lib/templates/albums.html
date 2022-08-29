@@ -39,7 +39,7 @@
 <dl>
     {% for a in albums %}
     <dt style="display:inline;"> 
-        <a href="{{url_for('album_bp.show_album',album_name=a.Name,artist=a.Artists)}}">
+        <a href="{{url_for('album_bp.show_album',album_id=a.Id,artist=a.Artists)}}">
             <figure style="display:inline-block; width:20%;">
                 <img src="..\static\img\gallery.png" style="width:100%;">
                 <figcaption style="text-align:center;"> {{a.Name}} </figcaption>

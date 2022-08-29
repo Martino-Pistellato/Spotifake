@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import *
 from blueprints.models import *
+import datetime
 from ..forms import upload_SongForm
 
 # Blueprint Configuration
@@ -74,6 +75,24 @@ def edit_song(song_id):
 @login_required # richiede autenticazione
 def delete_song(song_id):
     if (current_user.Profile == 'Artist'):
+        albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id==song_id)))
+        playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsSongs.playlist_id).filter(PlaylistsSongs.song_id==song_id)))
+        song=session.query(Songs).filter(Songs.Id == song_id).first()
+
+        st = song.Duration
+        minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+        date = datetime.date(10, 10, 10)
+        
+        for a in albums:
+            start=datetime.datetime.combine(date, a.Duration)
+            end = start - minus
+            Albums.update_album(a.Id, a.Name, a.ReleaseDate, a.Record_House, end.time(), a.Is_Restricted)
+
+        for p in playlists:
+            start=datetime.datetime.combine(date, p.Duration)
+            end = start - minus
+            Playlists.update_playlist(p.Name, end.time())
+
         Songs.delete_song(song_id)
         return redirect(url_for("song_bp.show_my_songs"))
     return redirect(url_for("home_bp.home"))
