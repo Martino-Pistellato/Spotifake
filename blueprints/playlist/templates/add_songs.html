@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="w3-container"> 
-    <h1> {{playlist}} </h1> 
+    <h1> {{playlist.Name}} </h1> 
     <p> Scegli che canzoni aggiungere </p>
 </div>
 <div>
@@ -18,7 +18,7 @@
             <td style="text-align:left;"> {{s.Name}} </td>
             <td style="text-align:center;"> {{s.Genre}} </td>
             <td style="text-align:right; padding-right:1%;"> {{s.Duration}} </td>
-            <td><a href="{{ url_for('playlist_bp.add_songs',song_id=s.Id, playlist=playlist)}}"><img src="..\static\img\add.png", style="width:100%;"></a></td>
+            <td><a href="{{ url_for('playlist_bp.add_songs',song_id=s.Id, playlist_id=playlist.Id)}}"><img src="..\static\img\add.png", style="width:100%;"></a></td>
         </tr>
         {% endfor %}
     </table>

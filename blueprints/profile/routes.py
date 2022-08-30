@@ -13,6 +13,13 @@ profile_bp = Blueprint(
 @profile_bp.route('/profile')
 @login_required # richiede autenticazione
 def profile():
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    if(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    if(current_user.Profile == 'Free'):
+        session = Session(bind=engine["free"])
+
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         
     return render_template("profile.html", user = current_user, playlists=playlists)
@@ -20,24 +27,47 @@ def profile():
 @profile_bp.route('/update')
 @login_required
 def update():
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    if(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    if(current_user.Profile == 'Free'):
+        session = Session(bind=engine["free"])
+
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         
     return render_template("update_info.html", user = current_user, playlists=playlists)
 
-@profile_bp.route('/update_info/<Email>', methods=['GET', 'POST']) 
+@profile_bp.route('/update_info', methods=['GET', 'POST']) 
 @login_required
-def update_info(Email): 
+def update_info():
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    if(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    if(current_user.Profile == 'Free'):
+        session = Session(bind=engine["free"])
+
     if request.method == 'POST':
         name = request.form["name"]
         if(name is not None):
-            Users.update_user(Email, name)
+            user = session.query(Users).filter(Users.Email == current_user.Email).first()
+            Users.update_user(user, name, session)
             return redirect(url_for('profile_bp.profile'))
     return redirect(url_for("profile_bp.update"))
 
 @profile_bp.route('/delete_profile')
 @login_required
 def delete_profile():
-    email = current_user.Email
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    if(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    if(current_user.Profile == 'Free'):
+        session = Session(bind=engine["free"])
+
+    user = session.query(Users).filter(Users.Email == current_user.Email).first()
     logout_user()
-    Users.delete_user(email)
+    Users.delete_user(user, session)
+    
     return redirect(url_for("login_bp.login"))

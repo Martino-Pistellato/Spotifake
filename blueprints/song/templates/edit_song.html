@@ -35,7 +35,7 @@
       <img src="..\static\img\gallery.png" style="width:100%;">
     </td>
     <td style="width:60%;">
-      <form method="POST" action="{{ url_for('album_bp.create_album') }}">
+      <form method="POST" action="{{ url_for('song_bp.edit_song', song_id=id) }}">
         {{ form.csrf_token }}
     
         <fieldset class="form-field" >

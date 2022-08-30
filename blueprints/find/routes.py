@@ -12,6 +12,13 @@ find_bp = Blueprint(
 
 @find_bp.route('/find')
 def find():
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    if(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    if(current_user.Profile == 'Free'):
+        session = Session(bind=engine["free"])
+        
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     songs = session.query(Songs)
     albums = session.query(Albums)

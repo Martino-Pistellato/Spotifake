@@ -16,6 +16,13 @@ home_bp = Blueprint(
 @home_bp.route('/home')
 @login_required # richiede autenticazione
 def home():
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    if(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    if(current_user.Profile == 'Free'):
+        session = Session(bind=engine["free"])
+        
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)        
     
     return render_template("home.html", user=current_user, playlists=playlists)
