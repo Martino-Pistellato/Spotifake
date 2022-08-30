@@ -1,12 +1,16 @@
-my_l = []
+from datetime import *
+from time import *
+from models import *
 
-for i in range(10):
-    my_l.append([i,'prova'])
-x=my_l[0]
+users_like_me=session.query(Users)
+        
+medium_age = 0
+for x in users_like_me:
+    medium_age += 2022-x.BirthDate.year
+medium_age /= len(users_like_me)
+medium_age = int(medium_age)
+print(int(medium_age))
 
-y = x[0]
-z=x[1]
-
-print(x)
-print(y)
-print(z)
+countries = session.query(Users.Country,func.count(Users.Email)).group_by(Users.Country).all()
+for c in countries:
+    print(c[0],c[1])
