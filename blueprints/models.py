@@ -6,11 +6,18 @@ from flask_login import UserMixin, current_user
 from sqlalchemy import exc
 from flask import Blueprint, render_template, request, redirect, url_for
 
-engine = create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")
+engine = {"free" : create_engine("postgresql://free:free@localhost/prog_db"),
+          "premium" : create_engine("postgresql://premium:premium@localhost/prog_db"),
+          "artist" : create_engine("postgresql://artist:artist@localhost/prog_db"),
+          "admin" : create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")}
+
 metadata = MetaData()
 Base = declarative_base()
-Session = sessionmaker(bind=engine)      
+Session = sessionmaker(bind=engine["free"])      
 session = Session()
+
+
+
 
 ### Definizione tabelle principali ###
 
@@ -48,52 +55,67 @@ class Users(Base, UserMixin):
         self.Gender = gender
         self.Password = password
         self.Profile = profile
+        
 
-    def create_user(self):
+    def create_user(self, session):
+        if(self.Profile == 'Artist'):
+            session = Session(bind=engine["artist"])
+        if(self.Profile == 'Premium'):
+            session = Session(bind=engine["premium"])
+        if(self.Profile == 'Free'):
+            session = Session(bind=engine["free"])
+            
         try:
             session.add(self)
             session.commit()
         except exc.SQLAlchemyError as err:
-            session.rollback()  
-            print(err.orig.diag.message_primary) 
-        
+            session.rollback()   
+            print(err)
 
     def get_id(self):
         return self.Email
     
-    def add_playlist(self, playlist):
+    def add_playlist(self, playlist, session):
         self.playlists.append(playlist)
         session.commit()
     
-    def add_song_if_artist(self, song):
-        self.songs.append(song)
-        session.commit()
+    def add_song_if_artist(self, song, session):
+        try:
+            self.songs.append(song)
+            session.commit()
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            print(err)
 
-    def add_album_if_artist(self, album):
-        self.albums.append(album)
-        session.commit()
+    def add_album_if_artist(self, album, session):
+        try:    
+            self.albums.append(album)
+            session.commit()
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            print(err)
 
-    def delete_user(user_email):
-        session.query(Users).filter(Users.Email == user_email).delete()
+    def delete_user(self, session):
+        session.query(Users).filter(Users.Email == self.Email).delete()
         session.commit()
     
-    def update_user(email, name):
-        session.query(Users).filter(Users.Email == email).update({'Name': name})
+    def update_user(self, name, session):
+        session.query(Users).filter(Users.Email == self.Email).update({'Name': name})
         session.commit()
     
-    def add_song_to_liked(self, song):
+    def add_song_to_liked(self, song, session):
         self.liked_songs.append(song)
         session.commit()
     
-    def remove_song_from_liked(self, song_id):
+    def remove_song_from_liked(self, song_id, session):
         session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id == song_id, Users_liked_Songs.user_email==self.Email).delete()
         session.commit()
     
-    def add_album_to_liked(self, album):
+    def add_album_to_liked(self, album, session):
         self.liked_albums.append(album)
         session.commit()
     
-    def remove_album_from_liked(self, album_id):
+    def remove_album_from_liked(self, album_id, session):
         session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id == album_id, Users_liked_Albums.user_email==self.Email).delete()
         session.commit()
             
@@ -137,21 +159,21 @@ class Songs(Base):
         self.Artist = artist
         self.N_Likes = 0
 
-    def create_song(self):
+    def create_song(self, session):
         session.add(self)
         session.commit()
           
 
-    def delete_song(song_id):
+    def delete_song(song_id, session):
         session.query(Songs).filter(Songs.Id == song_id).delete()
         session.commit()
 
-    def update_song(song_id, name, duration, genre, restriction):
+    def update_song(song_id, name, duration, genre, restriction, session):
         session.query(Songs).filter(Songs.Id == song_id).update({'Name':name, 'Duration' : duration, 'Genre' : genre, 'Is_Restricted':restriction})
         session.commit()
          
 
-    def update_likes(like, song_id):
+    def update_likes(like, song_id, session):
         session.query(Songs).filter(Songs.Id == song_id).update({'N_Likes':like})
         session.commit()
 
@@ -197,27 +219,27 @@ class Albums(Base):
         self.Is_Restricted = restr
         self.N_Likes = 0
     
-    def create_album(self):
+    def create_album(self, session):
         session.add(self)
         session.commit()
     
-    def add_song_to_album(self, song):
+    def add_song_to_album(self, song, session):
         self.songs.append(song)
         session.commit()
     
-    def remove_song(self, song_id):
+    def remove_song(self, song_id, session):
         session.query(AlbumsSongs).filter(AlbumsSongs.album_id == self.Id, AlbumsSongs.song_id == song_id).delete()
         session.commit()
     
-    def delete_album(album_id):
+    def delete_album(album_id, session):
         session.query(Albums).filter(Albums.Id == album_id).delete()
         session.commit()
     
-    def update_album(album_id, name, releaseDate, record_h, duration, restr):
+    def update_album(album_id, name, releaseDate, record_h, duration, restr, session):
         session.query(Albums).filter(Albums.Id == album_id).update({'Name':name, 'ReleaseDate':releaseDate, 'Duration' : duration, 'Record_House' : record_h, 'Is_Restricted': restr})
         session.commit()
 
-    def update_likes(like, album_id):
+    def update_likes(like, album_id, session):
         session.query(Albums).filter(Albums.Id == album_id).update({'N_Likes':like})
         session.commit()   
 
@@ -239,19 +261,24 @@ class Playlists(Base):
         self.Name=name
         self.Duration='00:00:00'
     
-    def add_song_to_playlist(self, song):
+    def create_playlist(self, session):
+        session.add(self)
+        session.commit()
+ 
+    
+    def add_song_to_playlist(self, song, session):
         self.songs.append(song)
         session.commit()
     
-    def remove_song(self, song_id):
+    def remove_song(self, song_id, session):
         session.query(PlaylistsSongs).filter(PlaylistsSongs.playlist_id == self.Id, PlaylistsSongs.song_id == song_id).delete()
         session.commit()
     
-    def delete_playlist(pl_id):
+    def delete_playlist(pl_id, session):
         session.query(Playlists).filter(Playlists.Id == pl_id).delete()
         session.commit()
     
-    def update_playlist(pl_id, name, duration):
+    def update_playlist(pl_id, name, duration, session):
         session.query(Playlists).filter(Playlists.Id == pl_id).update({'Name':name, 'Duration':duration})
         session.commit()
 
@@ -307,14 +334,14 @@ class PlaylistsSongs(Base):
 ####################################################################################
 
 #Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine["admin"])
 
 #session.add(Profiles('Free'))
 #session.add(Profiles('Premium'))
 #session.add(Profiles('Artist'))
 
 #session.add(Record_Houses('Bloody'))
-#session.add(Record_Houses('Universal'))
+#@session.add(Record_Houses('Universal'))
 #session.add(Record_Houses('Soffro'))
 
 #session.commit()

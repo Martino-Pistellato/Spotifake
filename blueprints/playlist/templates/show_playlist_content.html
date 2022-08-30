@@ -3,7 +3,7 @@
 {% block content %}
 <div class="w3-container", style="display:inline;"> 
     <h1>{{playlist.Name}} 
-        <a href="{{ url_for('playlist_bp.show_songs_addable', playlist_name = playlist.Name) }}">
+        <a href="{{ url_for('playlist_bp.show_songs_addable', playlist_id = playlist.Id) }}">
             <figure style="display:inline-block; width:15%;">
                 <img src="..\static\img\add.png" style="width:35%;">
                 <figcaption style="text-align:center; display: inline-block;"> Aggiungi brani </figcaption>

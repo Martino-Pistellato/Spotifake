@@ -13,7 +13,7 @@
         <li style="display:inline;"> {{album.Duration}} - </li>
         <li style="display:inline;"> {{album.N_Likes}} </li>
     </ul>
-    <a href="{{ url_for('album_bp.show_songs_addable_album', album_name = album.Name) }}"><p>Aggiungi brani</p><img src="..\..\static\img\add.png" style="width: 10%;"></img></a>
+    <a href="{{ url_for('album_bp.show_songs_addable_album', album_id = album.Id) }}"><p>Aggiungi brani</p><img src="..\..\static\img\add.png" style="width: 10%;"></img></a>
 </div>
 
 <div>
