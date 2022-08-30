@@ -1,50 +1,42 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div class="w3-container", style="display:inline;"> 
-    <h1>{{playlist.Name}} 
-        <a href="{{ url_for('playlist_bp.show_songs_addable', playlist_id = playlist.Id) }}">
-            <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\add.png" style="width:35%;">
-                <figcaption style="text-align:center; display: inline-block;"> Aggiungi brani </figcaption>
-            </figure> 
+<table>
+    <tr>
+        <td style="width:30%;"><img src="..\static\img\gallery.png" style="width:100%;"></td>
+        <td>
+        <h1>{{playlist.Name}}</h1>
+        <p>{{n_songs}} - {{playlist.Duration}}</p>
+        <a href="{{url_for('playlist_bp.show_songs_addable',playlist_name=playlist.Name)}}">
+            <img src="..\static\img\add.png" style="width:10%;">
         </a>  
-        <a href="{{ url_for('playlist_bp.delete_playlist', pl_id=playlist.Id) }}">
-            <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\cancel.png" style="width:35%;">
-                <figcaption style="text-align:center; display: inline-block;"> Elimina playlist </figcaption>
-            </figure>
+        <a href="{{url_for('playlist_bp.delete_playlist',pl_id=playlist.Id)}}">
+            <img src="..\static\img\cancel.png" style="width:10%;">
         </a>
-        <a href="{{ url_for('playlist_bp.edit_playlist', pl_id=playlist.Id) }}"> 
-            <figure style="display:inline-block; width:15%;">
-                <img src="..\static\img\edit.png" style="width:35%;">
-                <figcaption style="text-align:center; display: inline-block;"> Modifica informazioni </figcaption>
-            </figure>
-        </a> 
-    </h1> 
-</div>
-<div>
-    <table style="width:98%; padding-left:2%;"> 
-        <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
-            <th style="width:30%; text-align:left;"> TITOLO </th>
-            <th style="width:30%;"> GENERE </th>
-            <th style="width:30%; text-align:right;"> DURATA </th>
-        </tr>
+        <a href="{{url_for('playlist_bp.edit_playlist',pl_id=playlist.Id)}}"> 
+            <img src="..\static\img\edit.png" style="width:10%;">
+        </a>
+        </td>
+    </tr>
+</table>
+  
+<table style="width:98%; padding-left:2%;"> 
+    <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
+        <th style="width:30%; text-align:left;"> TITOLO </th>
+        <th style="width:30%;"> GENERE </th>
+        <th style="width:30%; text-align:right;"> DURATA </th>
+    </tr>
+    {% for s in songs %}
         <tr>
-            {% for s in songs %}
-            <td> {{s.Name}} </td>
+            <td style="text-align:left;"> {{s.Name}} </td>
             <td style="text-align:center;"> {{s.Genre}} </td>
-            <td style="text-align:right;"> {{s.Duration}} </td>
+            <td style="text-align:right; padding-right:1%;"> {{s.Duration}} </td>
             <td>
-            <a href="{{ url_for('playlist_bp.remove_song', song_id=s.Id, pl_id=playlist.Id) }}">
-                <figure style="display:inline-block; width:15%;">
-                    <img src="..\static\img\cancel.png" style="width:100%;">
-                    <figcaption style="text-align:center; display: inline-block;"> Rimuovi brano </figcaption>
-                </figure>
+                <a href="{{ url_for('playlist_bp.remove_song', song_id=s.Id, pl_id=playlist.Id) }}">
+                    <img src="..\static\img\cancel.png", style="width:40%;">
+                </a>
             </td>
-            </a>
-            {% endfor %}
         </tr>
-    </table>
-</div>
+    {% endfor %}
+</table>
 {% endblock %}

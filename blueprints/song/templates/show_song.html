@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<table>
+    <tr>
+        <td style="width:32%;">
+            <img src="..\..\static\img\gallery.png" style="width:100%;">
+        </td>
+        <td>
+            <h1>{{song.Name}}</h1>
+            <p>
+              {{artist_name}} - {{song.N_Likes}}
+            </p>
+            {% if like == False %}
+                <a href="{{url_for('song_bp.add_to_liked_songs',song_id=song.Id)}}">
+                    <img src="..\..\static\img\like.png" style="width:10%;">
+                </a>
+            {% else %}
+                <a href="{{url_for('song_bp.remove_from_liked_songs',song_id=song.Id)}}">
+                    <img src="..\..\static\img\dislike.png" style="width:10%;">
+                </a>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+<table style="width:98%; padding-left:2%;"> 
+    <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
+        <th style="width:30%; text-align:left;"> TITOLO </th>
+        <th style="width:30%;"> GENERE </th>
+        <th style="width:30%; text-align:right;"> DURATA </th>
+    </tr>
+    <tr>
+        <td style="text-align:left;"> {{song.Name}} </td>
+        <td style="text-align:center;"> {{song.Genre}} </td>
+        <td style="text-align:right; padding-right:1%;"> {{song.Duration}} </td>
+    </tr>
+</table>
+
+{% endblock %}
+
+    

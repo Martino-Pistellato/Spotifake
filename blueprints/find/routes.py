@@ -39,6 +39,6 @@ def find():
         else:
             like = True
         artist = session.query(Users).filter(Users.Email == a.Artist).first()
-        lst_a.append([a.Name, a.Duration, artist.Name, a.Id, like])   
+        lst_a.append([a.Name, a.Duration, artist.Name, a.Id, like, artist.Email])   
     
     return render_template("find.html",user=current_user,playlists=playlists,albums=lst_a,songs=lst_s)

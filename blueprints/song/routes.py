@@ -1,3 +1,4 @@
+from re import template
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import *
 from blueprints.models import *
@@ -167,3 +168,15 @@ def remove_from_liked_songs(song_id):
 
     return redirect(url_for("find_bp.find"))
 
+@song_bp.route('/show_song/<song_id>')
+@login_required # richiede autenticazione
+def show_song(song_id):
+    song = session.query(Songs).filter(Songs.Id==song_id)
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+    if session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id==song.Id, Users_liked_Songs.user_email==current_user.Email).first() is None:
+        like = False
+    else:
+        like = True
+    artist = session.query(Users).filter(Users.Email==song.Artist)
+    
+    return render_template('show_song.html', user=current_user, playlists=playlists, song=song, artist_name=artist.Name, like=like)
