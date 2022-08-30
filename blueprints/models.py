@@ -57,14 +57,14 @@ class Users(Base, UserMixin):
         self.Profile = profile
         
 
-    def create_user(self, session):
+    def create_user(self):
         if(self.Profile == 'Artist'):
             session = Session(bind=engine["artist"])
         if(self.Profile == 'Premium'):
             session = Session(bind=engine["premium"])
         if(self.Profile == 'Free'):
             session = Session(bind=engine["free"])
-            
+
         try:
             session.add(self)
             session.commit()

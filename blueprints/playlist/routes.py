@@ -65,9 +65,9 @@ def show_playlist_content(playlist_id):
         session = Session(bind=engine["premium"])
     if(current_user.Profile == 'Free'):
         session = Session(bind=engine["free"])
-        
+
     pl = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
-    songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl.Id))).all
+    songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl.Id))).all()
     
     #songs = session.query(PlaylistsSongs).filter(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist.Id))
     
