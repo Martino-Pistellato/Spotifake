@@ -144,7 +144,12 @@ def show_album(album_id, artist):
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     n_songs = len(songs)
     
-    return render_template("show_album.html", user = current_user, album = album, songs = songs, albums = albums, n_songs = n_songs, playlists = playlists, artist_name = artist_user.Name)
+    if session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id==album.Id, Users_liked_Albums.user_email==current_user.Email).first() is None:
+        like = False
+    else:
+        like = True
+    
+    return render_template("show_album.html", user = current_user, album = album, songs = songs, albums = albums, n_songs = n_songs, playlists = playlists, artist_name = artist_user.Name, like = like)
 
 @album_bp.route('/remove_song_from_album/<song_id>/<album_id>', methods=['GET', 'POST'])
 @login_required

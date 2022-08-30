@@ -40,17 +40,17 @@ def show_songs_addable(playlist_name):
     
     return render_template("add_songs.html", songs = songs, user = current_user, playlist = playlist_name, playlists = playlists)
 
-@playlist_bp.route('/show_playlist_content/<playlist_name>', methods=['GET', 'POST'])
+@playlist_bp.route('/show_playlist_content/<playlist_id>', methods=['GET', 'POST'])
 @login_required
-def show_playlist_content(playlist_name):
-    pl = session.query(Playlists).filter(Playlists.User==current_user.Email, Playlists.Name == playlist_name).first()
-    songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl.Id)))
+def show_playlist_content(playlist_id):
+    pl = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
+    songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl.Id))).all
     
     #songs = session.query(PlaylistsSongs).filter(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist.Id))
     
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    
-    return render_template("show_playlist_content.html", songs = songs, user = current_user, playlist = pl, playlists = playlists)
+    n_songs = len(songs)
+    return render_template("show_playlist_content.html", songs = songs, user = current_user, playlist = pl, playlists = playlists, n_songs = n_songs)
 
 
 @playlist_bp.route('/add_songs/<song_id>/<playlist>', methods=['GET', 'POST'])
