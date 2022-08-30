@@ -13,7 +13,7 @@
         {{artist_name}} - {{n_songs}} - {{album.Duration}} - {{album.N_Likes}}
       </p>
       {% if user.Profile=="Artist" and user.Email==album.Artist %}
-        <a href="{{url_for('album_bp.show_songs_addable_album',album_name=album.Name)}}">
+        <a href="{{url_for('album_bp.show_songs_addable_album',album_id=album.Id)}}">
           <img src="..\..\static\img\add.png" style="width: 10%;"><span> Aggiungi brani</span>
         </a>
       {% else %}

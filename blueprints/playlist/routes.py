@@ -59,6 +59,13 @@ def show_songs_addable(playlist_id):
 @playlist_bp.route('/show_playlist_content/<playlist_id>', methods=['GET', 'POST'])
 @login_required
 def show_playlist_content(playlist_id):
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    if(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    if(current_user.Profile == 'Free'):
+        session = Session(bind=engine["free"])
+        
     pl = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl.Id))).all
     
