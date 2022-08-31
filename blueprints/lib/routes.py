@@ -36,23 +36,12 @@ def albums():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     albums = session.query(Albums).filter(Albums.Id.in_(session.query(Users_liked_Albums.album_id).filter(Users_liked_Albums.user_email==current_user.Email))) 
     
-    return render_template("albums.html", playlists=playlists, user=current_user, albums=albums)
+    lst_a=[]
+    for a in albums:
+        artist = session.query(Users).filter(Users.Email == a.Artist).first()
+        lst_a.append([a.Name, artist.Name, a.Record_House, a.ReleaseDate, a.Duration])
+    return render_template("albums.html", playlists=playlists, user=current_user, albums=lst_a)
 
-@library_bp.route('/artists')
-@login_required
-def artists():
-    if(current_user.Profile == 'Artist'):
-        session = Session(bind=engine["artist"])
-    elif(current_user.Profile == 'Premium'):
-        session = Session(bind=engine["premium"])
-    else:
-        session = Session(bind=engine["free"])
-
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    #artists = session.query(Users).filter(Users.Email.in_()) -- è possibile avere degli artisti salvati?
-    
-    return render_template("artists.html", playlists=playlists, user=current_user)
-    
 @library_bp.route('/songs')
 @login_required
 def songs():

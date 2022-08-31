@@ -1,9 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="w3-container"> <h1> I tuoi album <a href="{{ url_for('album_bp.create_album') }}"> <img src="..\static\img\add.png", style="width:5% ;"> </a></h1> </div>
+    <div class="w3-container"> <h1> I tuoi album <a href="{{ url_for('album_bp.create_album') }}"> <img src="..\static\img\add.png", style="width:5% ; transform: translateY(-25%);"> </a></h1> </div>
     <dl>
-        {% for a in albums %}
+        <h1 style="text-align: center;">Album pubblici</h1>
+        {% for a in albums_free %}
             <dt style="display:inline;"> 
                 <figure style="display:inline-block; width:15%;">
                     <a href="{{url_for('album_bp.show_album', album_id=a.Id, artist=a.Artist)}}"><img src="static\img\gallery.png" style="width:100%;"></a>
@@ -22,4 +23,29 @@
             </dt>
         {% endfor %}
     </dl>
+
+    <hr style="height:0.3vw;border-width:0; background-color: white;">
+
+    <dl>
+        <h1 style="text-align: center;">Album premium</h1>
+        {% for a in albums_premium %}
+            <dt style="display:inline;"> 
+                <figure style="display:inline-block; width:15%;">
+                    <a href="{{url_for('album_bp.show_album', album_id=a.Id, artist=a.Artist)}}"><img src="static\img\gallery.png" style="width:100%;"></a>
+                    <figcaption style="text-align:center;">
+                        {{a.Name}}  
+                    </figcaption>
+                    <figcaption style="text-align:center;">
+                        <a href="{{url_for('album_bp.delete_album', album_id=a.Id)}}">
+                            <img src="static\img\cancel.png" style="width:30%;">
+                        </a>
+                        <a href="{{url_for('album_bp.edit_album', album_id=a.Id)}}">
+                            <img src="static\img\edit.png" style="width:30%;">
+                        </a> 
+                    </figcaption>
+                </figure>
+            </dt>
+        {% endfor %}
+    </dl>
+
 {% endblock %}

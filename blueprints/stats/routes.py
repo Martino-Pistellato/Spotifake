@@ -40,8 +40,9 @@ def stats():
         for x in users_like_me:
             medium_age += 2022-x.BirthDate.year
         
-        medium_age /= len(users_like_me)    
-
+        if(len(users_like_me)>0):
+            medium_age /= len(users_like_me)    
+        
         countries=session.query(Users.Country, func.count(Users.Email)).filter(or_(Users.Email.in_(users_like_songs), Users.Email.in_(users_like_albums))).group_by(Users.Country).all()
             
         #countries = session.query(users_like_me.Country,func.count(users_like_me.Email)).group_by(users_like_me.Country)

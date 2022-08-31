@@ -104,10 +104,11 @@ def show_my_albums():
     else:
         session = Session(bind=engine["free"])
 
-    albums = session.query(Albums).filter(Albums.Artist == current_user.Email)
+    albums_free = session.query(Albums).filter(Albums.Artist == current_user.Email, Albums.Is_Restricted == False)
+    albums_premium= session.query(Albums).filter(Albums.Artist == current_user.Email, Albums.Is_Restricted == True)
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
        
-    return render_template("show_my_albums.html", user=current_user, playlists=playlists, albums=albums)
+    return render_template("show_my_albums.html", user=current_user, playlists=playlists, albums_free=albums_free, albums_premium=albums_premium)
 
 @album_bp.route('/delete_album/<album_id>')
 @login_required
@@ -150,8 +151,19 @@ def edit_album(album_id):
             restriction = True
         else:
             restriction = False
+
+        if(album.Is_Restricted == True and restriction==False):
+            songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id==album_id)), Songs.Is_Restricted==True)
+            at = album.Duration
+            start = datetime.datetime(10,10,10, hour=at.hour, minute=at.minute, second=at.second)
+            for s in songs:
+                st = s.Duration
+                minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+                start -= minus
+
+                Albums.remove_song(album, s.Id, session)
             
-        Albums.update_album(album_id, name, releaseDate, recordHouse, album.Duration, restriction, session)
+        Albums.update_album(album_id, name, releaseDate, recordHouse, start.time(), restriction, session)
             
         return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists)) 
         

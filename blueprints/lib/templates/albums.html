@@ -31,21 +31,30 @@
 
 <ul>
     <li><a href="{{url_for('library_bp.library')}}">Playlist</a></li>
-    <li style="border-radius: 10vw; background-color: #1ed760;"><a>Album</a></li>
-    <li><a href="{{url_for('library_bp.artists')}}">Artists</a></li>
+    <li style="border-radius: 10vw; background-color: #1ed760;"><a>Albums</a></li>
     <li><a href="{{url_for('library_bp.songs')}}">Songs</a></li>
 </ul>
 
 <dl>
-    {% for a in albums %}
-    <dt style="display:inline;"> 
-        <a href="{{url_for('album_bp.show_album',album_id=a.Id,artist=a.Artist)}}">
-            <figure style="display:inline-block; width:20%;">
-                <img src="..\static\img\gallery.png" style="width:100%;">
-                <figcaption style="text-align:center;"> {{a.Name}} </figcaption>
-            </figure>  
-        </a> 
-    </dt>
-    {% endfor %}
+    <table style="width:98%; padding-left:2%;"> 
+        <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
+            <th style="width:20%; text-align:left;"> TITOLO </th>
+            <th style="width:20%; text-align: center;"> ARTISTA </th>
+            <th style="width:20%; text-align: center;"> CASA DISCOGRAFICA </th>
+            <th style="width:20%; text-align: center;"> DATA </th>
+            <th style="width:20%; text-align: right;"> DURATA </th>
+        </tr>
+        {% for a in albums %}
+        <tr>
+            
+            <td> {{a[0]}} </td>
+            <td style="text-align:center;"> {{a[1]}} </td>
+            <td style="text-align:center;"> {{a[2]}} </td>
+            <td style="text-align:center;"> {{a[3]}} </td>
+            <td style="text-align:right;"> {{a[4]}} </td>
+            
+        </tr>
+        {% endfor %}
+    </table>
 </dl>
 {% endblock %}
