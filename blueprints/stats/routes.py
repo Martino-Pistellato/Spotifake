@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, jsonify
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
@@ -49,3 +49,17 @@ def stats():
         
         return render_template("stats.html", user=current_user, playlists=playlists, users=users_like_me, my_songs=my_songs, my_albums=my_albums, countries=countries)
     return redirect(url_for('home_bp.home'))
+
+@stats_bp.route('/get_countries')
+def get_countries():
+    all_liked_songs=session.query(Users_liked_Songs.song_id)
+    my_liked_songs=session.query(Songs.Id).filter(and_(Songs.Artist==current_user.Email,Songs.Id.in_(all_liked_songs)))
+    users_like_songs=session.query(Users.Email).filter(Users.Email.in_(session.query(Users_liked_Songs.user_email).filter(Users_liked_Songs.song_id.in_(my_liked_songs))))
+        
+    all_liked_albums=session.query(Users_liked_Albums.album_id)
+    my_liked_albums=session.query(Albums.Id).filter(and_(Albums.Artist==current_user.Email,Albums.Id.in_(all_liked_albums)))
+    users_like_albums=session.query(Users.Email).filter(Users.Email.in_(session.query(Users_liked_Albums.user_email).filter(Users_liked_Albums.album_id.in_(my_liked_albums))))
+        
+    countries=session.query(Users.Country, func.count(Users.Email)).filter(or_(Users.Email.in_(users_like_songs), Users.Email.in_(users_like_albums))).group_by(Users.Country).all()
+    
+    return jsonify({'dati':countries})

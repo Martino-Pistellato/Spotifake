@@ -321,7 +321,7 @@ class Users_liked_Songs(Base):
     user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
     def __repr__(self):
-        return "<Users_liked_Songs(song_id='%d', user_email='%s')>" % (self.song_id, self.user_email)  
+        return "<UsersSongs(song_id='%d', user_email='%s')>" % (self.song_id, self.user_email)  
 
 class Users_liked_Albums(Base):    
     __tablename__ = "Users_liked_Albums"
@@ -330,7 +330,7 @@ class Users_liked_Albums(Base):
     user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
     def __repr__(self):
-        return "<Users_liked_Albums(album_id='%d', user_email='%s')>" % (self.album_id, self.user_email)  
+        return "<UsersAlbums(album_id='%d', user_email='%s')>" % (self.album_id, self.user_email)  
 
 class AlbumsSongs(Base):    
     __tablename__ = "AlbumsSongs"
