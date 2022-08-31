@@ -18,9 +18,9 @@ home_bp = Blueprint(
 def home():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
         
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)        

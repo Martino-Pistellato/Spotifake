@@ -15,9 +15,9 @@ profile_bp = Blueprint(
 def profile():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -29,9 +29,9 @@ def profile():
 def update():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -43,9 +43,9 @@ def update():
 def update_info():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     if request.method == 'POST':
@@ -61,9 +61,9 @@ def update_info():
 def delete_profile():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     user = session.query(Users).filter(Users.Email == current_user.Email).first()

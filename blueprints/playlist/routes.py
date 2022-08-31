@@ -19,9 +19,9 @@ playlist_bp = Blueprint(
 def create_playlist():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -43,11 +43,11 @@ def show_songs_addable(playlist_id):
         session = Session(bind=engine["artist"])
         songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist_id)))
     
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
         songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist_id)))
     
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
         songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist_id)), Songs.Is_Restricted==False)
     
@@ -61,9 +61,9 @@ def show_songs_addable(playlist_id):
 def show_playlist_content(playlist_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     pl = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
@@ -81,15 +81,14 @@ def show_playlist_content(playlist_id):
 def add_songs(song_id, playlist_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     song = session.query(Songs).filter(Songs.Id == song_id).first()
     playlist = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
-        
+       
     Playlists.add_song_to_playlist(playlist, song, session)
 
     st = song.Duration
@@ -108,12 +107,11 @@ def add_songs(song_id, playlist_id):
 def delete_playlist(pl_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
     
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
     Playlists.delete_playlist(pl_id, session)
 
     return redirect(url_for("library_bp.library"))
@@ -123,15 +121,14 @@ def delete_playlist(pl_id):
 def edit_playlist(pl_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     pl = session.query(Playlists).filter(Playlists.Id == pl_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
-
+    
     form = upload_PlaylistForm(name=pl.Name)
     
     if form.validate_on_submit():
@@ -147,14 +144,13 @@ def edit_playlist(pl_id):
 def remove_song(song_id, pl_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlist = session.query(Playlists).filter(Playlists.Id == pl_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
-
+    
     Playlists.remove_song(playlist, song_id, session)
     song=session.query(Songs).filter(Songs.Id == song_id).first()
 

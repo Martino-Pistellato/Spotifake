@@ -15,9 +15,9 @@ library_bp = Blueprint(
 def library():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -28,9 +28,9 @@ def library():
 def albums():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -43,9 +43,9 @@ def albums():
 def artists():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -58,11 +58,11 @@ def artists():
 def songs():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
-
+        
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email==current_user.Email)))
     songs_id = session.query(Songs.Id).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email==current_user.Email)))

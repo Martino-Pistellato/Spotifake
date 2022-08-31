@@ -17,9 +17,9 @@ song_bp = Blueprint(
 def upload_song():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -50,15 +50,14 @@ def upload_song():
 def edit_song(song_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     song = session.query(Songs).filter(Songs.Id == song_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
-            
+           
     if song.Is_Restricted == True:
         restriction = 'Premium'
     else:
@@ -90,15 +89,14 @@ def edit_song(song_id):
 def delete_song(song_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id==song_id)))
     playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsSongs.playlist_id).filter(PlaylistsSongs.song_id==song_id)))
     song=session.query(Songs).filter(Songs.Id == song_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
             
     st = song.Duration
     minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
@@ -122,9 +120,9 @@ def delete_song(song_id):
 def show_my_songs():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     songs = session.query(Songs).filter(Songs.Artist == current_user.Email)
@@ -137,9 +135,9 @@ def show_my_songs():
 def add_to_liked_songs(song_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     song = session.query(Songs).filter(Songs.Id == song_id).first()
@@ -155,9 +153,9 @@ def add_to_liked_songs(song_id):
 def remove_from_liked_songs(song_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
         
     song = session.query(Songs).filter(Songs.Id == song_id).first()
@@ -171,8 +169,16 @@ def remove_from_liked_songs(song_id):
 @song_bp.route('/show_song/<song_id>')
 @login_required # richiede autenticazione
 def show_song(song_id):
+    if(current_user.Profile == 'Artist'):
+        session = Session(bind=engine["artist"])
+    elif(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+    else:
+        session = Session(bind=engine["free"])
+
     song = session.query(Songs).filter(Songs.Id==song_id)
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+    
     if session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id==song.Id, Users_liked_Songs.user_email==current_user.Email).first() is None:
         like = False
     else:

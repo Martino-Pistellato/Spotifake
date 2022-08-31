@@ -42,7 +42,7 @@ class Users(Base, UserMixin):
 
     liked_albums = relationship('Albums', secondary='Users_liked_Albums', back_populates="liked_users")
     liked_songs =  relationship('Songs', secondary='Users_liked_Songs', back_populates="liked_users")
-    #liked_artists = relationship('Artists', secondary='UsersArtists', back_populates='liked_users')
+    #liked_artists = relationship('Users', secondary='UsersArtists', back_populates='liked_users')
     
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)

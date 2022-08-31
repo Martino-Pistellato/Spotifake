@@ -14,14 +14,23 @@ find_bp = Blueprint(
 def find():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
         
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    songs = session.query(Songs)
-    albums = session.query(Albums)
+
+    if(current_user.Profile == 'Free'):
+        songs = session.query(Songs).filter(Songs.Is_Restricted == False)
+        albums = session.query(Albums).filter(Albums.Is_Restricted == False)
+    elif(current_user.Profile == 'Premium'):
+        songs = session.query(Songs)
+        albums = session.query(Albums)
+    else:
+        songs = session.query(Songs).filter(Songs.Artist != current_user.Email)
+        albums = session.query(Albums).filter(Albums.Artist != current_user.Email)
+
     lst_s=[]
     lst_a=[]
     

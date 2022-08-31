@@ -18,9 +18,9 @@ album_bp = Blueprint(
 def create_album():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -51,16 +51,18 @@ def create_album():
 def show_songs_addable_album(album_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
     
     album = session.query(Albums).filter(and_(Albums.Id == album_id)).first()
     all_my_songs = session.query(Songs.Id).filter(Songs.Artist == current_user.Email)
     my_songs_in_album = session.query(Songs.Id).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id)))
-    my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs), Songs.Is_Restricted == False)
-    if(album.Is_Restricted == True):
+    
+    if(album.Is_Restricted == False):
+        my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs), Songs.Is_Restricted == False)
+    else:
         my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs))
        
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -73,14 +75,13 @@ def show_songs_addable_album(album_id):
 def add_songs_to_album(song_id, album_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     song = session.query(Songs).filter(Songs.Id == song_id).first()
     album = session.query(Albums).filter(Albums.Id == album_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
         
     Albums.add_song_to_album(album, song, session)
     st = song.Duration
@@ -99,9 +100,9 @@ def add_songs_to_album(song_id, album_id):
 def show_my_albums():
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     albums = session.query(Albums).filter(Albums.Artist == current_user.Email)
@@ -114,12 +115,10 @@ def show_my_albums():
 def delete_album(album_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
-    
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
 
     Albums.delete_album(album_id, session)
     return redirect(url_for("album_bp.show_my_albums"))
@@ -129,15 +128,14 @@ def delete_album(album_id):
 def edit_album(album_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     album = session.query(Albums).filter(Albums.Id == album_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
-
+    
     if album.Is_Restricted == True:
         restriction = 'Premium'
     else:
@@ -167,9 +165,9 @@ def edit_album(album_id):
 def show_album(album_id, artist):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     album = session.query(Albums).filter(Albums.Id == album_id).first()
@@ -191,14 +189,13 @@ def show_album(album_id, artist):
 def remove_song_from_album(song_id, album_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     album = session.query(Albums).filter(Albums.Id == album_id).first()
     song = session.query(Songs).filter(Songs.Id == song_id).first()
-    user = session.query(Users).filter(Users.Email == current_user.Email).first()
 
     st = song.Duration
     at = album.Duration
@@ -219,9 +216,9 @@ def remove_song_from_album(song_id, album_id):
 def add_to_liked_albums(album_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     album = session.query(Albums).filter(Albums.Id == album_id).first()
@@ -237,9 +234,9 @@ def add_to_liked_albums(album_id):
 def remove_from_liked_albums(album_id):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    if(current_user.Profile == 'Premium'):
+    elif(current_user.Profile == 'Premium'):
         session = Session(bind=engine["premium"])
-    if(current_user.Profile == 'Free'):
+    else:
         session = Session(bind=engine["free"])
 
     album = session.query(Albums).filter(Albums.Id == album_id).first()
