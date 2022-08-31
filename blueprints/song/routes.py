@@ -35,14 +35,15 @@ def upload_song():
             else:
                 restriction = False  
             song = Songs(name, time, genre, restriction, current_user.Email)
-            user = session.query(Users).filter(Users.Email == current_user.Email).first()
+            artist = session.query(Artists).filter(Artists.Email == current_user.Email).first()
             Songs.create_song(song, session)
-            Users.add_song_if_artist(user, song, session)
+            Artists.add_song_if_artist(artist, song, session)
                 
             return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists))    
         return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     except exc.SQLAlchemyError as err:
         session.rollback()
+        print(err)
         return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     
 @song_bp.route('/edit_song/<song_id>', methods=['GET', 'POST'])
@@ -73,7 +74,21 @@ def edit_song(song_id):
                 restriction = True
             else:
                 restriction = False  
-                
+            
+            if(song.Is_Restricted == False and restriction):
+                albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id),filter(AlbumsSongs.song_id==song_id)), Albums.Is_Restricted==False)
+                for a in albums:
+                    st = song.Duration
+                    at = a.Duration
+
+                    start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
+                    minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+                    end = start - minus
+
+                    Albums.remove_song(a, song_id, session)
+
+                    Albums.update_album(a.Id, a.Name, a.ReleaseDate,a.Record_House, end.time(), a.Is_Restricted, session)
+
             Songs.update_song(song_id, name, time, genre, restriction, session)
                 
             return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists)) 
@@ -81,6 +96,7 @@ def edit_song(song_id):
         return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
     except exc.SQLAlchemyError as err:
         session.rollback()
+        print(err)
         return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
             
     
@@ -178,7 +194,7 @@ def show_song(song_id):
 
     song = session.query(Songs).filter(Songs.Id==song_id)
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    
+
     if session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id==song.Id, Users_liked_Songs.user_email==current_user.Email).first() is None:
         like = False
     else:

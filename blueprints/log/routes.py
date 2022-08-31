@@ -54,8 +54,15 @@ def subscribe():
         gender = form.gender.data
         country = form.country.data
         birthday = form.birthday.data
-        user = Users(email, name, birthday, country, gender, encrypted_pwd, profile)
-        Users.create_user(user)
+        if(profile=='Artist'):
+            artist = Artists(email, name, birthday, country, gender, encrypted_pwd, profile)
+            Artists.create_artist(artist)
+        elif(profile=='Premium'):
+            premium = Premium(email, name, birthday, country, gender, encrypted_pwd, profile)
+            Premium.create_premium(premium)
+        else:
+            user = Users(email, name, birthday, country, gender, encrypted_pwd, profile)
+            Users.create_user(user)
         return redirect(url_for('login_bp.login'))
     return render_template('subscribe.html',form=form)
 
