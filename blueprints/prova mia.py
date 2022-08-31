@@ -2,7 +2,7 @@ from datetime import *
 from time import *
 from models import *
 
-users_like_me=session.query(Users)
+users_like_me=session.query(Users).all()
         
 medium_age = 0
 for x in users_like_me:

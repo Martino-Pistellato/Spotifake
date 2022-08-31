@@ -6,10 +6,10 @@ from flask_login import UserMixin, current_user
 from sqlalchemy import exc
 from flask import Blueprint, render_template, request, redirect, url_for
 
-engine = {"free" : create_engine("postgresql://free:free@localhost/prog_db"),
-          "premium" : create_engine("postgresql://premium:premium@localhost/prog_db"),
-          "artist" : create_engine("postgresql://artist:artist@localhost/prog_db"),
-          "admin" : create_engine("postgresql://postgres:Dat4Bas32022!@localhost/prog_db")}
+engine = {"free" : create_engine("postgresql://postgres:martino@localhost/prog_db"),
+          "premium" : create_engine("postgresql://postgres:martino@localhost/prog_db"),
+          "artist" : create_engine("postgresql://postgres:martino@localhost/prog_db"),
+          "admin" : create_engine("postgresql://postgres:martino@localhost/prog_db")}
 
 metadata = MetaData()
 Base = declarative_base()

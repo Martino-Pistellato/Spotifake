@@ -71,8 +71,9 @@
     <!-- Page Content -->
     <div style="margin-left:20%">
         <div class="w3-container"></div>
-      
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
         <script type="text/javascript">
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
@@ -94,10 +95,11 @@
                 ['Greece', 2]
                 ]);
 
-                
+                var x = {{country|tosjon}};
 
-                for c in country:
+                for (c in country){
                     data.addRow([c[0],c[1]]);
+                }
 
                 var options = {
                     title:'Diffusione ascoltatori',
@@ -123,6 +125,11 @@
             });
         </script>
 
+        $.ajax({
+            type: 'get'
+            url: '{{url_for('')}}'
+        })
+        
         <div id="chart_div"></div>
     
     </div>
