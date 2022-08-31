@@ -26,7 +26,6 @@ def create_album():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     
     form = upload_AlbumForm()
-    form.recordHouse.choices = [(rh.Name) for rh in session.query(Record_Houses)]
         
     if form.validate_on_submit():
         name = form.name.data
@@ -38,9 +37,9 @@ def create_album():
             restriction = False
                 
         album = Albums(name, date, rec_h, current_user.Email, restriction)
-        user = session.query(Users).filter(Users.Email == current_user.Email).first()
+        artist = session.query(Artists).filter(Artists.Email == current_user.Email).first()
         Albums.create_album(album, session)
-        Users.add_album_if_artist(user, album, session)
+        Artists.add_album_if_artist(artist, album, session)
             
         return redirect(url_for("album_bp.show_songs_addable_album", album_id = album.Id))    
     return render_template('create_album.html',form=form, user=current_user, playlists=playlists)
@@ -142,8 +141,7 @@ def edit_album(album_id):
         restriction = 'Free'
 
     form = upload_AlbumForm(name=album.Name, releaseDate=album.ReleaseDate, recordHouse=album.Record_House, type = restriction)
-    form.recordHouse.choices = [(rh.Name) for rh in session.query(Record_Houses)]
-
+    
     if form.validate_on_submit():
         name = form.name.data
         releaseDate = form.releaseDate.data
@@ -171,7 +169,7 @@ def show_album(album_id, artist):
         session = Session(bind=engine["free"])
 
     album = session.query(Albums).filter(Albums.Id == album_id).first()
-    artist_user = session.query(Users).filter(Users.Email == artist).first()
+    artist_user = session.query(Artists).filter(Artists.Email == artist).first()
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album_id))).all()
     albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album_id).all()
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)

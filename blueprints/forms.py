@@ -2,7 +2,8 @@ from email.policy import default
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, DateField, SelectField, TimeField
 from wtforms.validators import DataRequired, Email, Length, ValidationError
-
+import datetime
+from datetime import date
 
 class subscribeForm(FlaskForm):
     name = StringField(
@@ -93,13 +94,23 @@ class upload_SongForm(FlaskForm):
             DataRequired(message="Indica la durata della canzone"), time_check
         ],
         format='%H:%M:%S',
-        render_kw={"step": "1"}
-        #default=00:00:00
+        render_kw={"step": "1"},
+        default=datetime.time(0,0,0)
     )
-    genre = StringField(
+    genre = SelectField(
         'Genere',
         [
             DataRequired(message="Indica il genere della canzone")
+        ],
+        choices=[
+            ('Rap', 'Rap'),
+            ('Pop', 'Pop'),
+            ('Country', 'Country'),
+            ('Techno', 'Techno'),
+            ('Rock', 'Rock'),
+            ('Metal', 'Metal'),
+            ('Classic', 'Classic'),
+            ('Neomelodico Napoletano', 'Neomelodico Napoletano')
         ]
     )
     type = SelectField(
@@ -124,12 +135,19 @@ class upload_AlbumForm(FlaskForm):
         'Data di pubblicazione',
         [
             DataRequired(message="Indica la data di pubblicazione")
-        ]
+        ],
+        default=date.today()
     )
     recordHouse = SelectField(
         'Casa discografica',
         [
             DataRequired(message="Indica la casa discografica")
+        ],
+        choices=[
+            ('Universal', 'Universal'),
+            ('Bloody', 'Bloody'),
+            ('Warner Brothers', 'Warner Brothers'),
+            ('Bicho Malo', 'Bicho Malo')
         ]
     )
     type = SelectField(

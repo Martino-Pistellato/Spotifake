@@ -1,7 +1,7 @@
 import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, validates
+from sqlalchemy.orm import sessionmaker, relationship, validates, class_mapper
 from flask_login import UserMixin, current_user
 from sqlalchemy import exc
 from flask import Blueprint, render_template, request, redirect, url_for
@@ -13,7 +13,7 @@ engine = {"free" : create_engine("postgresql://free:free@localhost/prog_db"),
 
 metadata = MetaData()
 Base = declarative_base()
-Session = sessionmaker(bind=engine["free"])      
+Session = sessionmaker(bind=engine["admin"])      
 session = Session()
 
 
@@ -23,8 +23,7 @@ session = Session()
 
 class Users(Base, UserMixin):
     __tablename__ = "Users"
-   
-
+  
     Email = Column(String, CheckConstraint(column('Email').like('%@%')), primary_key = True) 
     Name = Column(String, nullable = False)
     BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2022' )), nullable = False)
@@ -33,13 +32,12 @@ class Users(Base, UserMixin):
     Profile = Column(String, ForeignKey('Profiles.Name', ondelete="CASCADE", onupdate="CASCADE"), nullable = False)
     Password = Column(String, nullable = False)
     
-    songs = relationship('Songs')
     playlists = relationship('Playlists')
-    albums = relationship('Albums')
-   
     liked_albums = relationship('Albums', secondary='Users_liked_Albums', back_populates="liked_users")
     liked_songs =  relationship('Songs', secondary='Users_liked_Songs', back_populates="liked_users")
 
+    __mapper_args__ = {'polymorphic_on': Profile, 'polymorphic_identity': 'Free'}
+    
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
     
@@ -52,7 +50,6 @@ class Users(Base, UserMixin):
         self.Password = password
         self.Profile = profile
         
-
     def create_user(self):
         if(self.Profile == 'Artist'):
             session = Session(bind=engine["artist"])
@@ -75,22 +72,6 @@ class Users(Base, UserMixin):
         self.playlists.append(playlist)
         session.commit()
     
-    def add_song_if_artist(self, song, session):
-        try:
-            self.songs.append(song)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()
-            print(err)
-
-    def add_album_if_artist(self, album, session):
-        try:    
-            self.albums.append(album)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()
-            print(err)
-
     def delete_user(self, session):
         session.query(Users).filter(Users.Email == self.Email).delete()
         session.commit()
@@ -114,7 +95,74 @@ class Users(Base, UserMixin):
     def remove_album_from_liked(self, album_id, session):
         session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id == album_id, Users_liked_Albums.user_email==self.Email).delete()
         session.commit()
-            
+
+class Premium(Users):
+    __mapper_args__ = {'polymorphic_identity': 'Premium'}
+    __tablename__ = 'Premium'
+    
+    Email = Column(None, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
+
+    def __init__(self, email, name, birth, country, gender, password, profile):
+        super().__init__(email, name, birth, country, gender, password, profile)
+
+    def create_premium(self):
+        if(self.Profile == 'Artist'):
+            session = Session(bind=engine["artist"])
+        if(self.Profile == 'Premium'):
+            session = Session(bind=engine["premium"])
+        if(self.Profile == 'Free'):
+            session = Session(bind=engine["free"])
+
+        try:
+            session.add(self)
+            session.commit()
+        except exc.SQLAlchemyError as err:
+            session.rollback()   
+            print(err)
+
+class Artists(Users):
+    __mapper_args__ = {'polymorphic_identity': 'Artist'}
+    __tablename__ = 'Artists'
+    
+    Email = Column(None, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
+
+    songs = relationship('Songs')
+    albums = relationship('Albums')
+
+    def __init__(self, email, name, birth, country, gender, password, profile):
+        super().__init__(email, name, birth, country, gender, password, profile)
+
+    def create_artist(self):
+        if(self.Profile == 'Artist'):
+            session = Session(bind=engine["artist"])
+        if(self.Profile == 'Premium'):
+            session = Session(bind=engine["premium"])
+        if(self.Profile == 'Free'):
+            session = Session(bind=engine["free"])
+
+        try:
+            session.add(self)
+            session.commit()
+        except exc.SQLAlchemyError as err:
+            session.rollback()   
+            print(err)
+
+    def add_song_if_artist(self, song, session):
+        try:
+            self.songs.append(song)
+            session.commit()
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            print(err)
+
+    def add_album_if_artist(self, album, session):
+        try:    
+            self.albums.append(album)
+            session.commit()
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            print(err)
+
 class Profiles(Base):
     __tablename__ = "Profiles"
     
@@ -137,7 +185,7 @@ class Songs(Base):
     Genre = Column(String)
     Id = Column(Integer, primary_key = True)
     Is_Restricted = Column(Boolean, nullable = False)
-    Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
+    Artist = Column(String, ForeignKey('Artists.Email', ondelete="CASCADE", onupdate="CASCADE"))
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
     liked_users = relationship('Users', secondary= 'Users_liked_Songs', back_populates="liked_songs")
@@ -173,20 +221,6 @@ class Songs(Base):
         session.query(Songs).filter(Songs.Id == song_id).update({'N_Likes':like})
         session.commit()
 
-
-class Record_Houses(Base):
-    __tablename__ = "Record_Houses"
-
-    Name = Column(String, primary_key = True)
-
-    albums = relationship('Albums')
-    
-    def __repr__(self):
-        return "<Record_Houses(Name='%s')>" % (self.Name)
-    
-    def __init__(self, name):
-        self.Name = name
-
 class Albums(Base):
     __tablename__ = "Albums"
 
@@ -194,9 +228,9 @@ class Albums(Base):
     ReleaseDate = Column(Date)
     Duration = Column(Time, CheckConstraint(and_(column('Duration') >= '00:00:00', column('Duration') <= '01:30:00' )))
     Id = Column(Integer, primary_key = True)
-    Record_House = Column(String, ForeignKey('Record_Houses.Name', ondelete="CASCADE", onupdate="CASCADE"))
+    Record_House = Column(String)
     Is_Restricted = Column(Boolean, nullable = False)
-    Artist = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
+    Artist = Column(String, ForeignKey('Artists.Email', ondelete="CASCADE", onupdate="CASCADE"))
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
