@@ -30,10 +30,10 @@ def find():
     else:
         songs = session.query(Songs).filter(Songs.Artist != current_user.Email)
         albums = session.query(Albums).filter(Albums.Artist != current_user.Email)
-
+    
     lst_s=[]
     lst_a=[]
-    
+  
     for s in songs:
         if session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id==s.Id, Users_liked_Songs.user_email==current_user.Email).first() is None:
             like = False
@@ -48,6 +48,7 @@ def find():
         else:
             like = True
         artist = session.query(Users).filter(Users.Email == a.Artist).first()
-        lst_a.append([a.Name, a.Duration, artist.Name, a.Id, like, artist.Email])   
+        lst_a.append([a.Name, a.Duration, artist.Name, a.Id, like, artist.Email]) 
+      
     
     return render_template("find.html",user=current_user,playlists=playlists,albums=lst_a,songs=lst_s)

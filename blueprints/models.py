@@ -36,14 +36,10 @@ class Users(Base, UserMixin):
     songs = relationship('Songs')
     playlists = relationship('Playlists')
     albums = relationship('Albums')
-   # profile = relationship('Profiles', back_populates="users" )
-
-    #Possibile sistema di like (vogliamo anche che da un oggetto piaciuto si possa risalire agli utenti?)
-
+   
     liked_albums = relationship('Albums', secondary='Users_liked_Albums', back_populates="liked_users")
     liked_songs =  relationship('Songs', secondary='Users_liked_Songs', back_populates="liked_users")
-    #liked_artists = relationship('Users', secondary='UsersArtists', back_populates='liked_users')
-    
+
     def __repr__(self):
         return "<Users(email='%s', name='%s', birth='%s', country='%s', gender='%s', profile='%s')>" % (self.Email, self.Name, self.BirthDate, self.Country, self.Gender, self.Profile)
     
@@ -291,7 +287,7 @@ class Users_liked_Songs(Base):
     user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
     def __repr__(self):
-        return "<UsersSongs(song_id='%d', user_email='%s')>" % (self.song_id, self.user_email)  
+        return "<Users_liked_Songs(song_id='%d', user_email='%s')>" % (self.song_id, self.user_email)  
 
 class Users_liked_Albums(Base):    
     __tablename__ = "Users_liked_Albums"
@@ -300,7 +296,7 @@ class Users_liked_Albums(Base):
     user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
     
     def __repr__(self):
-        return "<UsersAlbums(album_id='%d', user_email='%s')>" % (self.album_id, self.user_email)  
+        return "<Users_liked_Albums(album_id='%d', user_email='%s')>" % (self.album_id, self.user_email)  
 
 class AlbumsSongs(Base):    
     __tablename__ = "AlbumsSongs"
