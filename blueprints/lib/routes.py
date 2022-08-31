@@ -60,6 +60,6 @@ def songs():
     lst_s=[]
     for s in songs:
         artist = session.query(Users).filter(Users.Email == s.Artist).first()
-        lst_s.append([s.Name, artist.Name, s.Genre, s.Duration, s.Id])
+        lst_s.append([s.Name, artist.Name, s.Genre, s.Duration, s.Id, artist.Email])
     
     return render_template("songs.html", playlists=playlists, user=current_user, songs=lst_s, albums=albums)

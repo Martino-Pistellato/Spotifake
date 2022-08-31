@@ -41,7 +41,16 @@
             <figure style="display:inline-block; width:20%;">
                 <img src="..\static\img\gallery.png" style="width:100%;">
                 <figcaption style="text-align:center;"> {{p.Name}} </figcaption>
-            </figure>  
+                <figcaption style="text-align:center;">
+                    <a href="{{url_for('playlist_bp.delete_playlist',pl_id=p.Id)}}">
+                        <img src="static\img\cancel.png" style="width:30%;">
+                    </a>
+                    <a href="{{url_for('playlist_bp.edit_playlist',pl_id=p.Id)}}">
+                        <img src="static\img\edit.png" style="width:30%;">
+                    </a> 
+                </figcaption>  
+            </figure>
+            
         </a>
     </dt>
     {% endfor %}

@@ -30,7 +30,8 @@ def create_app():
         from .lib import routes
         from .stats import routes
         from .song import routes
-        
+        from .artist import routes
+
         # Register Blueprints
         app.register_blueprint(home.routes.home_bp)
         app.register_blueprint(profile.routes.profile_bp)
@@ -41,6 +42,7 @@ def create_app():
         app.register_blueprint(lib.routes.library_bp)
         app.register_blueprint(stats.routes.stats_bp)
         app.register_blueprint(song.routes.song_bp)
+        app.register_blueprint(artist.routes.artist_bp)
 
         # Create Database
         db.create_all()

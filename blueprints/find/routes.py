@@ -40,7 +40,7 @@ def find():
         else:
             like = True
         artist = session.query(Users).filter(Users.Email == s.Artist).first()
-        lst_s.append([s.Name, s.Duration, artist.Name, s.Id, like])   
+        lst_s.append([s.Name, s.Duration, artist.Name, s.Id, like, artist.Email])   
     
     for a in albums:
         if session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id==a.Id, Users_liked_Albums.user_email==current_user.Email).first() is None:

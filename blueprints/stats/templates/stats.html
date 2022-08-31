@@ -11,13 +11,13 @@
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
 
-            let countries = data['dati'];
+            //let countries = data['dati'];
             const table =[["Paese","Numero ascoltatori"]];
 
             function drawChart(){
                 for (const [key, value] of Object.entries(data['dati'])){
                     let row = [];
-                    row.push(hey);
+                    row.push(key);
                     row.push(value);
                     table.push(row);
                 }

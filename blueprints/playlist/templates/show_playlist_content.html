@@ -6,16 +6,10 @@
         <td style="width:30%;"><img src="..\static\img\gallery.png" style="width:100%;"></td>
         <td>
         <h1>{{playlist.Name}}</h1>
-        <p>{{n_songs}} - {{playlist.Duration}}</p>
+        <p>{{n_songs}} brani - {{playlist.Duration}}</p>
         <a href="{{url_for('playlist_bp.show_songs_addable',playlist_id=playlist.Id)}}">
-            <img src="..\static\img\add.png" style="width:10%;">
+            <img src="..\static\img\add.png" style="width:10%;"> Aggiungi brani
         </a>  
-        <a href="{{url_for('playlist_bp.delete_playlist',pl_id=playlist.Id)}}">
-            <img src="..\static\img\cancel.png" style="width:10%;">
-        </a>
-        <a href="{{url_for('playlist_bp.edit_playlist',pl_id=playlist.Id)}}"> 
-            <img src="..\static\img\edit.png" style="width:10%;">
-        </a>
         </td>
     </tr>
 </table>

@@ -151,11 +151,12 @@ def edit_album(album_id):
             restriction = True
         else:
             restriction = False
-
+        
+        at = album.Duration
+        start = datetime.datetime(10,10,10, hour=at.hour, minute=at.minute, second=at.second)
+        
         if(album.Is_Restricted == True and restriction==False):
             songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id==album_id)), Songs.Is_Restricted==True)
-            at = album.Duration
-            start = datetime.datetime(10,10,10, hour=at.hour, minute=at.minute, second=at.second)
             for s in songs:
                 st = s.Duration
                 minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
