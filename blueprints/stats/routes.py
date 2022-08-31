@@ -20,11 +20,11 @@ def stats():
         my_albums=session.query(Albums).filter(Albums.Artist==current_user.Email).order_by(Albums.N_Likes.desc())
         
         all_liked_songs=session.query(Users_liked_Songs.song_id)
-        my_liked_songs=session.query(Songs).filter(and_(Songs.Artist==current_user.Email,Songs.Id.in_(all_liked_song.Id)))
+        my_liked_songs=session.query(Songs).filter(and_(Songs.Artist==current_user.Email,Songs.Id.in_(all_liked_songs.Id)))
         users_like_songs=session.query(Users).filter(Users.Email.in_(session.query(Users_liked_Songs.user_email).filter(Users_liked_Songs.song_id.in_(my_liked_songs.Id))))
         
         all_liked_albums=session.query(Users_liked_Albums.album_id)
-        my_liked_albums=session.query(Album).filter(and_(Albums.Artist==current_user.Email,Album.Id.in_(all_liked_albums.Id)))
+        my_liked_albums=session.query(Albums).filter(and_(Albums.Artist==current_user.Email,Albums.Id.in_(all_liked_albums.Id)))
         users_like_albums=session.query(Users).filter(Users.Email.in_(session.query(Users_liked_Albums.user_email).filter(Users_liked_Albums.album_id.in_(my_liked_albums.Id))))
         
         users_like_me=session.query(Users).filter(Users.Email.in_(or_(users_like_songs.Email,users_like_albums.Email))).all()
