@@ -12,7 +12,7 @@
             google.charts.setOnLoadCallback(drawChart);
 
             //let countries = data['dati']
-            const table ={["Paese","Numero ascoltatori"]}
+            const table =[["Paese","Numero ascoltatori"]]
 
             function drawChart(){
                 for (const [key, value] of Object.entries(data['dati'])){
