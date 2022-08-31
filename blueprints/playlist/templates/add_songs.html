@@ -5,7 +5,11 @@
     <h1> {{playlist.Name}} </h1> 
     <p> Scegli che canzoni aggiungere </p>
 </div>
+<div style="text-align:center;">
+    <input type="text" id="mySearch" onkeyup="myFunction()" placeholder="Search..." title="Type in a song" style="width:90%;">
+</div>
 <div>
+    <dl id="myMenu" style="width:98%; padding-left:2%;">
     <table style="width:99%; padding-left:1%;"> 
         <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
             <th style="width:32%; text-align:left;"> TITOLO </th>
@@ -15,13 +19,38 @@
         </tr>
         {% for s in songs %}
         <tr>
-            <td style="text-align:left;"> {{s.Name}} </td>
-            <td style="text-align:center;"> {{s.Genre}} </td>
-            <td style="text-align:right; padding-right:1%;"> {{s.Duration}} </td>
-            <td><a href="{{ url_for('playlist_bp.add_songs',song_id=s.Id, playlist_id=playlist.Id)}}"><img src="..\static\img\add.png", style="width:100%;"></a></td>
+            <dt>
+                <td style="text-align:left;"><a href="{{url_for('song_bp.show_song', song_id = s.Id)}}">{{s.Name}}</a> </td>
+                <td style="text-align:center;"> {{s.Genre}} </td>
+                <td style="text-align:right; padding-right:1%;"> {{s.Duration}} </td>
+                <td><a href="{{ url_for('playlist_bp.add_songs',song_id=s.Id, playlist_id=playlist.Id)}}"><img src="..\static\img\add.png", style="width:100%;"></a></td>
+            </dt>
         </tr>
         {% endfor %}
     </table>
+    </dl>
 </div>
+
+<script>
+    function myFunction() {
+        // Declare variables
+        var input, filter, dl, dt, a, i;
+        input = document.getElementById("mySearch");
+        filter = input.value.toUpperCase();
+        dl = document.getElementById("myMenu");
+        dt = dl.getElementsByTagName("dt");
+    
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < dt.length; i++) {
+            a = dt[i].getElementsByTagName("a")[0];
+            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                dt[i].style.display = "";
+            } else {
+                dt[i].style.display = "none";
+            }
+        }
+    }
+</script>
+
 {% endblock %}
 

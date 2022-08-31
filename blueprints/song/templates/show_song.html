@@ -10,7 +10,7 @@
         <td>
             <h1>{{song.Name}}</h1>
             <p>
-              {{artist_name}} - {{song.Duration}} - {{song.Genre}} - {{song.N_Likes}}
+              <a href="{{url_for('artist_bp.show_artist', artist_email=song.Artist)}}">{{artist_name}}</a> - {{song.Duration}} - {{song.Genre}} - {{song.N_Likes}} like
             </p>
             {% if like == False %}
                 <a href="{{url_for('song_bp.add_to_liked_songs',song_id=song.Id)}}">

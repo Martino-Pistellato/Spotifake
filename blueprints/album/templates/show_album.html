@@ -10,7 +10,7 @@
     <td>
       <h1>{{album.Name}}</h1>
       <p>
-        {{artist_name}} - {{n_songs}} - {{album.Duration}} - {{album.N_Likes}}
+        <a href="{{url_for('artist_bp.show_artist', artist_email=album.Artist)}}">{{artist_name}}</a> - {{n_songs}} brani - {{album.Duration}} - {{album.N_Likes}} like
       </p>
       {% if user.Profile=="Artist" and user.Email==album.Artist %}
         <a href="{{url_for('album_bp.show_songs_addable_album',album_id=album.Id)}}">

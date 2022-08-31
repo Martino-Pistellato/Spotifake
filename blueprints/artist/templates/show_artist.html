@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<table>
+  <tr>
+    <td style="width:32%;">
+      <img src="..\..\static\img\profile.png" style="width:100%;">
+    </td>
+    <td>
+      <h1>{{artist.Name}}</h1>
+      <p>
+        {{artist.Country}} - {{age}} anni - {{n_songs}} brani - {{n_albums}} album 
+      </p>
+    </td>
+  </tr>
+</table>
+
+<div class="w3-container"> <h2> Altro di {{artist.Name}} </h2> </div>
+<dl>
+    <h1 style="text-align: center;"> Brani </h1>
+    {% for s in songs %}
+    <dt style="display:inline;"> 
+      <a href="{{ url_for('song_bp.show_song',song_id=s.Id)}}">
+        <figure style="display:inline-block; width:15%;">
+          <img src="..\..\static\img\gallery.png" style="width:100%;">
+          <figcaption style="text-align:center;"> {{s.Name}} </figcaption>
+        </figure>
+      </a> 
+    </dt>
+    {% endfor %}
+    
+</dl>
+<hr style="height:0.3vw;border-width:0; background-color: white;">
+<dl>
+    <h1 style="text-align: center;"> Album </h1>
+    {% for a in albums %}
+    <dt style="display:inline;"> 
+      <a href="{{ url_for('album_bp.show_album',album_id=a.Id, artist=a.Artist)}}">
+        <figure style="display:inline-block; width:15%;">
+          <img src="..\..\static\img\gallery.png" style="width:100%;">
+          <figcaption style="text-align:center;"> {{a.Name}} </figcaption>
+        </figure>
+      </a> 
+    </dt>
+    {% endfor %}
+    
+</dl>
+
+{% endblock %}
