@@ -62,4 +62,11 @@ def get_countries():
         
     countries=session.query(Users.Country, func.count(Users.Email)).filter(or_(Users.Email.in_(users_like_songs), Users.Email.in_(users_like_albums))).group_by(Users.Country).all()
     
-    return jsonify({'dati':countries})
+    #l=[]
+    res={}
+    for c in countries:
+        #dict={}
+        res[c[0]] = c[1]
+    #l.append(dict)
+    
+    return jsonify({'dati':res})
