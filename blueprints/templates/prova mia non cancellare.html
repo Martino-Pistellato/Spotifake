@@ -95,12 +95,6 @@
                 ['Greece', 2]
                 ]);
 
-                var x = {{country|tosjon}};
-
-                for (c in country){
-                    data.addRow([c[0],c[1]]);
-                }
-
                 var options = {
                     title:'Diffusione ascoltatori',
                     titleTextStyle: {
@@ -127,7 +121,42 @@
 
         $.ajax({
             type: 'get'
-            url: '{{url_for('')}}'
+            url: '{{url_for('stats_bp.get_countries')}}'
+            success: function(coso){
+                google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(drawChart);
+
+                function drawChart(){
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Paesi');
+                    data.addColumn('number', 'Numero di ascoltatori');
+                    for (var i=0; i < coso['data'].length(); i++){
+                        data.addRows([
+                            [coso['data'][i]['first'], coso['data'][i]['second']]
+                        ]);
+                    }
+
+                    var options = {
+                        title:'Diffusione ascoltatori',
+                        titleTextStyle: {
+                            color: "rgb(249, 248, 241)",
+                            fontName: "Gotham_Regular",    
+                            fontSize: 20},
+                        legendTextStyle: {
+                            color: "rgb(249, 248, 241)",
+                            fontName: "Gotham_Light",    
+                            fontSize: 15},
+                        backgroundColor: 'transparent',
+                        width:500,
+                        height:300,
+                        chartArea: {'width': '98%'},
+                    };
+                
+                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    chart.draw(data, options);
+                }
+
+            }
         })
         
         <div id="chart_div"></div>
