@@ -11,13 +11,13 @@
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
 
-            let countries = data['dati'];
+            //let countries = data['dati'];
             const table =[["Paese","Numero ascoltatori"]];
 
             function drawChart(){
                 for (const [key, value] of Object.entries(data['dati'])){
                     let row = [];
-                    row.push(hey);
+                    row.push(key);
                     row.push(value);
                     table.push(row);
                 }
@@ -29,23 +29,161 @@
                     titleTextStyle: {
                         color: "rgb(249, 248, 241)",
                         fontName: "Gotham_Regular",    
-                        fontSize: 20},
+                        fontSize: 25},
                     legendTextStyle: {
                         color: "rgb(249, 248, 241)",
                         fontName: "Gotham_Light",    
                         fontSize: 15},
                     backgroundColor: 'transparent',
-                    width:500,
-                    height:300,
+                    width:600,
+                    height:400,
                     chartArea: {'width': '98%'},
                 };
             
-                var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                var chart = new google.visualization.PieChart(document.getElementById('country_chart'));
+                chart.draw(my_data, options);
+            }
+        }
+    });
+
+    $.ajax({
+        type: 'get',
+        url: '/get_ages',
+        success: function(data){
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            
+            const table =[["Età","Numero ascoltatori"]];
+
+            function drawChart(){
+                for (const [key, value] of Object.entries(data['dati'])){
+                    let row = [];
+                    row.push(key);
+                    row.push(value);
+                    table.push(row);
+                }
+
+                var my_data = google.visualization.arrayToDataTable(table);
+
+                var options = {
+                    title:'Età ascoltatori',
+                    titleTextStyle: {
+                        color: "rgb(249, 248, 241)",
+                        fontName: "Gotham_Regular",    
+                        fontSize: 25},
+                    legendTextStyle: {
+                        color: "rgb(249, 248, 241)",
+                        fontName: "Gotham_Light",    
+                        fontSize: 15},
+                    backgroundColor: 'transparent',
+                    width:600,
+                    height:400,
+                    chartArea: {'width': '98%'},
+                };
+            
+                var chart = new google.visualization.BarChart(document.getElementById('ages_chart'));
+                chart.draw(my_data, options);
+            }
+        }
+    });
+
+    $.ajax({
+        type: 'get',
+        url: '/get_genders',
+        success: function(data){
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            
+            const table =[["Sesso","Numero ascoltatori"]];
+
+            function drawChart(){
+                for (const [key, value] of Object.entries(data['dati'])){
+                    let row = [];
+                    row.push(key);
+                    row.push(value);
+                    table.push(row);
+                }
+
+                var my_data = google.visualization.arrayToDataTable(table);
+
+                var options = {
+                    title:'Sesso ascoltatori',
+                    titleTextStyle: {
+                        color: "rgb(249, 248, 241)",
+                        fontName: "Gotham_Regular",    
+                        fontSize: 25},
+                    legendTextStyle: {
+                        color: "rgb(249, 248, 241)",
+                        fontName: "Gotham_Light",    
+                        fontSize: 15},
+                    backgroundColor: 'transparent',
+                    width:600,
+                    height:400,
+                    chartArea: {'width': '98%'},
+                    pieHole:0.4,
+                };
+            
+                var chart = new google.visualization.PieChart(document.getElementById('genders_chart'));
                 chart.draw(my_data, options);
             }
         }
     });
 </script>
 
-<div id="chart_div"></div>
+<style>
+    .my_table{
+        background-color: #1d1d1d;;
+        border-radius: 4vw;
+    }
+</style>
+
+<table style="width:98%; padding-left:1.5%;">
+    <tr>
+        <td style="width:40%; vertical-align:top;">
+            <table>
+                <tr>
+                    <td class="my_table">
+                        <div id="country_chart" > </div>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="my_table">
+                        <div id="genders_chart" > </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="my_table" style="padding-right:3%;">
+                        <ul>
+                            {% for a in my_albums %}
+                                <li> {{a}} - {{a.N_Likes}} </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td style="width:40%; vertical-align:top;">
+            <table>
+                <tr>
+                    <td class="my_table">
+                        <div id="ages_chart" > </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="my_table" style="padding-right:3%;">
+                        <ul>
+                            {% for s in my_songs %}
+                                <li> {{s}} - {{s.N_Likes}} </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
 {% endblock %}
