@@ -76,12 +76,12 @@ def edit_song(song_id):
                 restriction = False  
             
             if(song.Is_Restricted == False and restriction):
-                albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id),filter(AlbumsSongs.song_id==song_id)), Albums.Is_Restricted==False)
+                albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id==song_id)), Albums.Is_Restricted==False)
+                st = song.Duration
+                date = datetime.date(10, 10, 10)
                 for a in albums:
-                    st = song.Duration
                     at = a.Duration
-
-                    start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
+                    start = datetime.datetime.combine(date, at)
                     minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
                     end = start - minus
 
@@ -141,10 +141,11 @@ def show_my_songs():
     else:
         session = Session(bind=engine["free"])
 
-    songs = session.query(Songs).filter(Songs.Artist == current_user.Email)
+    songs_free = session.query(Songs).filter(Songs.Artist == current_user.Email, Songs.Is_Restricted == False)
+    songs_premium = session.query(Songs).filter(Songs.Artist == current_user.Email, Songs.Is_Restricted == True)
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     
-    return render_template("show_my_songs.html", songs = songs, user = current_user, playlists = playlists)
+    return render_template("show_my_songs.html", songs_free = songs_free, songs_premium = songs_premium, user = current_user, playlists = playlists)
     
 @song_bp.route('/add_to_liked_songs/<song_id>')
 @login_required # richiede autenticazione

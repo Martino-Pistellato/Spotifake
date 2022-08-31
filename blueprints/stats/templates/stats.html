@@ -5,8 +5,8 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     $.ajax({
-        type: 'get'
-        url: '{{url_for('stats_bp.get_countries')}}'
+        type: 'get',
+        url: 'blueprints/stats/routes.py/stats_bp.get_countries',
         success: function(coso){
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);

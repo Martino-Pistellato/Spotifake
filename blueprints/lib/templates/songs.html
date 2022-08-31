@@ -31,16 +31,16 @@
 <ul>
     <li><a href="{{url_for('library_bp.library')}}">Playlist</a></li>
     <li><a href="{{url_for('library_bp.albums')}}">Album</a></li>
-    <li><a href="{{url_for('library_bp.artists')}}">Artists</a></li>
     <li style="border-radius: 10vw; background-color: #1ed760;"><a>Songs</a></li>
 </ul>
 
-<div>
+<dl>
     <table style="width:98%; padding-left:2%;"> 
         <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
             <th style="width:25%; text-align:left;"> TITOLO </th>
-            <th style="width:25%;"> GENERE </th>
-            <th style="width:25%;"> ALBUM </th>
+            <th style="width:25%; transform: translateX(-40%);"> ARTISTA </th>
+            <th style="width:25%; transform: translateX(-30%);"> GENERE </th>
+            <th style="width:25%; transform: translateX(-20%);"> ALBUM </th>
             <th style="width:25%; text-align:right;"> DURATA </th>
         </tr>
         <tr>
@@ -56,5 +56,5 @@
             {% endfor %}
         </tr>
     </table>
-</div>
+</dl>
 {% endblock %}
