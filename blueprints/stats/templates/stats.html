@@ -11,8 +11,8 @@
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
 
-            let countries = data['dati']
-            const table ={["Paese","Numero ascoltatori"]}
+            let countries = data['dati'];
+            const table =[["Paese","Numero ascoltatori"]];
 
             function drawChart(){
                 for (let c in countries){

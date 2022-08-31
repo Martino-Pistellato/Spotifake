@@ -39,7 +39,7 @@ def albums():
     lst_a=[]
     for a in albums:
         artist = session.query(Users).filter(Users.Email == a.Artist).first()
-        lst_a.append([a.Name, artist.Name, a.Record_House, a.ReleaseDate, a.Duration])
+        lst_a.append([a.Name, artist.Name, a.Record_House, a.ReleaseDate, a.Duration, a.Id, artist.Email])
     return render_template("albums.html", playlists=playlists, user=current_user, albums=lst_a)
 
 @library_bp.route('/songs')
@@ -57,4 +57,9 @@ def songs():
     songs_id = session.query(Songs.Id).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email==current_user.Email)))
     albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id.in_(session.query(Songs.Id).filter(Songs.Id.in_(songs_id)))))).all()
     
-    return render_template("songs.html", playlists=playlists, user=current_user, songs=songs, albums=albums)
+    lst_s=[]
+    for s in songs:
+        artist = session.query(Users).filter(Users.Email == s.Artist).first()
+        lst_s.append([s.Name, artist.Name, s.Genre, s.Duration, s.Id])
+    
+    return render_template("songs.html", playlists=playlists, user=current_user, songs=lst_s, albums=albums)

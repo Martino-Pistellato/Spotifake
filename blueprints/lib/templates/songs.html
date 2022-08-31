@@ -37,24 +37,27 @@
 <dl>
     <table style="width:98%; padding-left:2%;"> 
         <tr style="border-bottom: 0.20vw solid rgb(219, 219, 213);">
-            <th style="width:25%; text-align:left;"> TITOLO </th>
-            <th style="width:25%; transform: translateX(-40%);"> ARTISTA </th>
-            <th style="width:25%; transform: translateX(-30%);"> GENERE </th>
-            <th style="width:25%; transform: translateX(-20%);"> ALBUM </th>
-            <th style="width:25%; text-align:right;"> DURATA </th>
+            <th style="width:20%; text-align:left;"> TITOLO </th>
+            <th style="width:20%; text-align: center;"> ARTISTA </th>
+            <th style="width:20%; text-align: center;"> GENERE </th>
+            <th style="width:20%; text-align: center;"> ALBUM </th>
+            <th style="width:20%; text-align:right;"> DURATA </th>
         </tr>
+        {% for s in songs %}
         <tr>
-            {% for s in songs %}
-            <td> {{s.Name}} </td>
-            <td style="text-align:center;"> {{s.Genre}} </td>
+            
+            <td> <a href="{{url_for('song_bp.show_song', song_id = s[4])}}"><img src="static\img\gallery.png" style="width:10% ;">{{s[0]}}</a> </td>
+            <td style="text-align:center;"> {{s[1]}} </td>
+            <td style="text-align:center;"> {{s[2]}} </td>
             <td style="text-align:center;"> 
                 {% for a in albums %}
                     {{a.Name}}     
                 {% endfor %}
             </td>
-            <td style="text-align:right;"> {{s.Duration}} </td>
-            {% endfor %}
+            <td style="text-align:right;"> {{s[3]}} </td>
+            
         </tr>
+        {% endfor %}
     </table>
 </dl>
 {% endblock %}

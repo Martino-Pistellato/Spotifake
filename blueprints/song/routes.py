@@ -193,13 +193,13 @@ def show_song(song_id):
     else:
         session = Session(bind=engine["free"])
 
-    song = session.query(Songs).filter(Songs.Id==song_id)
+    song = session.query(Songs).filter(Songs.Id==song_id).first()
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
 
     if session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id==song.Id, Users_liked_Songs.user_email==current_user.Email).first() is None:
         like = False
     else:
         like = True
-    artist = session.query(Users).filter(Users.Email==song.Artist)
+    artist = session.query(Users).filter(Users.Email==song.Artist).first()
     
     return render_template('show_song.html', user=current_user, playlists=playlists, song=song, artist_name=artist.Name, like=like)

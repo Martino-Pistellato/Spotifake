@@ -46,8 +46,7 @@
         </tr>
         {% for a in albums %}
         <tr>
-            
-            <td> {{a[0]}} </td>
+            <td> <a href="{{url_for('album_bp.show_album', album_id = a[5], artist=a[6])}}"><img src="static\img\gallery.png" style="width:10% ;">{{a[0]}}</a>  </td>
             <td style="text-align:center;"> {{a[1]}} </td>
             <td style="text-align:center;"> {{a[2]}} </td>
             <td style="text-align:center;"> {{a[3]}} </td>
