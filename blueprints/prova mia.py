@@ -1,6 +1,7 @@
 from datetime import *
 from time import *
 from models import *
+from flask import *
 
 users_like_me=session.query(Users).all()
         
@@ -14,3 +15,5 @@ print(int(medium_age))
 countries = session.query(Users.Country,func.count(Users.Email)).group_by(Users.Country).all()
 for c in countries:
     print(c[0],c[1])
+    
+print(jsonify(countries))
