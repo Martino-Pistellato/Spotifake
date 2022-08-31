@@ -15,10 +15,10 @@
             const table ={["Paese","Numero ascoltatori"]}
 
             function drawChart(){
-                for (const c in countries){
+                for (let c in countries){
                     const row = [];
-                    row.push(${c});
-                    row.push(${countries[c]});
+                    row.push(c);
+                    row.push(countries[c]);
                     table.push(row);
                 }
 
