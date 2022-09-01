@@ -8,11 +8,6 @@ from ..forms import subscribeForm, loginForm
 login_manager=LoginManager()
 login_manager.init_app(app)
 
-@login_manager.user_loader # attenzione a questo !
-def get_user_by_email(email):
-    user = session.query(Users).filter(Users.Email == email).first()
-    return Users(user.Email, user.Name, user.BirthDate, user.Country, user.Gender, user.Password, user.Profile)
-
 # Blueprint Configuration
 login_bp = Blueprint(
     'login_bp', __name__,

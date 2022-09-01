@@ -78,7 +78,6 @@ def show_playlist_content(playlist_id):
     pl = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl.Id))).all()
     
-    #songs = session.query(PlaylistsSongs).filter(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist.Id))
     
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     n_songs = len(songs)

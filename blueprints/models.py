@@ -33,8 +33,8 @@ class Users(Base, UserMixin):
     Password = Column(String, nullable = False)
     
     playlists = relationship('Playlists')
-    liked_albums = relationship('Albums', secondary='Users_liked_Albums')#, back_populates="liked_users"
-    liked_songs =  relationship('Songs', secondary='Users_liked_Songs')#, back_populates="liked_users"
+    liked_albums = relationship('Albums', secondary='Users_liked_Albums')
+    liked_songs =  relationship('Songs', secondary='Users_liked_Songs')
 
     __mapper_args__ = {'polymorphic_on': Profile, 'polymorphic_identity': 'Free'}
     
@@ -152,8 +152,8 @@ class Profiles(Base):
     
     Name = Column(String, CheckConstraint(or_(column('Name') == 'Free', column('Name') == 'Premium', column('Name') == 'Artist')), primary_key = True)
     
-   # actions = relationship('Actions', secondary = 'ProfilesActions', back_populates="profiles" )
-    users = relationship('Users') #cascade="all, delete, delete-orphan"
+  
+    users = relationship('Users') 
     
     def __repr__(self):
         return "<Profiles(Name='%s')>" % (self.Name)
@@ -172,7 +172,7 @@ class Songs(Base):
     Artist = Column(String, ForeignKey('Artists.Email', ondelete="CASCADE", onupdate="CASCADE"))
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
-    #liked_users = relationship('Users', secondary= 'Users_liked_Songs', back_populates="liked_songs")
+  
     playlists = relationship('Playlists', secondary = 'PlaylistsSongs', back_populates="songs")
     albums = relationship('Albums', secondary = 'AlbumsSongs', back_populates="songs" )
 
@@ -218,7 +218,7 @@ class Albums(Base):
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
-    #liked_users = relationship('Users', secondary= 'Users_liked_Albums', back_populates="liked_albums")
+  
     
     
     def __repr__(self):
@@ -265,7 +265,7 @@ class Playlists(Base):
     Duration = Column(Time)
     User = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"))
 
-    #users = relationship('Users', secondary = 'PlaylistsUsers', back_populates="playlists" )
+ 
     songs = relationship('Songs', secondary = 'PlaylistsSongs', back_populates="playlists" )
     
     def __repr__(self):
@@ -333,16 +333,6 @@ class PlaylistsSongs(Base):
     
     def __repr__(self):
         return "<PlaylistsSongs(playlist_id='%d', song_id='%d')>" % (self.playlist_id, self.song_id) 
-    
-#class PlaylistsUsers(Base):    
-#    __tablename__ = "PlaylistsUsers"
-    
-#    playlist_id = Column(Integer, ForeignKey('Playlists.Id', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-#    user_email = Column(String, ForeignKey('Users.Email', ondelete="CASCADE", onupdate="CASCADE"), primary_key = True)
-    
-#    def __repr__(self):
-#        return "<PlaylistsUsers(playlist_id='%d', user_email='%s')>" % (self.playlist_id, self.user_email) 
-
 
 
 ####################################################################################
