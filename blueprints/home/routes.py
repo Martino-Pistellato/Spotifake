@@ -24,13 +24,13 @@ def home():
         session = Session(bind=engine["free"])   
     
     if (current_user.Profile == "Free"):
-        liked_genres = session.query(Songs.Genre).filter(and_(Songs.Is_Restricted==False,Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email)))).group_by(Songs.Genre).order_by(func.count(Songs.Id.desc())).all()
+        liked_genres = session.query(Songs.Genre).filter(and_(Songs.Is_Restricted==False,Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email)))).group_by(Songs.Genre).order_by(func.count(Songs.Id).desc()).all()
         
         not_liked_songs = session.query(Songs).filter(and_(Songs.Is_Restricted==False,Songs.Id.not_in(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email)))).all()
         
         most_liked_songs = session.query(Songs).filter(Songs.Is_Restricted==False).order_by(Songs.N_Likes.desc()).all()
     else:
-        liked_genres = session.query(Songs.Genre).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).group_by(Songs.Genre).order_by(func.count(Songs.Id.desc())).all()
+        liked_genres = session.query(Songs.Genre).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).group_by(Songs.Genre).order_by(func.count(Songs.Id).desc()).all()
         
         not_liked_songs = session.query(Songs).filter(Songs.Id.not_in(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).all()
         
