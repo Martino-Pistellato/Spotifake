@@ -5,11 +5,16 @@ from wtforms.validators import DataRequired, Email, Length, ValidationError
 import datetime
 from datetime import date
 
+
+def len_name_user(form, field):
+    if(len(field.data) > 20):
+        raise ValidationError('Il tuo nome utente deve avere una lunghezza massima di 20 caratteri')
+
 class subscribeForm(FlaskForm):
     name = StringField(
         'Nome',
         [
-            DataRequired(message="Indica un nome utente")
+            DataRequired(message="Indica un nome utente"), len_name_user
         ]
     )
     email = StringField(
@@ -83,11 +88,15 @@ def time_check_song(form, field):
     elif(t.hour == 0 and t.minute == 0):
         raise ValidationError('Un brano deve avere una durata minima di 1 minuto')
 
+def len_name(form, field):
+    if(len(field.data) > 10):
+        raise ValidationError('Il titolo di un brano deve avere una lunghezza massima di 10 caratteri')
+
 class upload_SongForm(FlaskForm):
     name = StringField(
         'Nome',
         [
-            DataRequired(message="Indica il nome della canzone")
+            DataRequired(message="Indica il nome della canzone"), len_name
         ]
     )
     time = TimeField(
@@ -130,7 +139,7 @@ class upload_AlbumForm(FlaskForm):
     name = StringField(
         'Nome',
         [
-            DataRequired(message="Indica il nome dell'album")
+            DataRequired(message="Indica il nome dell'album"), len_name
         ]
     )
     releaseDate = DateField(

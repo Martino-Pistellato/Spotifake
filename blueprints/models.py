@@ -25,7 +25,7 @@ class Users(Base, UserMixin):
     __tablename__ = "Users"
   
     Email = Column(String, CheckConstraint(column('Email').like('%@%')), primary_key = True) 
-    Name = Column(String, nullable = False)
+    Name = Column(String(20), nullable = False)
     BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2022' )), nullable = False)
     Country = Column(String, nullable = False)
     Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F')), nullable = False) 
@@ -164,7 +164,7 @@ class Profiles(Base):
 class Songs(Base):
     __tablename__ = "Songs"
     
-    Name = Column(String, nullable = False)
+    Name = Column(String(10), nullable = False)
     Duration = Column(Time, CheckConstraint(and_(column('Duration') >= '00:01:00', column('Duration') <= '00:30:00' )))
     Genre = Column(String)
     Id = Column(Integer, primary_key = True)
@@ -208,7 +208,7 @@ class Songs(Base):
 class Albums(Base):
     __tablename__ = "Albums"
 
-    Name = Column(String)
+    Name = Column(String(10), nullable = False)
     ReleaseDate = Column(Date)
     Duration = Column(Time, CheckConstraint(and_(column('Duration') >= '00:00:00', column('Duration') <= '01:30:00' )))
     Id = Column(Integer, primary_key = True)

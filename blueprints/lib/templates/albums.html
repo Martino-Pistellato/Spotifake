@@ -46,11 +46,11 @@
         </tr>
         {% for a in albums %}
         <tr>
-            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;"> <a href="{{url_for('album_bp.show_album', album_id = a[5], artist=a[6])}}"><img src="static\img\gallery.png" style="width:10% ;">{{a[0]}}</a>  </td>
-            <td style="text-align:center;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;"> <a href="{{url_for('artist_bp.show_artist', artist_email=a[6])}}">{{a[1]}} </a> </td>
-            <td style="text-align:center;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;"> {{a[2]}} </td>
-            <td style="text-align:center;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;"> {{a[3]}} </td>
-            <td style="text-align:right;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;"> {{a[4]}} </td>
+            <td> <a href="{{url_for('album_bp.show_album', album_id = a[5], artist=a[6])}}"><img src="static\img\gallery.png" style="width:10% ;">{{a[0]}}</a>  </td>
+            <td style="text-align:center;"> <a href="{{url_for('artist_bp.show_artist', artist_email=a[6])}}">{{a[1]}} </a> </td>
+            <td style="text-align:center;"> {{a[2]}} </td>
+            <td style="text-align:center;"> {{a[3]}} </td>
+            <td style="text-align:right;"> {{a[4]}} </td>
             
         </tr>
         {% endfor %}

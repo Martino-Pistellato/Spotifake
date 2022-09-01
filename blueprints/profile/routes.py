@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
@@ -48,13 +48,18 @@ def update_info():
     else:
         session = Session(bind=engine["free"])
 
-    if request.method == 'POST':
-        name = request.form["name"]
-        if(name is not None):
-            user = session.query(Users).filter(Users.Email == current_user.Email).first()
-            Users.update_user(user, name, session)
-            return redirect(url_for('profile_bp.profile'))
-    return redirect(url_for("profile_bp.update"))
+    try:
+        if request.method == 'POST':
+            name = request.form["name"]
+            if(name is not None):
+                user = session.query(Users).filter(Users.Email == current_user.Email).first()
+                Users.update_user(user, name, session)
+                return redirect(url_for('profile_bp.profile'))
+        return redirect(url_for("profile_bp.update"))
+    except exc.SQLAlchemyError as err:
+        session.rollback()
+        flash('Il tuo nome utente deve avere una lunghezza massima di 20 caratteri', 'error')
+        return redirect(url_for("profile_bp.update"))
 
 @profile_bp.route('/delete_profile')
 @login_required

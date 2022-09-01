@@ -10,8 +10,7 @@
                 <figure style="display:inline-block; width:15%;">
                     <img src="static\img\gallery.png" style="width:100%;">
                     <figcaption style="text-align:center;">
-                        <span  style="display:inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;">{{s.Name}}</span>  
-                        
+                        {{s.Name}}
                     </figcaption>
                     <figcaption style="text-align:center;">
                         <a href="{{url_for('song_bp.delete_song',song_id=s.Id)}}">
@@ -35,8 +34,7 @@
                 <figure style="display:inline-block; width:15%;">
                     <img src="static\img\gallery.png" style="width:100%;">
                     <figcaption style="text-align:center;">
-                        <span  style="display:inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;">{{s.Name}}</span>  
-                         
+                        {{s.Name}}   
                     </figcaption>
                     <figcaption style="text-align:center;">
                         <a href="{{url_for('song_bp.delete_song',song_id=s.Id)}}">
