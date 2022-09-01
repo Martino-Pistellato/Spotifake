@@ -35,7 +35,7 @@
                         fontName: "Gotham_Light",    
                         fontSize: 15},
                     backgroundColor: 'transparent',
-                    width:600,
+                    width:500,
                     height:400,
                     chartArea: {'width': '98%'},
                 };
@@ -77,12 +77,12 @@
                         fontName: "Gotham_Light",    
                         fontSize: 15},
                     backgroundColor: 'transparent',
-                    width:600,
+                    width:500,
                     height:400,
                     chartArea: {'width': '98%'},
                 };
             
-                var chart = new google.visualization.BarChart(document.getElementById('ages_chart'));
+                var chart = new google.visualization.PieChart(document.getElementById('ages_chart'));
                 chart.draw(my_data, options);
             }
         }
@@ -119,7 +119,7 @@
                         fontName: "Gotham_Light",    
                         fontSize: 15},
                     backgroundColor: 'transparent',
-                    width:600,
+                    width:500,
                     height:400,
                     chartArea: {'width': '98%'},
                     pieHole:0.4,
@@ -144,21 +144,22 @@
         <td style="width:40%; vertical-align:top;">
             <table>
                 <tr>
-                    <td class="my_table">
+                    <td class="my_table" style="padding-left: 2%;">
                         <div id="country_chart" > </div>
                     </td>
                     
                 </tr>
                 <tr>
-                    <td class="my_table">
+                    <td class="my_table" style="padding-left: 2%;">
                         <div id="genders_chart" > </div>
                     </td>
                 </tr>
                 <tr>
                     <td class="my_table" style="padding-right:3%;">
+                        <h2 style="padding-left: 2%;">I tuoi album</h2>
                         <ul>
                             {% for a in my_albums %}
-                                <li> {{a}} - {{a.N_Likes}} </li>
+                                <li> {{a.Name}} - {{a.N_Likes}} like </li>
                             {% endfor %}
                         </ul>
                     </td>
@@ -168,15 +169,16 @@
         <td style="width:40%; vertical-align:top;">
             <table>
                 <tr>
-                    <td class="my_table">
+                    <td class="my_table" style="padding-left: 2%;">
                         <div id="ages_chart" > </div>
                     </td>
                 </tr>
                 <tr>
                     <td class="my_table" style="padding-right:3%;">
+                        <h2 style="padding-left: 2%;">I tuoi brani</h2>
                         <ul>
                             {% for s in my_songs %}
-                                <li> {{s}} - {{s.N_Likes}} </li>
+                                <li> {{s.Name}} - {{s.N_Likes}} like </li>
                             {% endfor %}
                         </ul>
                     </td>

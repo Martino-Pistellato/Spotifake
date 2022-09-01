@@ -28,7 +28,33 @@
   }
 </style>
 
-<h1> Aggiorna le informazioni del tuo album </h1> 
+<h1> Aggiorna le informazioni del tuo album </h1>
+
+
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+  {% if errors %}
+    <div id="myErrors" class="alert-message block-message error" style="text-align: center; background-color: #1d1d1d; border-radius: 5vw;">
+          <ul>
+              {%- for msg in errors %}
+                <li style="text-align: center;">{{ msg }}</li>
+              {% endfor -%}
+          </ul>
+          <a id="closeButton" class="submit_btn" href="#" onclick="myFunction()" style="text-align: center; padding: 0 0.8vw;">Ok</a>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<script>
+  function myFunction() {
+    var x = document.getElementById("myErrors");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+</script>
+
 <table>
   <tr>
     <td style="vertical-align:top; width:40%;">

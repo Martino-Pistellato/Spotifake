@@ -58,23 +58,23 @@ def get_ages():
     my_liked_albums=session.query(Albums.Id).filter(and_(Albums.Artist==current_user.Email,Albums.Id.in_(all_liked_albums)))
     users_like_albums=session.query(Users.Email).filter(Users.Email.in_(session.query(Users_liked_Albums.user_email).filter(Users_liked_Albums.album_id.in_(my_liked_albums))))
     
-    users_age=session.query(Users.BirthDate.year).filter(or_(Users.Email.in_(users_like_songs), Users.Email.in_(users_like_albums))).all()
+    users=session.query(Users).filter(or_(Users.Email.in_(users_like_songs), Users.Email.in_(users_like_albums))).all()
     
     medium_age = 0
-    for x in users_age:
-        medium_age += 2022-x
+    for x in users:
+        medium_age += 2022-x.BirthDate.year
     
-    if(len(users_age)>0):
-        medium_age /= len(users_age)
+    if(len(users)>0):
+        medium_age /= len(users)
         
     
     
     res={}
-    for age in users_age:
-        if 2022-x not in res:
-            res[2022-x] = 1
+    for age in users:
+        if 2022-age.BirthDate.year not in res:
+            res[2022-age.BirthDate.year] = 1
         else:
-            res[2022-x] += 1
+            res[2022-age.BirthDate.year] += 1
     
     
     return jsonify({'dati':res})
