@@ -76,10 +76,12 @@ class loginForm(FlaskForm):
     subscribe = SubmitField('Subscribe')
 
 
-def time_check(form, field):
+def time_check_song(form, field):
     t = field.data
-    if (t.hour > 0 or (t.minute >= 30 and t.second > 0)):
-        raise ValidationError('Un brano può avere una durata massima di 30 minuti')
+    if (t.hour > 0 or t.minute > 30 or (t.minute == 30 and t.second > 0)):
+        raise ValidationError('Un brano deve avere una durata massima di 30 minuti')
+    elif(t.hour == 0 and t.minute == 0):
+        raise ValidationError('Un brano deve avere una durata minima di 1 minuto')
 
 class upload_SongForm(FlaskForm):
     name = StringField(
@@ -91,7 +93,7 @@ class upload_SongForm(FlaskForm):
     time = TimeField(
         'Durata',
         [
-            DataRequired(message="Indica la durata della canzone"), time_check
+            DataRequired(message="Indica la durata della canzone"), time_check_song
         ],
         format='%H:%M:%S',
         render_kw={"step": "1"},

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask import current_app as app
 from flask_login import *
 from sqlalchemy import exc
@@ -54,16 +54,24 @@ def subscribe():
         gender = form.gender.data
         country = form.country.data
         birthday = form.birthday.data
-        if(profile=='Artist'):
-            artist = Artists(email, name, birthday, country, gender, encrypted_pwd, profile)
-            Artists.create_artist(artist)
-        elif(profile=='Premium'):
-            premium = Premium(email, name, birthday, country, gender, encrypted_pwd, profile)
-            Premium.create_premium(premium)
-        else:
-            user = Users(email, name, birthday, country, gender, encrypted_pwd, profile)
-            Users.create_user(user)
-        return redirect(url_for('login_bp.login'))
+
+        try:
+            if(profile=='Artist'):
+                artist = Artists(email, name, birthday, country, gender, encrypted_pwd, profile)
+                Artists.create_artist(artist)
+            elif(profile=='Premium'):
+                premium = Premium(email, name, birthday, country, gender, encrypted_pwd, profile)
+                Premium.create_premium(premium)
+            else:
+                user = Users(email, name, birthday, country, gender, encrypted_pwd, profile)
+                Users.create_user(user)
+            return redirect(url_for('login_bp.login'))
+            
+        except exc.SQLAlchemyError as err:
+            session.rollback()
+            flash("L'indirizzo "+str(email)+" è già associato ad un altro account", 'error')
+            return render_template('subscribe.html',form=form)
+
     return render_template('subscribe.html',form=form)
 
 

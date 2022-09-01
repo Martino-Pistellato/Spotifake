@@ -33,8 +33,8 @@ class Users(Base, UserMixin):
     Password = Column(String, nullable = False)
     
     playlists = relationship('Playlists')
-    liked_albums = relationship('Albums', secondary='Users_liked_Albums', back_populates="liked_users")
-    liked_songs =  relationship('Songs', secondary='Users_liked_Songs', back_populates="liked_users")
+    liked_albums = relationship('Albums', secondary='Users_liked_Albums')#, back_populates="liked_users"
+    liked_songs =  relationship('Songs', secondary='Users_liked_Songs')#, back_populates="liked_users"
 
     __mapper_args__ = {'polymorphic_on': Profile, 'polymorphic_identity': 'Free'}
     
@@ -58,12 +58,9 @@ class Users(Base, UserMixin):
         if(self.Profile == 'Free'):
             session = Session(bind=engine["free"])
 
-        try:
-            session.add(self)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()   
-            print(err)
+        session.add(self)
+        session.commit()
+        
 
     def get_id(self):
         return self.Email
@@ -113,12 +110,9 @@ class Premium(Users):
         if(self.Profile == 'Free'):
             session = Session(bind=engine["free"])
 
-        try:
-            session.add(self)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()   
-            print(err)
+        session.add(self)
+        session.commit()
+        
 
 class Artists(Users):
     __mapper_args__ = {'polymorphic_identity': 'Artist'}
@@ -140,28 +134,18 @@ class Artists(Users):
         if(self.Profile == 'Free'):
             session = Session(bind=engine["free"])
 
-        try:
-            session.add(self)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()   
-            print(err)
+        session.add(self)
+        session.commit()
+        
 
     def add_song_if_artist(self, song, session):
-        try:
-            self.songs.append(song)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()
-            print(err)
+        self.songs.append(song)
+        session.commit()
 
-    def add_album_if_artist(self, album, session):
-        try:    
-            self.albums.append(album)
-            session.commit()
-        except exc.SQLAlchemyError as err:
-            session.rollback()
-            print(err)
+    def add_album_if_artist(self, album, session):    
+        self.albums.append(album)
+        session.commit()
+        
 
 class Profiles(Base):
     __tablename__ = "Profiles"
@@ -181,14 +165,14 @@ class Songs(Base):
     __tablename__ = "Songs"
     
     Name = Column(String, nullable = False)
-    Duration = Column(Time, CheckConstraint(and_(column('Duration') >= '00:00:00', column('Duration') <= '00:30:00' )))
+    Duration = Column(Time, CheckConstraint(and_(column('Duration') >= '00:01:00', column('Duration') <= '00:30:00' )))
     Genre = Column(String)
     Id = Column(Integer, primary_key = True)
     Is_Restricted = Column(Boolean, nullable = False)
     Artist = Column(String, ForeignKey('Artists.Email', ondelete="CASCADE", onupdate="CASCADE"))
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
-    liked_users = relationship('Users', secondary= 'Users_liked_Songs', back_populates="liked_songs")
+    #liked_users = relationship('Users', secondary= 'Users_liked_Songs', back_populates="liked_songs")
     playlists = relationship('Playlists', secondary = 'PlaylistsSongs', back_populates="songs")
     albums = relationship('Albums', secondary = 'AlbumsSongs', back_populates="songs" )
 
@@ -234,7 +218,7 @@ class Albums(Base):
     N_Likes = Column(Integer, CheckConstraint(column('N_Likes') >= 0))
     
     songs = relationship('Songs', secondary = 'AlbumsSongs', back_populates="albums" )
-    liked_users = relationship('Users', secondary= 'Users_liked_Albums', back_populates="liked_albums")
+    #liked_users = relationship('Users', secondary= 'Users_liked_Albums', back_populates="liked_albums")
     
     
     def __repr__(self):

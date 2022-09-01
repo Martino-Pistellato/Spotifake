@@ -52,6 +52,30 @@
       <img src="..\..\static\img\logo.png" style="width:15%;">
       <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
   </div>
+  
+  {% with errors = get_flashed_messages(category_filter=["error"]) %}
+  {% if errors %}
+    <div id="myErrors" class="alert-message block-message error" style="text-align: center; background-color: #1d1d1d; border-radius: 5vw;">
+          <ul>
+              {%- for msg in errors %}
+                <li style="text-align: center;">{{ msg }}</li>
+              {% endfor -%}
+          </ul>
+          <a id="closeButton" class="submit_btn" href="#" onclick="myFunction()" style="text-align: center; padding: 0 0.8vw;">Ok</a>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<script>
+  function myFunction() {
+    var x = document.getElementById("myErrors");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+</script>
 
   <h2 class="title" style="text-align:center;">Sign up</h2>
 

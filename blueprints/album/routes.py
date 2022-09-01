@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask import current_app as app
 from blueprints.models import *
 from flask_login import *
@@ -23,26 +23,31 @@ def create_album():
     else:
         session = Session(bind=engine["free"])
 
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    
-    form = upload_AlbumForm()
+    try:
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         
-    if form.validate_on_submit():
-        name = form.name.data
-        date = form.releaseDate.data
-        rec_h = form.recordHouse.data
-        if form.type.data == 'Premium':
-            restriction = True
-        else:
-            restriction = False
-                
-        album = Albums(name, date, rec_h, current_user.Email, restriction)
-        artist = session.query(Artists).filter(Artists.Email == current_user.Email).first()
-        Albums.create_album(album, session)
-        Artists.add_album_if_artist(artist, album, session)
+        form = upload_AlbumForm()
             
-        return redirect(url_for("album_bp.show_songs_addable_album", album_id = album.Id))    
-    return render_template('create_album.html',form=form, user=current_user, playlists=playlists)
+        if form.validate_on_submit():
+            name = form.name.data
+            date = form.releaseDate.data
+            rec_h = form.recordHouse.data
+            if form.type.data == 'Premium':
+                restriction = True
+            else:
+                restriction = False
+                    
+            album = Albums(name, date, rec_h, current_user.Email, restriction)
+            artist = session.query(Artists).filter(Artists.Email == current_user.Email).first()
+            Albums.create_album(album, session)
+            Artists.add_album_if_artist(artist, album, session)
+                
+            return redirect(url_for("album_bp.show_songs_addable_album", album_id = album.Id)) 
+        return render_template('create_album.html',form=form, user=current_user, playlists=playlists) 
+    except exc.SQLAlchemyError as err:
+        session.rollback()
+        flash(err.orig.diag.message_primary, 'error')
+        return render_template('create_album.html',form=form, user=current_user, playlists=playlists)
     #return redirect(url_for("home_bp.home"))
 
 @album_bp.route('/show_songs_addable_album/<album_id>', methods=['GET', 'POST'])
@@ -79,20 +84,28 @@ def add_songs_to_album(song_id, album_id):
     else:
         session = Session(bind=engine["free"])
 
-    song = session.query(Songs).filter(Songs.Id == song_id).first()
-    album = session.query(Albums).filter(Albums.Id == album_id).first()
-        
-    Albums.add_song_to_album(album, song, session)
-    st = song.Duration
-    at = album.Duration
-    
-    start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
-    add = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
-    end = start + add
-     
-    Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted, session)
+    try:
 
-    return redirect(url_for("album_bp.show_songs_addable_album", album_id=album.Id))
+        song = session.query(Songs).filter(Songs.Id == song_id).first()
+        album = session.query(Albums).filter(Albums.Id == album_id).first()
+            
+        
+        st = song.Duration
+        at = album.Duration
+        
+        start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
+        add = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+        end = start + add
+        
+        Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted, session)
+        Albums.add_song_to_album(album, song, session)
+
+    except exc.SQLAlchemyError as err:
+        session.rollback()
+        flash('Un album può avere una durata massima di 1:30:00', 'error')
+        flash('Aggiungendo questo brano il tuo album avrebbe una durata di ' + str(end.time()), 'error')
+    finally:
+        return redirect(url_for("album_bp.show_songs_addable_album", album_id=album.Id))
 
 @album_bp.route('/show_my_albums')
 @login_required
@@ -133,42 +146,45 @@ def edit_album(album_id):
     else:
         session = Session(bind=engine["free"])
 
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    album = session.query(Albums).filter(Albums.Id == album_id).first()
-    
-    if album.Is_Restricted == True:
-        restriction = 'Premium'
-    else:
-        restriction = 'Free'
-
-    form = upload_AlbumForm(name=album.Name, releaseDate=album.ReleaseDate, recordHouse=album.Record_House, type = restriction)
-    
-    if form.validate_on_submit():
-        name = form.name.data
-        releaseDate = form.releaseDate.data
-        recordHouse = form.recordHouse.data
-        if form.type.data == 'Premium':
-            restriction = True
+    try:
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        album = session.query(Albums).filter(Albums.Id == album_id).first()
+        
+        if album.Is_Restricted == True:
+            restriction = 'Premium'
         else:
-            restriction = False
-        
-        at = album.Duration
-        start = datetime.datetime(10,10,10, hour=at.hour, minute=at.minute, second=at.second)
-        
-        if(album.Is_Restricted == True and restriction==False):
-            songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id==album_id)), Songs.Is_Restricted==True)
-            for s in songs:
-                st = s.Duration
-                minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
-                start -= minus
+            restriction = 'Free'
 
-                Albums.remove_song(album, s.Id, session)
-            
-        Albums.update_album(album_id, name, releaseDate, recordHouse, start.time(), restriction, session)
-            
-        return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists)) 
+        form = upload_AlbumForm(name=album.Name, releaseDate=album.ReleaseDate, recordHouse=album.Record_House, type = restriction)
         
-    return render_template("edit_album.html", user=current_user, playlists=playlists, id=album_id, form=form)
+        if form.validate_on_submit():
+            name = form.name.data
+            releaseDate = form.releaseDate.data
+            recordHouse = form.recordHouse.data
+            if form.type.data == 'Premium':
+                restriction = True
+            else:
+                restriction = False
+            
+            at = album.Duration
+            start = datetime.datetime(10,10,10, hour=at.hour, minute=at.minute, second=at.second)
+            
+            if(album.Is_Restricted == True and restriction==False):
+                songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id==album_id)), Songs.Is_Restricted==True)
+                for s in songs:
+                    st = s.Duration
+                    minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
+                    start -= minus
+
+                    Albums.remove_song(album, s.Id, session)
+                
+            Albums.update_album(album_id, name, releaseDate, recordHouse, start.time(), restriction, session)
+            return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists))
+        return render_template("edit_album.html", user=current_user, playlists=playlists, id=album_id, form=form)
+    except exc.SQLAlchemyError as err:
+        session.rollback()
+        flash(err.orig.diag.message_primary, 'error')   
+        return render_template("edit_album.html", user=current_user, playlists=playlists, id=album_id, form=form)
     
 
 @album_bp.route('/show_album/<album_id>/<artist>')
@@ -215,10 +231,8 @@ def remove_song_from_album(song_id, album_id):
     minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
     end = start - minus
 
-    Albums.remove_song(album, song_id, session)
-
     Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted, session)
-
+    Albums.remove_song(album, song_id, session)
 
     return redirect(url_for("album_bp.show_album", album_id=album.Id, artist=current_user.Email))
 

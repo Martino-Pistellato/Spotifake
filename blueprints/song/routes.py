@@ -1,5 +1,5 @@
 from re import template
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import *
 from blueprints.models import *
 import datetime
@@ -43,7 +43,7 @@ def upload_song():
         return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     except exc.SQLAlchemyError as err:
         session.rollback()
-        print(err)
+        flash(err.orig.diag.message_primary, 'error') 
         return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     
 @song_bp.route('/edit_song/<song_id>', methods=['GET', 'POST'])
@@ -96,7 +96,7 @@ def edit_song(song_id):
         return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
     except exc.SQLAlchemyError as err:
         session.rollback()
-        print(err)
+        flash(err.orig.diag.message_primary, 'error') 
         return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
             
     

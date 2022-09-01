@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
@@ -23,18 +23,27 @@ def create_playlist():
         session = Session(bind=engine["premium"])
     else:
         session = Session(bind=engine["free"])
-
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    form = upload_PlaylistForm()
     
-    if form.validate_on_submit():
-        user = session.query(Users).filter(Users.Email == current_user.Email).first()
-        playlist = Playlists(form.name.data)
-        Playlists.create_playlist(playlist, session)
-        Users.add_playlist(user, playlist, session)
+    try:
+
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        form = upload_PlaylistForm()
         
-        return redirect(url_for("playlist_bp.show_songs_addable", playlist_id=playlist.Id))
-    return render_template('playlist.html', form=form, user=current_user, playlists=playlists)
+        if form.validate_on_submit():
+            user = session.query(Users).filter(Users.Email == current_user.Email).first()
+            playlist = Playlists(form.name.data)
+            Playlists.create_playlist(playlist, session)
+            Users.add_playlist(user, playlist, session)
+            
+            return redirect(url_for("playlist_bp.show_songs_addable", playlist_id=playlist.Id))
+        return render_template('playlist.html', form=form, user=current_user, playlists=playlists)
+    
+    except exc.SQLAlchemyError as err:
+        session.rollback()
+        flash(err.orig.diag.message_primary, 'error')
+        return render_template('playlist.html', form=form, user=current_user, playlists=playlists)
+
+
 
 @playlist_bp.route('/show_songs_addable/<playlist_id>', methods=['GET', 'POST'])
 @login_required
@@ -85,7 +94,7 @@ def add_songs(song_id, playlist_id):
         session = Session(bind=engine["premium"])
     else:
         session = Session(bind=engine["free"])
-
+    
     song = session.query(Songs).filter(Songs.Id == song_id).first()
     playlist = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
        
@@ -126,17 +135,23 @@ def edit_playlist(pl_id):
     else:
         session = Session(bind=engine["free"])
 
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    pl = session.query(Playlists).filter(Playlists.Id == pl_id).first()
-    
-    form = upload_PlaylistForm(name=pl.Name)
-    
-    if form.validate_on_submit():
-        Playlists.update_playlist(pl_id, form.name.data, pl.Duration, session)
-                    
-        return redirect(url_for("library_bp.library"))
+    try:
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        pl = session.query(Playlists).filter(Playlists.Id == pl_id).first()
         
-    return render_template("edit_playlist.html", user=current_user, playlists=playlists, name=pl.Name, id=pl_id, form=form)
+        form = upload_PlaylistForm(name=pl.Name)
+        
+        if form.validate_on_submit():
+            Playlists.update_playlist(pl_id, form.name.data, pl.Duration, session)
+                        
+            return redirect(url_for("library_bp.library"))
+            
+        return render_template("edit_playlist.html", user=current_user, playlists=playlists, name=pl.Name, id=pl_id, form=form)
+
+    except exc.SQLAlchemyError as err:
+        session.rollback()
+        flash(err.orig.diag.message_primary, 'error')
+        return render_template("edit_playlist.html", user=current_user, playlists=playlists, name=pl.Name, id=pl_id, form=form)
 
 
 @playlist_bp.route('/remove_song/<song_id>/<pl_id>', methods=['GET', 'POST'])
@@ -159,7 +174,7 @@ def remove_song(song_id, pl_id):
 
     start = datetime.datetime(10, 10, 10, hour=pt.hour, minute=pt.minute, second=pt.second)
     minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
-    end = start + minus
+    end = start - minus
 
     Playlists.update_playlist(pl_id, playlist.Name, end.time(), session)
 

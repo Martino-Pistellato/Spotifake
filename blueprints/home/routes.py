@@ -25,10 +25,10 @@ def home():
         
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)   
     
-    liked_genres = session.query(Songs.Genre).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).group_by(Songs.Genre).order_by(func.count(Songs.Id.desc())).all()
+    liked_genres = session.query(Songs.Genre).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).group_by(Songs.Genre).order_by(func.count(Songs.Id).desc()).all()
     
     if (len(liked_genres) == 0):
-        most_liked_songs=session.query(Songs).filter(songs.Id.in_(session.query(Users_liked_Songs.song_id))).order_by(Songs.N_Likes.desc()).all()
+        most_liked_songs=session.query(Songs).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id))).order_by(Songs.N_Likes.desc()).all()
         res=[]
         for i in range(10):
             if (len(most_liked_songs) > 0):
