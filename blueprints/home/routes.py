@@ -26,15 +26,11 @@ def home():
     if (current_user.Profile == "Free"):
         liked_genres = session.query(Songs.Genre).filter(and_(Songs.Is_Restricted==False,Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email)))).group_by(Songs.Genre).order_by(func.count(Songs.Id).desc()).all()
         
-        not_liked_songs = session.query(Songs).filter(and_(Songs.Is_Restricted==False,Songs.Id.not_in(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email)))).all()
-        
-        most_liked_songs = session.query(Songs).filter(Songs.Is_Restricted==False).order_by(Songs.N_Likes.desc()).all()
+        not_liked_songs = session.query(Songs).filter(and_(Songs.Is_Restricted==False,Songs.Id.not_in(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email)))).order_by(Songs.N_Likes.desc()).all()
     else:
         liked_genres = session.query(Songs.Genre).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).group_by(Songs.Genre).order_by(func.count(Songs.Id).desc()).all()
         
-        not_liked_songs = session.query(Songs).filter(Songs.Id.not_in(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).all()
-        
-        most_liked_songs = session.query(Songs).order_by(Songs.N_Likes.desc()).all()
+        not_liked_songs = session.query(Songs).filter(Songs.Id.not_in(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email == current_user.Email))).order_by(Songs.N_Likes.desc()).all()
         
     res=[]
     if (len(liked_genres) > 0):
@@ -47,10 +43,10 @@ def home():
                             not_liked_songs.remove(y)
     if(len(res) < 5 ):
         for i in range(len(res), 5):
-            if (len(most_liked_songs) > 0):
-                x = most_liked_songs[0]
+            if (len(not_liked_songs) > 0):
+                x = not_liked_songs[0]
                 res.append(x)
-                most_liked_songs.remove(x)
+                not_liked_songs.remove(x)
     
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     return render_template("home.html", user=current_user, playlists=playlists, consigli=res)
