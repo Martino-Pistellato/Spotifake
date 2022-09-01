@@ -11,14 +11,14 @@
     <h1 style="text-align: center;"> Album </h1>
     {% for a in albums %}
         <div>
-            <dt style="display: inline">
+            <dt style="display: inline; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;">
                 <img src="static\img\gallery.png" style="width:3%;"> <a href="{{url_for('album_bp.show_album',album_id=a[3], artist=a[5])}}">{{a[0]}}</a> - {{a[1]}} - <a href="{{url_for('artist_bp.show_artist', artist_email=a[5])}}">{{a[2]}}</a>
                 {% if a[4] == False %}
-                    <a href="{{url_for('album_bp.add_to_liked_albums',album_id=a[3])}}">
+                    <a href="{{url_for('album_bp.add_to_liked_albums',album_id=a[3], page=1)}}">
                         <img src="static\img\like.png" style="width:5%; float: right; padding-right: 2%;">
                     </a>
                 {% else %}
-                    <a href="{{url_for('album_bp.remove_from_liked_albums',album_id=a[3])}}">
+                    <a href="{{url_for('album_bp.remove_from_liked_albums',album_id=a[3], page=1)}}">
                         <img src="static\img\dislike.png" style="width:5%; float: right; padding-right: 2%;">
                     </a>
                 {% endif %}
@@ -31,14 +31,14 @@
     <h1 style="text-align: center;"> Brani </h1>
     {% for s in songs %}
         <div>
-            <dt style="display: inline">
+            <dt style="display: inline; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;">
                 <img src="static\img\gallery.png" style="width:3%;"> <a href="{{url_for('song_bp.show_song',song_id=s[3])}}">{{s[0]}}</a> - {{s[1]}} - <a href="{{url_for('artist_bp.show_artist', artist_email=s[5])}}">{{s[2]}}</a> 
                 {% if s[4] == False %}
-                    <a href="{{url_for('song_bp.add_to_liked_songs',song_id=s[3])}}">
+                    <a href="{{url_for('song_bp.add_to_liked_songs',song_id=s[3], page=1)}}">
                         <img src="static\img\like.png" style="width:5%; float: right; padding-right: 2%;">
                     </a>
                 {% else %}
-                    <a href="{{url_for('song_bp.remove_from_liked_songs',song_id=s[3])}}">
+                    <a href="{{url_for('song_bp.remove_from_liked_songs',song_id=s[3], page=1)}}">
                         <img src="static\img\dislike.png" style="width:5%; float: right;padding-right: 2%;">
                     </a>
                 {% endif %}

@@ -24,6 +24,12 @@
     </tr>
 </table>
 
+<div id="myPopup" style= "display: none; text-align: center;  background-color: #1d1d1d; border-radius: 5vw;">
+    Vuoi davvero cancellare il tuo profilo? <br>
+    <a class="logout_btn" href="#" onclick="myFunction()" style="text-align: center; padding: 0 0.8vw;">No</a>
+    <a class="submit_btn" href="{{ url_for('profile_bp.delete_profile') }}" style="text-align: center; padding: 0 1.2vw;">Sì</a>
+</div>
+
 <div style="display:inline-block; width:30%;">
     <img src="..\static\img\profile.png" style="width:100%;">
 </div>
@@ -34,9 +40,20 @@
         <button id="button">Modifica nome</button>
     </a>
     <br>
-    <a href="{{ url_for('profile_bp.delete_profile') }}">
-        <button class="logout_btn" style="transform: translateY(+25%)">Cancella profilo</button>
+    <a href="#">
+        <button class="logout_btn" style="transform: translateY(+25%)" onclick="myFunction()">Cancella profilo</button>
     </a>
+
+    <script>
+        // When the user clicks on <div>, open the popup
+        function myFunction() {
+          var popup = document.getElementById("myPopup");
+          if (popup.style.display=="none")
+                popup.style.display="block"
+          else
+                popup.style.display="none"
+        }
+    </script>
 </div>    
 
 {% endblock %}

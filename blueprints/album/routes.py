@@ -236,9 +236,9 @@ def remove_song_from_album(song_id, album_id):
 
     return redirect(url_for("album_bp.show_album", album_id=album.Id, artist=current_user.Email))
 
-@album_bp.route('/add_to_liked_albums/<album_id>')
+@album_bp.route('/add_to_liked_albums/<album_id>/<int:page>')
 @login_required # richiede autenticazione
-def add_to_liked_albums(album_id):
+def add_to_liked_albums(album_id, page):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
     elif(current_user.Profile == 'Premium'):
@@ -252,11 +252,14 @@ def add_to_liked_albums(album_id):
     Users.add_album_to_liked(user, album, session)
     Albums.update_likes(album.N_Likes + 1, album_id, session)
 
-    return redirect(url_for("find_bp.find"))
+    if(page == 1):
+        return redirect(url_for("find_bp.find"))
+    else:
+        return redirect(url_for("album_bp.show_album", album_id=album_id, artist=album.Artist))
 
-@album_bp.route('/remove_from_liked_albums/<album_id>')
+@album_bp.route('/remove_from_liked_albums/<album_id>/<int:page>')
 @login_required # richiede autenticazione
-def remove_from_liked_albums(album_id):
+def remove_from_liked_albums(album_id, page):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
     elif(current_user.Profile == 'Premium'):
@@ -270,4 +273,7 @@ def remove_from_liked_albums(album_id):
     Users.remove_album_from_liked(user, album_id, session)
     Albums.update_likes(album.N_Likes - 1, album_id, session)
 
-    return redirect(url_for("find_bp.find"))
+    if(page == 1):
+        return redirect(url_for("find_bp.find"))
+    else:
+        return redirect(url_for("album_bp.show_album", album_id=album_id, artist=album.Artist))

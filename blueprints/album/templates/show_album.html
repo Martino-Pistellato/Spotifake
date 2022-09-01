@@ -18,11 +18,11 @@
         </a>
       {% else %}
         {% if like == False %}
-          <a href="{{url_for('album_bp.add_to_liked_albums',album_id=album.Id)}}">
+          <a href="{{url_for('album_bp.add_to_liked_albums',album_id=album.Id, page=2)}}">
             <img src="..\..\static\img\like.png" style="width:10%;">
           </a>
         {% else %}
-          <a href="{{url_for('album_bp.remove_from_liked_albums',album_id=album.Id)}}">
+          <a href="{{url_for('album_bp.remove_from_liked_albums',album_id=album.Id, page=2)}}">
             <img src="..\..\static\img\dislike.png" style="width:10%;">
           </a>
         {% endif %}
