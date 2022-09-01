@@ -16,4 +16,16 @@
     </dl>
 
     <div class="w3-container"> <h1> Consigliata per oggi </h1> </div>
+    <dl>
+        {% for c in consigli %}
+            <dt style="display:inline;"> 
+                <a href="{{ url_for('song_bp.show_song', song_id=c.Id) }}">
+                    <figure style="display:inline-block; width:15%;">
+                        <img src="..\static\img\gallery.png" style="width:100%;">
+                        <figcaption style="text-align:center;"> {{c.Name}} </figcaption>
+                    </figure>  
+                </a> 
+            </dt>
+        {% endfor %}
+        </dl>
 {% endblock %}
