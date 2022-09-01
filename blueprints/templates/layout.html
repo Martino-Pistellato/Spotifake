@@ -60,7 +60,7 @@
         <div class="container">
             {% for p in playlists %}
             <dl>
-                <dt> 
+                <dt style="text-align:center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;"> 
                     <a href="{{ url_for('playlist_bp.show_playlist_content', playlist_id=p.Id )}}"> {{p.Name}} </a> 
                 </dt>
             </dl>

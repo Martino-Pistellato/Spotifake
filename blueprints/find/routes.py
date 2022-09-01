@@ -24,14 +24,16 @@ def find():
     if(current_user.Profile == 'Free'):
         songs = session.query(Songs).filter(Songs.Is_Restricted == False)
         albums = session.query(Albums).filter(Albums.Is_Restricted == False)
+        artists=session.query(Artists)
     elif(current_user.Profile == 'Premium'):
         songs = session.query(Songs)
         albums = session.query(Albums)
+        artists=session.query(Artists)
     else:
         songs = session.query(Songs).filter(Songs.Artist != current_user.Email)
         albums = session.query(Albums).filter(Albums.Artist != current_user.Email)
+        artists=session.query(Artists).filter(Artists.Email != current_user.Email)
     
-    artists=session.query(Artists)
 
     lst_s=[]
     lst_a=[]

@@ -40,7 +40,7 @@
         <a href="{{url_for('playlist_bp.show_playlist_content',playlist_id=p.Id)}}">
             <figure style="display:inline-block; width:20%;">
                 <img src="..\static\img\gallery.png" style="width:100%;">
-                <figcaption style="text-align:center;"> {{p.Name}} </figcaption>
+                <figcaption style="text-align:center;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 6ch;"> {{p.Name}} </figcaption>
                 <figcaption style="text-align:center;">
                     <a href="{{url_for('playlist_bp.delete_playlist',pl_id=p.Id)}}">
                         <img src="static\img\cancel.png" style="width:30%;">
