@@ -27,13 +27,42 @@
   }
 </script>
 
-    <div style="display:inline-block; width:30%;">
-        <img src="..\static\img\profile.png" style="width:100%;">
-    </div>
-    <div style="display:inline-block; width:35%;">
-        <form id="user_name", action="/update_info" method="POST"> 
-            <input type="text", name="name" placeholder="Nuovo nome", value="{{user.Name}}">
-            <input type="submit", value="Salva">
-    </div>
+<h2 class="title" style="text-align:center;">Aggiorna il tuo profilo</h2>
+
+<form method="POST" action="{{ url_for('profile_bp.update_info') }}">
+  {{ form.csrf_token }}
+
+  <fieldset class="form-field">
+    {{ form.name.label }} 
+    {{ form.name }}
+    {% if form.name.errors %}
+      <ul class="errors">
+        {% for error in form.name.errors %}
+          <li class="error">
+            <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </fieldset>
+  <br>
+  <fieldset class="form-field">
+    {{ form.profile.label }} 
+    {{ form.profile }}
+    {% if form.profile.errors %}
+      <ul class="errors">
+        {% for error in form.profile.errors %}
+          <li class="error">
+            <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </fieldset>
+
+  <br>
+  {{ form.submit(class_="submit_btn") }}
+</form>
+
 
 {% endblock %}

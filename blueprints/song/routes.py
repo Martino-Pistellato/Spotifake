@@ -4,6 +4,7 @@ from flask_login import *
 from blueprints.models import *
 import datetime
 from ..forms import upload_SongForm
+from sqlescapy import sqlescape
 
 # Blueprint Configuration
 song_bp = Blueprint(
@@ -15,19 +16,17 @@ song_bp = Blueprint(
 @song_bp.route('/upload_song', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def upload_song():
-    if(current_user.Profile == 'Artist'):
-        session = Session(bind=engine["artist"])
-    elif(current_user.Profile == 'Premium'):
-        session = Session(bind=engine["premium"])
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
     else:
-        session = Session(bind=engine["free"])
+        session = Session(bind=engine["artist"])
 
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    
-    form = upload_SongForm()
     try:
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        form = upload_SongForm()
+        
         if form.validate_on_submit():
-            name = form.name.data
+            name = sqlescape(form.name.data)
             time = form.time.data
             genre = form.genre.data
             if form.type.data == 'Premium':
@@ -41,6 +40,7 @@ def upload_song():
                 
             return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists))    
         return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
+
     except exc.SQLAlchemyError as err:
         session.rollback()
         flash(err.orig.diag.message_primary, 'error') 
@@ -49,25 +49,26 @@ def upload_song():
 @song_bp.route('/edit_song/<song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def edit_song(song_id):
-    if(current_user.Profile == 'Artist'):
-        session = Session(bind=engine["artist"])
-    elif(current_user.Profile == 'Premium'):
-        session = Session(bind=engine["premium"])
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
     else:
-        session = Session(bind=engine["free"])
-
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    song = session.query(Songs).filter(Songs.Id == song_id).first()
-           
-    if song.Is_Restricted == True:
-        restriction = 'Premium'
-    else:
-        restriction = 'Free'
-    form = upload_SongForm(name=song.Name, time=song.Duration, genre=song.Genre, type = restriction)
+        session = Session(bind=engine["artist"]) 
         
     try:
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        song = session.query(Songs).filter(Songs.Id == song_id).first()
+        if(song.Artist != current_user.Email):
+            return redirect(url_for("home_bp.home"))
+           
+        if song.Is_Restricted == True:
+            restriction = 'Premium'
+        else:
+            restriction = 'Free'
+        
+        form = upload_SongForm(name=song.Name, time=song.Duration, genre=song.Genre, type = restriction)
+        
         if form.validate_on_submit():
-            name = form.name.data
+            name = sqlescape(form.name.data)
             time = form.time.data
             genre = form.genre.data
             if form.type.data == 'Premium':
@@ -94,6 +95,7 @@ def edit_song(song_id):
             return redirect(url_for("song_bp.show_my_songs", user=current_user, playlists=playlists)) 
             
         return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
+
     except exc.SQLAlchemyError as err:
         session.rollback()
         flash(err.orig.diag.message_primary, 'error') 
@@ -103,16 +105,17 @@ def edit_song(song_id):
 @song_bp.route('/delete_song/<song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def delete_song(song_id):
-    if(current_user.Profile == 'Artist'):
-        session = Session(bind=engine["artist"])
-    elif(current_user.Profile == 'Premium'):
-        session = Session(bind=engine["premium"])
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
     else:
-        session = Session(bind=engine["free"])
+        session = Session(bind=engine["artist"]) 
 
     albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id==song_id)))
     playlists = session.query(Playlists).filter(Playlists.Id.in_(session.query(PlaylistsSongs.playlist_id).filter(PlaylistsSongs.song_id==song_id)))
     song=session.query(Songs).filter(Songs.Id == song_id).first()
+
+    if(song.Artist != current_user.Email):
+        return redirect(url_for("home_bp.home"))
             
     st = song.Duration
     minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
@@ -134,12 +137,10 @@ def delete_song(song_id):
 @song_bp.route('/show_my_songs')
 @login_required # richiede autenticazione
 def show_my_songs():
-    if(current_user.Profile == 'Artist'):
-        session = Session(bind=engine["artist"])
-    elif(current_user.Profile == 'Premium'):
-        session = Session(bind=engine["premium"])
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
     else:
-        session = Session(bind=engine["free"])
+        session = Session(bind=engine["artist"]) 
 
     songs_free = session.query(Songs).filter(Songs.Artist == current_user.Email, Songs.Is_Restricted == False)
     songs_premium = session.query(Songs).filter(Songs.Artist == current_user.Email, Songs.Is_Restricted == True)
@@ -160,8 +161,9 @@ def add_to_liked_songs(song_id, page):
     song = session.query(Songs).filter(Songs.Id == song_id).first()
     user = session.query(Users).filter(Users.Email == current_user.Email).first()
 
-    Users.add_song_to_liked(user, song, session)
-    Songs.update_likes(song.N_Likes + 1, song_id, session)
+    if(session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id == song_id, Users_liked_Songs.user_email==user.Email).first() is None):
+        Users.add_song_to_liked(user, song, session)
+        Songs.update_likes(song.N_Likes + 1, song_id, session)
 
     if(page == 1):
         return redirect(url_for("find_bp.find"))
@@ -181,8 +183,9 @@ def remove_from_liked_songs(song_id, page):
     song = session.query(Songs).filter(Songs.Id == song_id).first()
     user = session.query(Users).filter(Users.Email == current_user.Email).first()
 
-    Users.remove_song_from_liked(user, song_id, session)
-    Songs.update_likes(song.N_Likes - 1, song_id, session)
+    if(session.query(Users_liked_Songs).filter(Users_liked_Songs.song_id == song_id, Users_liked_Songs.user_email==user.Email).first() is not None):
+        Users.remove_song_from_liked(user, song_id, session)
+        Songs.update_likes(song.N_Likes - 1, song_id, session)
 
     if(page == 1):
         return redirect(url_for("find_bp.find"))

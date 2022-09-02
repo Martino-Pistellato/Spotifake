@@ -51,7 +51,7 @@
             <td style="text-align:center;"> {{s[2]}} </td>
             <td style="text-align:center;"> 
                 {% for a in albums %}
-                    {{a.Name}}     
+                <a href="{{url_for('album_bp.show_album', album_id = a.Id)}}"> {{a.Name}} </a>    
                 {% endfor %}
             </td>
             <td style="text-align:right;"> {{s[3]}} </td>

@@ -5,6 +5,7 @@ from blueprints.models import *
 from datetime import timedelta
 import datetime
 from ..forms import upload_PlaylistForm
+from sqlescapy import sqlescape
 
 # Blueprint Configuration
 playlist_bp = Blueprint(
@@ -31,7 +32,7 @@ def create_playlist():
         
         if form.validate_on_submit():
             user = session.query(Users).filter(Users.Email == current_user.Email).first()
-            playlist = Playlists(form.name.data)
+            playlist = Playlists(sqlescape(form.name.data))
             Playlists.create_playlist(playlist, session)
             Users.add_playlist(user, playlist, session)
             
@@ -61,6 +62,10 @@ def show_songs_addable(playlist_id):
         songs = session.query(Songs).filter(Songs.Id.not_in(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==playlist_id)), Songs.Is_Restricted==False)
     
     pl = session.query(Playlists).filter(Playlists.Id == playlist_id).first()
+
+    if(pl.User != current_user.Email):
+        return redirect(url_for("home_bp.home"))
+
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)     
     
     return render_template("add_songs.html", songs = songs, user = current_user, playlist = pl, playlists = playlists)
@@ -76,9 +81,12 @@ def show_playlist_content(playlist_id):
         session = Session(bind=engine["free"])
 
     pl = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
+
+    if(pl.User != current_user.Email):
+        return redirect(url_for("home_bp.home"))
+
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==pl.Id))).all()
-    
-    
+  
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     n_songs = len(songs)
     return render_template("show_playlist_content.html", songs = songs, user = current_user, playlist = pl, playlists = playlists, n_songs = n_songs)
@@ -96,6 +104,9 @@ def add_songs(song_id, playlist_id):
     
     song = session.query(Songs).filter(Songs.Id == song_id).first()
     playlist = session.query(Playlists).filter(Playlists.Id==playlist_id).first()
+
+    if(playlist.User != current_user.Email):
+        return redirect(url_for("home_bp.home"))
        
     Playlists.add_song_to_playlist(playlist, song, session)
 
@@ -120,6 +131,11 @@ def delete_playlist(pl_id):
     else:
         session = Session(bind=engine["free"])
     
+    playlist = session.query(Playlists).filter(Playlists.Id==pl_id).first()
+
+    if(playlist.User != current_user.Email):
+        return redirect(url_for("home_bp.home"))
+    
     Playlists.delete_playlist(pl_id, session)
 
     return redirect(url_for("library_bp.library"))
@@ -137,11 +153,14 @@ def edit_playlist(pl_id):
     try:
         playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         pl = session.query(Playlists).filter(Playlists.Id == pl_id).first()
+
+        if(pl.User != current_user.Email):
+            return redirect(url_for("home_bp.home"))
         
         form = upload_PlaylistForm(name=pl.Name)
         
         if form.validate_on_submit():
-            Playlists.update_playlist(pl_id, form.name.data, pl.Duration, session)
+            Playlists.update_playlist(pl_id, sqlescape(form.name.data), pl.Duration, session)
                         
             return redirect(url_for("library_bp.library"))
             
@@ -164,6 +183,9 @@ def remove_song(song_id, pl_id):
         session = Session(bind=engine["free"])
 
     playlist = session.query(Playlists).filter(Playlists.Id == pl_id).first()
+
+    if(playlist.User != current_user.Email):
+        return redirect(url_for("home_bp.home"))
     
     Playlists.remove_song(playlist, song_id, session)
     song=session.query(Songs).filter(Songs.Id == song_id).first()

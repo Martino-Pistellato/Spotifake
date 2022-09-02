@@ -12,25 +12,30 @@ stats_bp = Blueprint(
 )
 
 @stats_bp.route('/stats')
+@login_required
 def stats():
-    if(current_user.Profile == 'Artist'):
-        session = Session(bind=engine["artist"])
-    elif(current_user.Profile == 'Premium'):
-        session = Session(bind=engine["premium"])
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
     else:
-        session = Session(bind=engine["free"])
+        session = Session(bind=engine["artist"]) 
 
-    if(current_user.Profile=='Artist'):
-        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+    
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
             
-        my_songs=session.query(Songs).filter(Songs.Artist==current_user.Email).order_by(Songs.N_Likes.desc())
-        my_albums=session.query(Albums).filter(Albums.Artist==current_user.Email).order_by(Albums.N_Likes.desc())    
+    my_songs=session.query(Songs).filter(Songs.Artist==current_user.Email).order_by(Songs.N_Likes.desc())
+    my_albums=session.query(Albums).filter(Albums.Artist==current_user.Email).order_by(Albums.N_Likes.desc())    
         
-        return render_template("stats.html", user=current_user, playlists=playlists, my_songs=my_songs, my_albums=my_albums)
-    return redirect(url_for('home_bp.home'))
+    return render_template("stats.html", user=current_user, playlists=playlists, my_songs=my_songs, my_albums=my_albums)
+    
 
 @stats_bp.route('/get_countries')
+@login_required
 def get_countries():
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
+    else:
+        session = Session(bind=engine["artist"])
+
     all_liked_songs=session.query(Users_liked_Songs.song_id)
     my_liked_songs=session.query(Songs.Id).filter(and_(Songs.Artist==current_user.Email,Songs.Id.in_(all_liked_songs)))
     users_like_songs=session.query(Users.Email).filter(Users.Email.in_(session.query(Users_liked_Songs.user_email).filter(Users_liked_Songs.song_id.in_(my_liked_songs))))
@@ -48,7 +53,12 @@ def get_countries():
     return jsonify({'dati':res})
 
 @stats_bp.route('/get_ages')
+@login_required
 def get_ages():
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
+    else:
+        session = Session(bind=engine["artist"])
     
     all_liked_songs=session.query(Users_liked_Songs.song_id)
     my_liked_songs=session.query(Songs.Id).filter(and_(Songs.Artist==current_user.Email,Songs.Id.in_(all_liked_songs)))
@@ -80,7 +90,12 @@ def get_ages():
     return jsonify({'dati':res})
 
 @stats_bp.route('/get_genders')
+@login_required
 def get_genders():
+    if(current_user.Profile != 'Artist'):
+        return redirect(url_for("home_bp.home"))
+    else:
+        session = Session(bind=engine["artist"])
     
     all_liked_songs=session.query(Users_liked_Songs.song_id)
     my_liked_songs=session.query(Songs.Id).filter(and_(Songs.Artist==current_user.Email,Songs.Id.in_(all_liked_songs)))

@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="..\..\static\css\style.css">
+
+<style>
+  fieldset{
+    border: 0;
+    background-color: #212221;
+    border-radius: 4vw;
+    text-align: center; 
+    width: 60%;
+    margin: auto;
+  }
+  ul{
+    list-style-type: none;
+  }
+  form{
+    text-align: center;
+  }
+  h1 {
+    color:#1ed760; 
+    text-align: center; 
+    vertical-align: middle;
+  }
+  p {
+    text-align: center; 
+    vertical-align: middle;
+  }
+  .submit_btn {
+    background-color:#1ed760; 
+    border:none; 
+    border-radius:10vw;
+    color: rgb(249, 248, 241);
+    padding: 0.8vw 1.2vw;
+  }
+  .submit_btn:hover {
+    background-color: #16a748;
+  }
+</style>
+
+<head>
+    <title>Spotifake</title>
+    <link rel="icon" type="image/x-icon" href="..\..\static\img\logo.png">
+</head>
+<body>
+  <div class="form-wrapper">
+    <div style="text-align:center;">
+      <img src="..\..\static\img\logo.png" style="width:15%;">
+      <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
+  </div>
+  
+  {% with errors = get_flashed_messages(category_filter=["error"]) %}
+  {% if errors %}
+    <div id="myErrors" class="alert-message block-message error" style="text-align: center; background-color: #1d1d1d; border-radius: 5vw;">
+          <ul>
+              {%- for msg in errors %}
+                <li style="text-align: center;">{{ msg }}</li>
+              {% endfor -%}
+          </ul>
+          <a id="closeButton" class="submit_btn" href="#" onclick="myFunction()" style="text-align: center; padding: 0 0.8vw;">Ok</a>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<script>
+  function myFunction() {
+    var x = document.getElementById("myErrors");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+</script>
+
+<h2 class="title" style="text-align:center;">Cambia Password</h2>
+
+<form method="POST" action="{{ url_for('login_bp.change_pwd') }}">
+  {{ form.csrf_token }}
+
+  <fieldset class="form-field">
+    {{ form.email.label }} 
+    {{ form.email }}
+    {% if form.email.errors %}
+      <ul class="errors">
+        {% for error in form.email.errors %}
+          <li class="error">
+            <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </fieldset>
+  <br>
+  <fieldset class="form-field">
+    {{ form.password.label }} 
+    {{ form.password }}
+    {% if form.password.errors %}
+      <ul class="errors">
+        {% for error in form.password.errors %}
+          <li class="error">
+            <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </fieldset>
+  <br>
+  {{ form.submit(class_="submit_btn") }}
+</form>
+</body>
+</html>

@@ -1,6 +1,30 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+  {% if errors %}
+    <div id="myErrors" class="alert-message block-message error" style="text-align: center; background-color: #1d1d1d; border-radius: 5vw;">
+          <ul>
+              {%- for msg in errors %}
+                <li style="text-align: center;">{{ msg }}</li>
+              {% endfor -%}
+          </ul>
+          <a id="closeButton" class="submit_btn" href="#" onclick="myFunction()" style="text-align: center; padding: 0 0.8vw;">Ok</a>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<script>
+  function myFunction() {
+    var x = document.getElementById("myErrors");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+</script>
+
     <div class="w3-container"> <h1>Le tue playlist <a href="{{ url_for('playlist_bp.create_playlist') }}"> <img src="..\static\img\add.png", style="width:5% ;transform: translateY(-25%)"> </a></h1> </div>
     <dl>
     {% for p in playlists %}

@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
+from sqlescapy import sqlescape
+from ..forms import update_profileForm
 
 # Blueprint Configuration
 profile_bp = Blueprint(
@@ -49,17 +51,23 @@ def update_info():
         session = Session(bind=engine["free"])
 
     try:
-        if request.method == 'POST':
-            name = request.form["name"]
+        form = update_profileForm(name=current_user.Name, profile=current_user.Profile)
+
+        playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+        
+        if form.validate_on_submit():
+            name = sqlescape(form.name.data)
+            prf = form.profile.data
             if(name is not None):
                 user = session.query(Users).filter(Users.Email == current_user.Email).first()
                 Users.update_user(user, name, session)
+                Users.update_profile(user, prf)
                 return redirect(url_for('profile_bp.profile'))
-        return redirect(url_for("profile_bp.update"))
+        return render_template("update_info.html", form=form, playlists=playlists, user=current_user)
     except exc.SQLAlchemyError as err:
         session.rollback()
         flash('Il tuo nome utente deve avere una lunghezza massima di 20 caratteri', 'error')
-        return redirect(url_for("profile_bp.update"))
+        return render_template("update_info.html", form=form, playlists=playlists, user=current_user)
 
 @profile_bp.route('/delete_profile')
 @login_required

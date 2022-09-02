@@ -10,6 +10,16 @@ library_bp = Blueprint(
     static_folder='static'
 )
 
+
+#Route per visualizzare le playlist nella libreria
+
+#A questa pagina ha accesso chiunque
+#Semplicemente vengono collezionate le playlist dell'utente, utili anche a layout.html
+#Oltre all'icona e al nome verranno visualizzati un bottone per eliminare e uno per modificare la playlist
+#In cima alla pagina dei bottoni permettono di scorrere la libreria e passare ad altri contenuti
+#Cliccando sull'icona o sul nome della playlist si viene indirizzati alla pagina della medesima
+#dove se ne possono vedere il nome, la durata, quanti e quali brani vi sono, ed eventualmente toglierne/aggiungerne
+
 @library_bp.route('/library')
 @login_required
 def library():
@@ -22,7 +32,17 @@ def library():
 
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     return render_template("library.html", playlists=playlists, user=current_user)
-    
+
+ 
+#Route per visualizzare gli album a cui l'utente ha messo 'Mi piace' nella libreria
+
+#A questa pagina ha accesso chiunque
+#Semplicemente vengono collezionati gli album a cui l'utente ha messo 'Mi piace' e in una lista
+#vengono inserite n-uple contenenti le informazioni da visualizzare come il nome, la durata, la casa discografica, ecc..
+#Cliccando sull'icona o sul nome si viene reindirizzati alla pagina dell'album
+#Cliccando sul nome dell'artista si viene reindirizzati alla pagina dell'artista
+#In cima alla pagina dei bottoni permettono di scorrere la libreria e passare ad altri contenuti
+   
 @library_bp.route('/albums')
 @login_required
 def albums():
@@ -42,6 +62,16 @@ def albums():
         lst_a.append([a.Name, artist.Name, a.Record_House, a.ReleaseDate, a.Duration, a.Id, artist.Email])
     return render_template("albums.html", playlists=playlists, user=current_user, albums=lst_a)
 
+
+#Route per visualizzare le canzoni a cui l'utente ha messo 'Mi piace' nella libreria
+
+#A questa pagina ha accesso chiunque
+#Semplicemente vengono collezionate le canzoni a cui l'utente ha messo 'Mi piace' e in una lista
+#vengono inserite n-uple contenenti le informazioni da visualizzare come il nome, la durata, gli album che la contengono, ecc..
+#Cliccando sull'icona o sul nome si viene reindirizzati alla pagina della canzone
+#Cliccando sul nome dell'artista si viene reindirizzati alla pagina dell'artista
+#In cima alla pagina dei bottoni permettono di scorrere la libreria e passare ad altri contenuti
+ 
 @library_bp.route('/songs')
 @login_required
 def songs():

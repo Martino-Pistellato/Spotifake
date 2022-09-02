@@ -79,20 +79,6 @@
         </fieldset>
         <br>
         <fieldset class="form-field">
-          {{ form.releaseDate.label }} 
-          {{ form.releaseDate }}
-          {% if form.releaseDate.errors %}
-            <ul class="errors">
-              {% for error in form.releaseDate.errors %}
-                <li class="error">
-                  <i class="fas fa-exclamation"></i> <span class="error-message">{{ error }}</span>
-                </li>
-              {% endfor %}
-            </ul>
-          {% endif %}
-        </fieldset>
-        <br>
-        <fieldset class="form-field">
           {{ form.recordHouse.label }} 
           {{ form.recordHouse }}
           {% if form.recordHouse.errors %}

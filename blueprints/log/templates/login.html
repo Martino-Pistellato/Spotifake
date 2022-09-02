@@ -55,6 +55,30 @@
         <h1 style="display:inline-block; font-size:10vw;"> Spotifake </h1>
     </div>
 
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+{% if errors %}
+  <div id="myErrors" class="alert-message block-message error" style="text-align: center; background-color: #1d1d1d; border-radius: 5vw;">
+        <ul>
+            {%- for msg in errors %}
+              <li style="text-align: center;">{{ msg }}</li>
+            {% endfor -%}
+        </ul>
+        <a id="closeButton" class="submit_btn" href="#" onclick="myFunction()" style="text-align: center; padding: 0 0.8vw;">Ok</a>
+  </div>
+{% endif %}
+{% endwith %}
+
+<script>
+function myFunction() {
+  var x = document.getElementById("myErrors");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
     <h2 class="title" style="text-align:center;">Login</h2>
 
     <form method="POST" action="{{ url_for('login_bp.login') }}">
@@ -92,6 +116,9 @@
     </form>
     <form method="POST" action="{{ url_for('login_bp.subscribe') }}">
       {{ form.subscribe(class_="submit_btn") }}
+    </form>
+    <form method="POST" action="{{ url_for('login_bp.change_pwd') }}">
+      {{ form.pwd_dimenticata(class_="submit_btn") }}
     </form>
   </div>
 </body>

@@ -13,26 +13,32 @@ artist_bp = Blueprint(
     static_folder='static'
 )
 
+#Route per raccogliere e mostrare informazioni sull'artista, quali il nome, l'età, il paese, 
+#il numero di brani e album pubblicati (questi numeri dipendono dal tipo di utente che accede alla pagina: per un
+#utente Free verranno conteggiati solo i contenuti pubblici)
+
+#A questa pagina ha accesso chiunque
+
 @artist_bp.route('/show_artist/<artist_email>')
 @login_required
 def show_artist(artist_email):
     if(current_user.Profile == 'Artist'):
         session = Session(bind=engine["artist"])
-    elif(current_user.Profile == 'Premium'):
-        session = Session(bind=engine["premium"])
-    else:
-        session = Session(bind=engine["free"])
-    
-    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
-    artist = session.query(Artists).filter(Artists.Email == artist_email).first()
-
-    if(current_user.Profile == "Free"):
-        songs = session.query(Songs).filter(Songs.Artist == artist_email, Songs.Is_Restricted == False).all()
-        albums = session.query(Albums).filter(Albums.Artist == artist_email, Albums.Is_Restricted == False).all()
-    else:
         songs = session.query(Songs).filter(Songs.Artist == artist_email).all()
         albums = session.query(Albums).filter(Albums.Artist == artist_email).all()
 
+    elif(current_user.Profile == 'Premium'):
+        session = Session(bind=engine["premium"])
+        songs = session.query(Songs).filter(Songs.Artist == artist_email).all()
+        albums = session.query(Albums).filter(Albums.Artist == artist_email).all()
+
+    else:
+        session = Session(bind=engine["free"])
+        songs = session.query(Songs).filter(Songs.Artist == artist_email, Songs.Is_Restricted == False).all()
+        albums = session.query(Albums).filter(Albums.Artist == artist_email, Albums.Is_Restricted == False).all()
+    
+    playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
+    artist = session.query(Artists).filter(Artists.Email == artist_email).first()
 
     n_songs=len(songs)
     n_albums=len(albums)
