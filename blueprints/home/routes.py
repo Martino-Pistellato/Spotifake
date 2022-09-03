@@ -51,7 +51,7 @@ def home():
         if(len(songs) == len(albums) == 0):
             if(date.today().day - current_user.SubscribedDate.day) >= 5 or (date.today().month - current_user.SubscribedDate.month) > 0:
                 user = session.query(Artists).filter(Artists.Email == current_user.Email).first()
-                Users.update_profile(user, 'Free')
+                Users.update_profile(user, 'Free', session)
                 flash('Il tuo profilo è stato declassato a Free a causa della tua inattività', 'error')
                 return redirect(url_for('home_bp.home'))
 

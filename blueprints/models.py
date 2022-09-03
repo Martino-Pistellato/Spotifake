@@ -158,7 +158,8 @@ class Users(Base, UserMixin):
             session.close()
             if(prf == 'Artist'):
                 session_n = Session(bind=engine["artist"])
-                artist = Artists(email, nome, birth, country, gender, pwd, prf, subs)
+                subs_n = date.today()
+                artist = Artists(email, nome, birth, country, gender, pwd, prf, subs_n)
                 Artists.create_artist(artist, session_n)
 
                 for p in lst_pl:
