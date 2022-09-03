@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template
 from flask import current_app as app
 from flask_login import *
 from blueprints import *
@@ -29,6 +29,7 @@ find_bp = Blueprint(
 #I contenuti nella pagina sono mostati divisi opportunamente nei 3 gruppi Brani, Album e Artisti
 #Oltre alla possibilità di metter 'Mi piace' si può cliccare sul nome di un contenuto o di un artista 
 #per visualizzarne la rispettiva pagina
+
 #Una barra di ricerca permette di navigare agevolmente fra i contenuti tramite un meccanismo show-hide:
 #se, per esempio, l'utente dovesse digitare la lettera L nella barra di ricerca, solo i contenuti e gli artisti
 #con tale lettera nel nome saranno visibili, mentre gli altri verranno nascosti

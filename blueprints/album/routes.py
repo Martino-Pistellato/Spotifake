@@ -1,10 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash
 from flask import current_app as app
 from blueprints.models import *
 from flask_login import *
 from ..forms import upload_AlbumForm
 import datetime
 from sqlescapy import sqlescape
+from sqlalchemy import exc
 
 # Blueprint Configuration
 album_bp = Blueprint(
@@ -12,6 +13,24 @@ album_bp = Blueprint(
     template_folder='templates',
     static_folder='static'
 )
+
+#N.B: ogni pagina html estende layout.html.
+#In questa pagina vi è una colonna laterale con un elenco di funzionalità base:
+#-la propria foto profilo ed il proprio nome per accedere al proprio profilo
+#-Home per tornare alla home
+#-Cerca per andare ad effettuare ricerche di contenuti nell'app
+#-Libreria per risalire agevolmente ai contenuti a cui si è messo 'Mi piace' e le proprie playlist
+#-Crea playlist per creare una nuova playlist
+
+#Un utente Artist avrà anche accesso alle funzionalità:
+#-Carica brano per caricare una canzone
+#-Crea album per creare un album
+#-Le tue canzoni per risalire in modo agevole alle canzoni da lui create
+#-I tuoi album per risalire in modo agevole agli album da lui creati
+#-Statistiche per visualizzare statistiche sui suoi contenuti e gli utenti che ne usufruiscono
+
+#Per ogni utente inoltre, in una sezione separata, sono elencate tutte le playlist da esso create
+
 
 
 #Route per caricare un album sull'applicazione
@@ -47,11 +66,13 @@ def create_album():
                 restriction = True
             else:
                 restriction = False
-                    
-            album = Albums(name, rec_h, current_user.Email, restriction) 
+            
+            relDate = date.today()
+            
+            album = Albums(name, rec_h, current_user.Email, restriction, relDate) 
             artist = session.query(Artists).filter(Artists.Email == current_user.Email).first() 
-            Albums.create_album(album, session) 
-            Artists.add_album_if_artist(artist, album, session) 
+            Albums.create_album(album, session) #crea la'lbum nel DB
+            Artists.add_album_if_artist(artist, album, session) #associa album e artista
                 
             return redirect(url_for("album_bp.show_songs_addable_album", album_id = album.Id)) 
         return render_template('create_album.html',form=form, user=current_user, playlists=playlists) 
@@ -68,7 +89,7 @@ def create_album():
 #Lo stesso avviene se un artista dovesse accedere a questa funzionalità per un album non suo.
 #Tramite due query si risale a tutte le canzoni dell'artista e a quelle che sono già contenute nell'album (questa route viene usata per
 #aggiungere brani all'album in generale), e tramite una terza query vengono trovate quelle che l'artista può inserire, guardando anche 
-#se il contenuto è Premium o meno)
+#se il contenuto è Premium o meno
 #N.B. un artista può creare un album solo con proprie canzoni
 
 @album_bp.route('/show_songs_addable_album/<album_id>', methods=['GET', 'POST'])
@@ -81,15 +102,16 @@ def show_songs_addable_album(album_id):
     
     album = session.query(Albums).filter(and_(Albums.Id == album_id)).first()
 
-    if(album.Artist != current_user.Email):
+    if(album.Artist != current_user.Email): #se l'utente non è l'autore dell'album, torna alla home
         return redirect(url_for("home_bp.home"))
 
+    #prima trovo tutte le canzoni dell'artista, poi quelle che sono già nell'album
     all_my_songs = session.query(Songs.Id).filter(Songs.Artist == current_user.Email)
     my_songs_in_album = session.query(Songs.Id).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album.Id)))
     
-    if(album.Is_Restricted == False):
+    if(album.Is_Restricted == False): #se l'album è pubblico, prendi le canzoni pubbliche dell'utente che non sono nell'album
         my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs), Songs.Is_Restricted == False)
-    else:
+    else: #se l'album è Premium, prendi tutte le canzoni dell'utente che non sono nell'album
         my_songs = session.query(Songs).filter(Songs.Id.not_in(my_songs_in_album), Songs.Id.in_(all_my_songs))
        
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
@@ -103,11 +125,11 @@ def show_songs_addable_album(album_id):
 #Lo stesso avviene se un artista dovesse accedere a questa funzionalità per un album o una canzone non suoi.
 #Nel blocco try..catch.., nel blocco try, vengono trovate la canzone e l'album specifici, il tempo dell'album
 #viene aggiornato aggiungendo il tempo della canzone e la canzone viene aggiunta all'album
-#Nel blocco except viene gestito l'errore nel caso in cui aggiungendo un brano si sforasse il tempo limite di un album
+#Nel blocco except viene gestito l'errore nel caso in cui aggiungendo un brano si sforasse il tempo limite di un album,
 #fissato a 1.30h
 #In entrambi i casi si resta sulla pagina che mostra i brani che si possono aggiungere
 #Se l'operazione è andata a buon fine la canzone sarà nell'album e non apparirà più fra le aggiungibili
-#Altrimenti sarà ancora lì e un verrà mostrato un messaggio d'errore
+#Altrimenti sarà ancora lì e verrà mostrato un messaggio d'errore
 
 @album_bp.route('/add_songs_to_album/<song_id>/<album_id>', methods=['GET', 'POST'])
 @login_required
@@ -121,17 +143,18 @@ def add_songs_to_album(song_id, album_id):
         song = session.query(Songs).filter(Songs.Id == song_id).first()
         album = session.query(Albums).filter(Albums.Id == album_id).first()
 
-        if(album.Artist != current_user.Email or song.Artist != current_user.Email):
+        if(album.Artist != current_user.Email or song.Artist != current_user.Email): #se l'utente non è l'autore dell'album o della canzone, torna alla home
             return redirect(url_for("home_bp.home"))
 
         
         st = song.Duration
         at = album.Duration
         
-        start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
-        add = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
-        end = start + add
+        start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second) #tempo iniziale (data fittizia)
+        add = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour) #tempo da aggiungere
+        end = start + add #tempo finale
         
+        #aggiorna e aggiunge, se non riesce ad aggiornare (oltre 1.30h), la canzone non si aggiunge
         Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted, session)
         Albums.add_song_to_album(album, song, session)
 
@@ -148,6 +171,7 @@ def add_songs_to_album(song_id, album_id):
 #Se un utente Free o Premium dovesse in qualche modo accedere a questa funzionalità, verrebbe rimandato alla home.
 #Tramite due query vengono collezionati gli album pubblici e gli album premium dell'artista che accede alla pagina
 #Nella pagina verrano visualizzati adeguatamente separati nelle due categorie
+#Cliccando sul nome si visualizza la pagina dell'album
 #Oltre all'icona e al nome dell'album, vengono visualizzati anche un bottone per eliminare e uno per modificare l'album
 #In cima alla pagina un bottone da la possibilità di creare nuovi album
 
@@ -159,8 +183,8 @@ def show_my_albums():
     else:
         session = Session(bind=engine["artist"])
 
-    albums_free = session.query(Albums).filter(Albums.Artist == current_user.Email, Albums.Is_Restricted == False)
-    albums_premium= session.query(Albums).filter(Albums.Artist == current_user.Email, Albums.Is_Restricted == True)
+    albums_free = session.query(Albums).filter(Albums.Artist == current_user.Email, Albums.Is_Restricted == False) #album pubblici
+    albums_premium= session.query(Albums).filter(Albums.Artist == current_user.Email, Albums.Is_Restricted == True) #album premium
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
        
     return render_template("show_my_albums.html", user=current_user, playlists=playlists, albums_free=albums_free, albums_premium=albums_premium)
@@ -183,7 +207,7 @@ def delete_album(album_id):
     
     album = session.query(Albums).filter(Albums.Id == album_id).first()
 
-    if(album.Artist != current_user.Email):
+    if(album.Artist != current_user.Email): #se l'utente non è l'autore dell'album, torna alla home
         return redirect(url_for("home_bp.home"))
 
     Albums.delete_album(album_id, session)
@@ -218,7 +242,7 @@ def edit_album(album_id):
         playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
         album = session.query(Albums).filter(Albums.Id == album_id).first()
 
-        if(album.Artist != current_user.Email):
+        if(album.Artist != current_user.Email):  #se l'utente non è l'autore dell'album, torna alla home
             return redirect(url_for("home_bp.home"))
         
         if album.Is_Restricted == True:
@@ -237,18 +261,19 @@ def edit_album(album_id):
                 restriction = False
             
             at = album.Duration
-            start = datetime.datetime(10,10,10, hour=at.hour, minute=at.minute, second=at.second)
+            start = datetime.datetime(10,10,10, hour=at.hour, minute=at.minute, second=at.second) #tempo iniziale
             
-            if(album.Is_Restricted == True and restriction==False):
+            if(album.Is_Restricted == True and restriction==False): #se da Premium diventa pubblico
+                #prendi le canzoni Premium nell'album
                 songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id==album_id)), Songs.Is_Restricted==True)
                 for s in songs:
                     st = s.Duration
-                    minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
-                    start -= minus
+                    minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour) #tempo da sottrarre
+                    start -= minus #tempo finale
 
-                    Albums.remove_song(album, s.Id, session)
+                    Albums.remove_song(album, s.Id, session) #rimuovi la canzone dall'album
                 
-            Albums.update_album(album_id, name, album.ReleaseDate, recordHouse, start.time(), restriction, session)
+            Albums.update_album(album_id, name, album.ReleaseDate, recordHouse, start.time(), restriction, session)# tempo album aggiornato
             return redirect(url_for("album_bp.show_my_albums", user=current_user, playlists=playlists))
         return render_template("edit_album.html", user=current_user, playlists=playlists, id=album_id, form=form)
 
@@ -262,8 +287,9 @@ def edit_album(album_id):
 #sono presenti e il numero di 'Mi piace'
 
 #A questa pagina ha accesso chiunque
-#Se l'utente visualizza la pagina inerente ad un album non suo, ha la possibilità di mettere 'Mi piace'
-#Se l'utente visualizza la pagina inerente ad un album suo, ha la possibilità di accedere alla pagina per aggiungere canzoni
+#Se l'utente visualizza la pagina inerente ad un album non suo, ha la possibilità di mettere 'Mi piace' 
+#e vedere altri album dello stesso artista
+#Se l'utente visualizza la pagina inerente ad un album suo, ha la possibilità di togliere/aggiungere canzoni
 
 @album_bp.route('/show_album/<album_id>/<artist>')
 @login_required
@@ -275,13 +301,14 @@ def show_album(album_id, artist):
     else:
         session = Session(bind=engine["free"])
 
-    album = session.query(Albums).filter(Albums.Id == album_id).first()
-    artist_user = session.query(Artists).filter(Artists.Email == artist).first()
-    songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album_id))).all()
-    albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album_id).all()
+    album = session.query(Albums).filter(Albums.Id == album_id).first() #trova album
+    artist_user = session.query(Artists).filter(Artists.Email == artist).first() #trova artista
+    songs = session.query(Songs).filter(Songs.Id.in_(session.query(AlbumsSongs.song_id).filter(AlbumsSongs.album_id == album_id))).all() #trova canzoni in album
+    albums = session.query(Albums).filter(Albums.Artist == artist, Albums.Id != album_id).all() #trova altri album
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     n_songs = len(songs)
     
+    #mostare like o dislike
     if session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id==album.Id, Users_liked_Albums.user_email==current_user.Email).first() is None:
         like = False
     else:
@@ -308,16 +335,17 @@ def remove_song_from_album(song_id, album_id):
     album = session.query(Albums).filter(Albums.Id == album_id).first()
     song = session.query(Songs).filter(Songs.Id == song_id).first()
 
-    if(album.Artist != current_user.Email or song.Artist != current_user.Email):
+    if(album.Artist != current_user.Email or song.Artist != current_user.Email):#se l'utente non è l'autore dell'album o della canzone, torna alla home
         return redirect(url_for("home_bp.home"))
 
     st = song.Duration
     at = album.Duration
 
-    start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)
-    minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)
-    end = start - minus
+    start = datetime.datetime(10, 10, 10, hour=at.hour, minute=at.minute, second=at.second)#tempo iniziale
+    minus = datetime.timedelta(seconds=st.second, minutes=st.minute, hours=st.hour)#tempo da sottrarre
+    end = start - minus#tempo finale
 
+    #aggiorna e rimuovi
     Albums.update_album(album.Id, album.Name, album.ReleaseDate,album.Record_House, end.time(), album.Is_Restricted, session)
     Albums.remove_song(album, song_id, session)
 
@@ -344,6 +372,7 @@ def add_to_liked_albums(album_id, page):
     album = session.query(Albums).filter(Albums.Id == album_id).first()
     user = session.query(Users).filter(Users.Email == current_user.Email).first()
 
+    #se l'utente non ha già messo 'Mi piace'
     if(session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id == album_id, Users_liked_Albums.user_email==user.Email).first() is None):
         Users.add_album_to_liked(user, album, session)
         Albums.update_likes(album.N_Likes + 1, album_id, session)
@@ -374,6 +403,7 @@ def remove_from_liked_albums(album_id, page):
     album = session.query(Albums).filter(Albums.Id == album_id).first()
     user = session.query(Users).filter(Users.Email == current_user.Email).first()
 
+    #se l'utente ha già messo 'Mi piace'
     if(session.query(Users_liked_Albums).filter(Users_liked_Albums.album_id == album_id, Users_liked_Albums.user_email==user.Email).first() is not None): 
         Users.remove_album_from_liked(user, album_id, session)
         Albums.update_likes(album.N_Likes - 1, album_id, session)

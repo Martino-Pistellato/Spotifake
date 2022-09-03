@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *
@@ -85,11 +85,12 @@ def songs():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     songs = session.query(Songs).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email==current_user.Email)))
     songs_id = session.query(Songs.Id).filter(Songs.Id.in_(session.query(Users_liked_Songs.song_id).filter(Users_liked_Songs.user_email==current_user.Email)))
-    albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id.in_(session.query(Songs.Id).filter(Songs.Id.in_(songs_id)))))).all()
+    #albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id.in_(session.query(Songs.Id).filter(Songs.Id.in_(songs_id)))))).all()
     
     lst_s=[]
     for s in songs:
+        albums = session.query(Albums).filter(Albums.Id.in_(session.query(AlbumsSongs.album_id).filter(AlbumsSongs.song_id==s.Id))).all()
         artist = session.query(Users).filter(Users.Email == s.Artist).first()
-        lst_s.append([s.Name, artist.Name, s.Genre, s.Duration, s.Id, artist.Email])
+        lst_s.append([s.Name, artist.Name, s.Genre, s.Duration, s.Id, artist.Email, albums])
     
-    return render_template("songs.html", playlists=playlists, user=current_user, songs=lst_s, albums=albums)
+    return render_template("songs.html", playlists=playlists, user=current_user, songs=lst_s)

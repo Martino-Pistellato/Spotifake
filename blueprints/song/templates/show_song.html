@@ -12,14 +12,16 @@
             <p>
               <a href="{{url_for('artist_bp.show_artist', artist_email=song.Artist)}}">{{artist_name}}</a> - {{song.Duration}} - {{song.Genre}} - {{song.N_Likes}} like
             </p>
-            {% if like == False %}
-                <a href="{{url_for('song_bp.add_to_liked_songs',song_id=song.Id, page=2)}}">
-                    <img src="..\..\static\img\like.png" style="width:10%;">
-                </a>
-            {% else %}
-                <a href="{{url_for('song_bp.remove_from_liked_songs',song_id=song.Id, page=2)}}">
-                    <img src="..\..\static\img\dislike.png" style="width:10%;">
-                </a>
+            {%if song.Artist != user.Email%}
+                {% if like == False %}
+                    <a href="{{url_for('song_bp.add_to_liked_songs',song_id=song.Id, page=2)}}">
+                        <img src="..\..\static\img\like.png" style="width:10%;">
+                    </a>
+                {% else %}
+                    <a href="{{url_for('song_bp.remove_from_liked_songs',song_id=song.Id, page=2)}}">
+                        <img src="..\..\static\img\dislike.png" style="width:10%;">
+                    </a>
+                {% endif %}
             {% endif %}
         </td>
     </tr>

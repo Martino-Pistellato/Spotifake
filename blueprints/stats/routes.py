@@ -4,12 +4,18 @@ from flask_login import *
 from blueprints.models import *
 from datetime import *
 
+
 # Blueprint Configuration
 stats_bp = Blueprint(
     'stats_bp', __name__,
     template_folder='templates',
     static_folder='static'
 )
+
+#Route per accedere alle statistiche
+
+#Se un utente Free o Premium dovesse accedere a questa funzionalità verrebbe rimandato alla home
+#Vengono collezionate le canzoni e gli album dell'utente così da poter mostare i titoli e il numero di 'Mi piace'
 
 @stats_bp.route('/stats')
 @login_required
@@ -26,7 +32,21 @@ def stats():
     my_albums=session.query(Albums).filter(Albums.Artist==current_user.Email).order_by(Albums.N_Likes.desc())    
         
     return render_template("stats.html", user=current_user, playlists=playlists, my_songs=my_songs, my_albums=my_albums)
-    
+
+#Route per collezionare dati sui paesi
+
+#Se un utente Free o Premium dovesse accedere a questa funzionalità verrebbe rimandato alla home
+#Con una prima query vengono collezionate tutti gli ID di canzoni piaciute (in generale)
+#Con una seconda query basata sulla prima si trovano gli ID delle canzoni piaciute e pubblicate dall'utente
+#Con una terza, basata sulla seconda, si collezionano gli utenti che hanno messo 'Mi piace' a canzoni dell'utente
+#Le stesse tre query sono poi rielaborate per ottenere gli stessi dati per quanto riguarda gli album dell'utente
+
+#Con la query finale si collezionano i paesi ed il numero di utenti che vi vivono fra quelli che hanno messo 'Mi piace' a
+#qualche contenuto dell'artista
+
+#Viene creato un dizionario in cui la chiave è il paese e il valore è il numero di utenti
+#Nella pagina i dati estratti da questo dizionario vengono mostrati sottoforma di grafico a torta, realizzato tramite AJAX,
+#Javascript e Googlechart
 
 @stats_bp.route('/get_countries')
 @login_required
@@ -52,6 +72,23 @@ def get_countries():
     
     return jsonify({'dati':res})
 
+
+#Route per collezionare dati sull'età
+
+#Se un utente Free o Premium dovesse accedere a questa funzionalità verrebbe rimandato alla home
+#Con una prima query vengono collezionate tutti gli ID di canzoni piaciute (in generale)
+#Con una seconda query basata sulla prima si trovano gli ID delle canzoni piaciute e pubblicate dall'utente
+#Con una terza, basata sulla seconda, si collezionano gli utenti che hanno messo 'Mi piace' a canzoni dell'utente
+#Le stesse tre query sono poi rielaborate per ottenere gli stessi dati per quanto riguarda gli album dell'utente
+
+#Con la query finale si collezionano gli utenti che hanno messo 'Mi piace' a qualche contenuto dell'artista 
+#(N.B.: se un utente ha messo 'Mi piace' sia ad una canzone che ad un album, verrà contato una volta)
+
+#Viene creato un dizionario in cui la chiave è l'età dell'utente che ha messo 'Mi piace' 
+#e il valore è il numero di utenti con quell'età
+#Nella pagina i dati estratti da questo dizionario vengono mostrati sottoforma di grafico a torta, realizzato tramite AJAX,
+#Javascript e Googlechart
+
 @stats_bp.route('/get_ages')
 @login_required
 def get_ages():
@@ -70,24 +107,32 @@ def get_ages():
     
     users=session.query(Users).filter(or_(Users.Email.in_(users_like_songs), Users.Email.in_(users_like_albums))).all()
     
-    medium_age = 0
-    for x in users:
-        medium_age += 2022-x.BirthDate.year
-    
-    if(len(users)>0):
-        medium_age /= len(users)
-        
-    
-    
     res={}
     for age in users:
-        if 2022-age.BirthDate.year not in res:
-            res[2022-age.BirthDate.year] = 1
+        if 2022 - age.BirthDate.year not in res:
+            res[2022 - age.BirthDate.year] = 1
         else:
-            res[2022-age.BirthDate.year] += 1
+            res[2022 - age.BirthDate.year] += 1
     
     
     return jsonify({'dati':res})
+
+
+
+#Route per collezionare dati sul sesso
+
+#Se un utente Free o Premium dovesse accedere a questa funzionalità verrebbe rimandato alla home
+#Con una prima query vengono collezionate tutti gli ID di canzoni piaciute (in generale)
+#Con una seconda query basata sulla prima si trovano gli ID delle canzoni piaciute e pubblicate dall'utente
+#Con una terza, basata sulla seconda, si collezionano gli utenti che hanno messo 'Mi piace' a canzoni dell'utente
+#Le stesse tre query sono poi rielaborate per ottenere gli stessi dati per quanto riguarda gli album dell'utente
+
+#Con la query finale si collezionano i sessi ed il numero di utenti con quel sesso fra quelli che hanno messo 'Mi piace' a
+#qualche contenuto dell'artista
+
+#Viene creato un dizionario in cui la chiave è il sesso e il valore è il numero di utenti di quel sesso
+#Nella pagina i dati estratti da questo dizionario vengono mostrati sottoforma di grafico a torta, realizzato tramite AJAX,
+#Javascript e Googlechart
 
 @stats_bp.route('/get_genders')
 @login_required

@@ -5,22 +5,21 @@ from flask_bcrypt import Bcrypt
 from flask_login import *
 from blueprints.models import *
 
-#from blueprints.library.routes import library
-
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+login_manager=LoginManager()
 
-def create_app():
-    """Create Flask application."""
+
+def create_app(): #Crea applicazione Flask
+    
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_object('config.Config')
 
     db.init_app(app)
     bcrypt.init_app(app)
-  
-    
-    with app.app_context():
-        # Import parts of our application
+    login_manager.init_app(app)
+
+    with app.app_context(): # Importa e configura le componenti necessarie per il corretto funzionamento dell'applicazione 
         from .home import routes
         from .profile import routes
         from .log import routes
@@ -32,7 +31,6 @@ def create_app():
         from .song import routes
         from .artist import routes
 
-        # Register Blueprints
         app.register_blueprint(home.routes.home_bp)
         app.register_blueprint(profile.routes.profile_bp)
         app.register_blueprint(log.routes.login_bp)
@@ -44,7 +42,6 @@ def create_app():
         app.register_blueprint(song.routes.song_bp)
         app.register_blueprint(artist.routes.artist_bp)
 
-        # Create Database
         db.create_all()
         
         return app

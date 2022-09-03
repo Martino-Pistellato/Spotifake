@@ -9,7 +9,7 @@
                 <figure style="display:inline-block; width:15%;">
                     <a href="{{url_for('album_bp.show_album', album_id=a.Id, artist=a.Artist)}}"><img src="static\img\gallery.png" style="width:100%;"></a>
                     <figcaption style="text-align:center;">
-                        {{a.Name}}
+                        <a href="{{ url_for('album_bp.show_album', album_id=a.Id, artist=user.Email) }}" > {{a.Name}}</a>
                     </figcaption>
                     <figcaption style="text-align:center;">
                         <a href="{{url_for('album_bp.delete_album', album_id=a.Id)}}">
@@ -33,7 +33,7 @@
                 <figure style="display:inline-block; width:15%;">
                     <a href="{{url_for('album_bp.show_album', album_id=a.Id, artist=a.Artist)}}"><img src="static\img\gallery.png" style="width:100%;"></a>
                     <figcaption style="text-align:center;">
-                        {{a.Name}}  
+                        <a href="{{ url_for('album_bp.show_album', album_id=a.Id, artist=user.Email) }}" > {{a.Name}}</a> 
                     </figcaption>
                     <figcaption style="text-align:center;">
                         <a href="{{url_for('album_bp.delete_album', album_id=a.Id)}}">

@@ -1,7 +1,6 @@
 from datetime import date
-import datetime
 from dateutil.relativedelta import relativedelta
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template
 from flask import current_app as app
 from flask_login import *
 from blueprints.models import *

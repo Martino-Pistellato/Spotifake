@@ -2,10 +2,9 @@
 import sqlalchemy
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, validates, class_mapper
-from flask_login import UserMixin, current_user
-from sqlalchemy import exc
-from flask import Blueprint, render_template, request, redirect, url_for
+from sqlalchemy.orm import sessionmaker, relationship
+from flask_login import UserMixin
+from flask import Blueprint
 from datetime import date
 
 
@@ -41,7 +40,7 @@ session = Session()
 
 #                                         nel DB sono stati definiti 3 ruoli con gli stessi nomi e le opportune restrizioni   
 #                              - Password: la password con cui l'utente si registra all'applicazione
-#
+#                              - SubscribedDate: la data d'iscrizione dell'utente
 #             ---> Relazioni con altre tabelle ---> playlists, relazione con Playlists, 
 #                                                   rappresenta le playlist create dall'utente
 #                                              ---> liked_songs, relazione con Songs, 
@@ -56,7 +55,7 @@ class Users(Base, UserMixin):
   
     Email = Column(String, CheckConstraint(column('Email').like('%@%')), primary_key = True) 
     Name = Column(String(20), nullable = False)
-    BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2022' )), nullable = False)
+    BirthDate = Column(Date, CheckConstraint(and_(column('BirthDate') > '1/1/1900', column('BirthDate') < '1/1/2008' )), nullable = False)
     Country = Column(String, nullable = False)
     Gender = Column(String, CheckConstraint(or_(column('Gender') == 'M', column('Gender') == 'F')), nullable = False) 
     Profile = Column(String, nullable = False)
@@ -82,14 +81,7 @@ class Users(Base, UserMixin):
         self.Profile = profile
         self.SubscribedDate = subs
 
-    def create_user(self): #aggiunge l'utente al DB
-        if(self.Profile == 'Artist'):
-            session = Session(bind=engine["artist"])
-        if(self.Profile == 'Premium'):
-            session = Session(bind=engine["premium"])
-        if(self.Profile == 'Free'):
-            session = Session(bind=engine["free"])
-
+    def create_user(self, session): #aggiunge l'utente al DB
         session.add(self)
         session.commit()
         
@@ -137,29 +129,78 @@ class Users(Base, UserMixin):
         session.query(Users).filter(Users.Email == self.Email).update({'Password': pwd})
         session.commit()
     
-    def update_profile(self, prf):
+    def update_profile(self, prf, session): #aggiorna il profilo dell'utente (N.B: le playlist vanno preservate)
         if(self.Profile != prf):
-            if(self.Profile == 'Artist'):
-                session = Session(bind=engine["artist"])
-                Artists.delete_artist(self, session)
-                session.query(Users).filter(Users.Email == self.Email).update({'Profile':prf})
-                if(prf == 'Premium'):
-                    Premium.create_premium(self)
-            elif(self.Profile == 'Premium'):
-                session = Session(bind=engine["premium"])
-                Premium.delete_premium(self)
-                session.query(Users).filter(Users.Email == self.Email).update({'Profile':prf})
-                if(prf == 'Artist'):
-                    Artists.create_artist(self)
+            email=self.Email
+            nome=self.Name
+            pwd=self.Password
+            birth=self.BirthDate
+            gender=self.Gender
+            country=self.Country
+            subs=self.SubscribedDate
+           
+            pl_id = session.query(Playlists.Id).filter(Playlists.User == email).all()
+            
+            pl_ids=[x[0] for x in pl_id]
+
+            lst_pl=[]
+            lst_sng=[]
+
+            for p in pl_ids:
+                pl = session.query(Playlists).filter(Playlists.Id==p).first()
+                songs = session.query(Songs).filter(Songs.Id.in_(session.query(PlaylistsSongs.song_id).filter(PlaylistsSongs.playlist_id==p))).all()
+                for s in songs:
+                    lst_sng.append([s.Id, p])
+                lst_pl.append([pl.Name, pl.Id, pl.Duration, pl.User])
+
+            
+            Users.delete_user(self, session)
+            session.close()
+            if(prf == 'Artist'):
+                session_n = Session(bind=engine["artist"])
+                artist = Artists(email, nome, birth, country, gender, pwd, prf, subs)
+                Artists.create_artist(artist, session_n)
+
+                for p in lst_pl:
+                    playlist = Playlists(p[0])
+                    Playlists.create_playlist(playlist, session_n)
+                    for s in lst_sng:
+                        if(s[1] == p[1]):
+                            song = session_n.query(Songs).filter(Songs.Id == s[0]).first()
+                            Playlists.add_song_to_playlist(playlist, song, session_n)
+
+                Users.add_playlist(artist, playlist, session_n)
+
+            elif(prf == 'Premium'):
+                session_n = Session(bind=engine["premium"])
+                premium = Premium(email, nome, birth, country, gender, pwd, prf, subs)
+                Premium.create_premium(premium, session_n)
+
+                for p in lst_pl:
+                    playlist = Playlists(p[0])
+                    Playlists.create_playlist(playlist, session_n)
+                    for s in lst_sng:
+                        if(s[1] == p[1]):
+                            song = session_n.query(Songs).filter(Songs.Id == s[0]).first()
+                            Playlists.add_song_to_playlist(playlist, song, session_n)
+
+                Users.add_playlist(premium, playlist, session_n)
+
             else:
-                session = Session(bind=engine["free"])
-                session.query(Users).filter(Users.Email == self.Email).update({'Profile':prf})
-                if(prf == 'Artist'):
-                    Artists.create_artist(self)
-                else:
-                    Premium.create_premium(self)
+                session_n = Session(bind=engine["free"])
+                user = Users(email, nome, birth, country, gender, pwd, prf, subs)
+                Users.create_user(user, session_n)
 
+                for p in lst_pl:
+                    playlist = Playlists(p[0])
+                    Playlists.create_playlist(playlist, session_n)
+                    for s in lst_sng:
+                        if(s[1] == p[1]):
+                            song = session_n.query(Songs).filter(Songs.Id == s[0]).first()
+                            Playlists.add_song_to_playlist(playlist, song, session_n)
 
+                Users.add_playlist(user, playlist, session_n)
+        
 
 
 #Tabella Premium ---> Sottoclasse di Users, contiene solo un campo Email (FK, Users) 
@@ -174,22 +215,14 @@ class Premium(Users):
     def __init__(self, email, name, birth, country, gender, password, profile, subs):
         super().__init__(email, name, birth, country, gender, password, profile, subs)
 
-    def create_premium(self): #aggiunge l'utente al DB e popola il rispettivo campo Email in Premium
-        if(self.Profile == 'Artist'):
-            session = Session(bind=engine["artist"])
-        if(self.Profile == 'Premium'):
-            session = Session(bind=engine["premium"])
-        if(self.Profile == 'Free'):
-            session = Session(bind=engine["free"])
+    def create_premium(self, session): #aggiunge l'utente al DB e popola il rispettivo campo Email in Premium
+        print('creo un premium')
+        print(self)
         session.add(self)
         session.commit()
+        print('commit effettuato')
 
     
-    def delete_premium(self, session):
-        session.query(Premium).filter(Premium.Email == self.Email).delete()
-        session.commit() 
-
-       
 #Tabella Artists ---> Sottoclasse di Users, contiene solo un campo Email (FK, Users) 
 #                     che rappresenta gli indirizzi Email degli utenti Artist
 #               
@@ -210,20 +243,9 @@ class Artists(Users):
     def __init__(self, email, name, birth, country, gender, password, profile, subs):
         super().__init__(email, name, birth, country, gender, password, profile, subs)
 
-    def create_artist(self): #aggiunge l'utente al DB e popola il rispettivo campo Email in Artists
-        if(self.Profile == 'Artist'):
-            session = Session(bind=engine["artist"])
-        if(self.Profile == 'Premium'):
-            session = Session(bind=engine["premium"])
-        if(self.Profile == 'Free'):
-            session = Session(bind=engine["free"])
-
+    def create_artist(self, session): #aggiunge l'utente al DB e popola il rispettivo campo Email in Artists
         session.add(self)
         session.commit()
-
-    def delete_artist(self, session):
-        session.query(Artists).filter(Artists.Email == self.Email).delete()
-        session.commit()   
 
     def add_song_if_artist(self, song, session): #associa una canzone all'artista che l'ha creata
         self.songs.append(song)
@@ -322,9 +344,9 @@ class Albums(Base):
     def __repr__(self):
         return "<Albums(Name='%s', ReleaseDate='%s', Duration='%s', Id='%d', Record_House='%s')>" % (self.Name, self.ReleaseDate, self.Duration, self.Id, self.Record_House)
 
-    def __init__(self, name, record_house, artist, restr):
+    def __init__(self, name, record_house, artist, restr, rel):
         self.Name=name
-        self.ReleaseDate=date.today()
+        self.ReleaseDate=rel
         self.Duration='00:00:00'
         self.Record_House=record_house
         self.Artist = artist
@@ -466,16 +488,59 @@ class PlaylistsSongs(Base):
 
 ####################################################################################
 
-#Base.metadata.drop_all(bind=engine)
-#Base.metadata.create_all(engine["admin"])
 
-#session.add(Profiles('Free'))
-#session.add(Profiles('Premium'))
-#session.add(Profiles('Artist'))
+################## TRIGGER E FUNZIONI ##################### 
 
-#session.add(Record_Houses('Bloody'))
-#@session.add(Record_Houses('Universal'))
-#session.add(Record_Houses('Soffro'))
 
-#session.commit()
+# CREATE TRIGGER "no_same_name_album" BEFORE INSERT OR UPDATE ON "public"."Albums"
+# FOR EACH ROW
+# EXECUTE PROCEDURE "public"."no_same_name_alb"(); 
+#CREATE OR REPLACE FUNCTION "public"."no_same_name_alb"()
+#  RETURNS "pg_catalog"."trigger" AS $BODY$BEGIN
+#        IF (NEW."Name" IN (SELECT a."Name" 
+#                           FROM "public"."Albums" AS a
+#                           WHERE a."Artist" = NEW."Artist" and a."Id" != NEW."Id")) THEN
+#        RAISE EXCEPTION 'Album con questo nome già presente';
+#         END IF;
 
+#         RETURN NEW;
+# END$BODY$
+#   LANGUAGE plpgsql VOLATILE
+#   COST 100;
+
+
+# CREATE TRIGGER "no_same_name_playlist" BEFORE INSERT OR UPDATE ON "public"."Playlists"
+# FOR EACH ROW
+# EXECUTE PROCEDURE "public"."no_same_name_pl"();
+# CREATE OR REPLACE FUNCTION "public"."no_same_name_pl"()
+#   RETURNS "pg_catalog"."trigger" AS $BODY$BEGIN
+#         IF (NEW."Name" IN (SELECT p."Name" 
+#                            FROM "public"."Playlists" AS p
+#                            WHERE p."User" = NEW."User" and p."Id" != NEW."Id")) THEN
+#         RAISE EXCEPTION 'Playlist con questo nome già presente';
+#         END IF;
+
+#         RETURN NEW;
+# END$BODY$
+#   LANGUAGE plpgsql VOLATILE
+#   COST 100;
+
+
+
+# CREATE TRIGGER "no_same_name_song" BEFORE INSERT OR UPDATE ON "public"."Songs"
+# FOR EACH ROW
+# # EXECUTE PROCEDURE "public"."no_same_name_sng"();
+# CREATE OR REPLACE FUNCTION "public"."no_same_name_sng"()
+#   RETURNS "pg_catalog"."trigger" AS $BODY$BEGIN
+#         IF (NEW."Name" IN (SELECT s."Name" 
+#                            FROM "public"."Songs" AS s
+#                            WHERE s."Artist" = NEW."Artist" and s."Id" != NEW."Id")) THEN
+#         RAISE EXCEPTION 'Brano con questo nome già presente';
+#         END IF;
+
+#         RETURN NEW;
+# END$BODY$
+#   LANGUAGE plpgsql VOLATILE
+#   COST 100;
+
+# ALTER FUNCTION "public"."no_same_name_sng"() OWNER TO "postgres";

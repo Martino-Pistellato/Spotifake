@@ -2,12 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask import current_app as app
 from flask_login import *
 from blueprints import *
-import datetime
 from datetime import date
-from dateutil.relativedelta import relativedelta
 
-login_manager=LoginManager()
-login_manager.init_app(app)
 
 # Blueprint Configuration
 home_bp = Blueprint(
@@ -21,20 +17,29 @@ home_bp = Blueprint(
 #A questa pagina ha accesso chiunque
 #Questa è la prima pagina a venire visualizzata dopo il login
 #Oltre alle playlist dell'utente, vengono visualizzate 5 canzoni "consigliate"
+
 #L'algoritmo, implementato in questa route, funziona così:
 #Tramite una prima query vengono collezionate le canzoni a cui l'utente ha messo 'Mi piace', e tramite una seconda query
 #basata sulla prima vengono estratti i generi di tali canzoni, ordinati in ordine decrescente in base a quante canzoni 
 #fra le piaciute hanno quel genere
+
 #Vengono poi collezionate le canzoni a cui l'utente non ha messo 'Mi piace', in ordine decrescente per numero di 'Mi piace, 
 #facendo sempre attenzione al tipo di profilo:
 #A un utente Free non vengono consigliate canzoni Premium
 #Fra i consigliati di un artista non possono di certo esserci le su stesse canzoni
+
 #Una volta collezionate queste informazioni adeguatamente, viene creata una lista in cui inserire i 5 brani consigliati
 #Come prima cosa si passano in rassegna i generi piaciuti: se fra le canzoni senza 'Mi piace' da parte dell'utente
 #ci sono canzoni aventi come genere un genere piaciuto, queste vengono inserite nella lista.
+
 #Se alla fine c'è ancora posto nella lista, vengono inserite le canzoni con il numero
 #di 'Mi piace' più alto fra le rimanenti senza 'Mi piace' da parte dell'utente
+
 #In cima alla pagina viene visualizzato anche un bottone per creare una nuova playlist
+
+#N.B.: se ad accedere è stato un artista, vengono eseguiti dei controlli extra:
+#      - se un artista non ha pubblicato nulla ed è iscritto da almeno 5 giorni, il suo profilo viene declassato a Free
+#      - se un artista ha pubblicato album da almeno 3 giorni la cui durata è ancora nulla, questi vengono rimossi
 
 @home_bp.route('/home')
 @login_required # richiede autenticazione
@@ -47,7 +52,7 @@ def home():
             if(date.today().day - current_user.SubscribedDate.day) >= 5 or (date.today().month - current_user.SubscribedDate.month) > 0:
                 user = session.query(Artists).filter(Artists.Email == current_user.Email).first()
                 Users.update_profile(user, 'Free')
-                flash('Il tuo profilo è stato declassato a causa della tua inattività', 'error')
+                flash('Il tuo profilo è stato declassato a Free a causa della tua inattività', 'error')
                 return redirect(url_for('home_bp.home'))
 
         albums=session.query(Albums).filter(Albums.Duration == '00:00:00')
@@ -80,9 +85,9 @@ def home():
     for lg in liked_genres_str: #scorro i generi piaciuti
             for nls in not_liked_songs: #scorro le canzoni senza 'Mi piace' da parte dell'utente
                 if (len(res) < 5):
-                    if  nls.Genre == lg: #se la canzone ha lo stesso genere di un genere piaciuto
+                    if  nls.Genre == lg: #se la canzone ha lo stesso genere del genere piaciuto preso in considerazione
                         res.append(nls) #aggiungo la canzone alle consigliate
-                        not_liked_songs.remove(nls) #la rimuovo da wuelle senza 'Mi piace'
+                        not_liked_songs.remove(nls) #la rimuovo da quelle senza 'Mi piace'
         
     
     if(len(res) < 5 ): #se c'è ancora spazio nella lista

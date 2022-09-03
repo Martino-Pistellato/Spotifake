@@ -50,8 +50,8 @@
             <td style="text-align:center;"><a href="{{url_for('artist_bp.show_artist', artist_email=s[5])}}">{{s[1]}}</a></td>
             <td style="text-align:center;"> {{s[2]}} </td>
             <td style="text-align:center;"> 
-                {% for a in albums %}
-                <a href="{{url_for('album_bp.show_album', album_id = a.Id)}}"> {{a.Name}} </a>    
+                {% for a in s[6] %}
+                <a href="{{url_for('album_bp.show_album', album_id = a.Id, artist=s[5])}}"> - {{a.Name}}  </a>    
                 {% endfor %}
             </td>
             <td style="text-align:right;"> {{s[3]}} </td>

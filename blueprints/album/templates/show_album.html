@@ -51,6 +51,7 @@
     {% endfor %}
 </table>
 
+{% if user.Email != album.Artist %}
 <div class="w3-container"> <h2> Altro di {{artist_name}} </h2> </div>
 <dl>
     {% for a in albums %}
@@ -64,7 +65,7 @@
     </dt>
     {% endfor %}
 </dl>
-
+{% endif %}
 {% endblock %}
 
     

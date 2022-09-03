@@ -5,12 +5,34 @@ from wtforms.validators import DataRequired, Email, Length, ValidationError
 import datetime
 from datetime import date
 
+### Funzioni per gestire errori nei form
+
+def time_check_song(form, field):
+    t = field.data
+    if (t.hour > 0 or t.minute > 30 or (t.minute == 30 and t.second > 0)):
+        raise ValidationError('Un brano deve avere una durata massima di 30 minuti')
+    elif(t.hour == 0 and t.minute == 0):
+        raise ValidationError('Un brano deve avere una durata minima di 1 minuto')
+
+def len_name_song(form, field):
+    if(len(field.data) > 10):
+        raise ValidationError('Il titolo di un brano deve avere una lunghezza massima di 10 caratteri')
+
+def len_name_alb(form, field):
+    if(len(field.data) > 10):
+        raise ValidationError('Il titolo di un album deve avere una lunghezza massima di 10 caratteri')
+
+def len_name_pl(form, field):
+    if(len(field.data) > 10):
+        raise ValidationError('Il titolo di una playlist deve avere una lunghezza massima di 10 caratteri')
 
 def len_name_user(form, field):
     if(len(field.data) > 20):
         raise ValidationError('Il tuo nome utente deve avere una lunghezza massima di 20 caratteri')
 
-class subscribeForm(FlaskForm):
+#Forms
+
+class subscribeForm(FlaskForm): #Form per iscriversi all'applicazione
     name = StringField(
         'Nome',
         [
@@ -261,7 +283,7 @@ class subscribeForm(FlaskForm):
     submit = SubmitField('Invia')
 
 
-class update_profileForm(FlaskForm):
+class update_profileForm(FlaskForm): #Form per aggiornare il profilo utente
     name = StringField(
         'Nome',
         [
@@ -278,9 +300,9 @@ class update_profileForm(FlaskForm):
         ]
     )
     submit = SubmitField('Invia')
+
     
-    
-class loginForm(FlaskForm):
+class loginForm(FlaskForm): #Form per accedere all'applicazione
     email = StringField(
         'Email',
         [
@@ -301,22 +323,26 @@ class loginForm(FlaskForm):
     pwd_dimenticata = SubmitField('Password dimenticata')
 
 
-def time_check_song(form, field):
-    t = field.data
-    if (t.hour > 0 or t.minute > 30 or (t.minute == 30 and t.second > 0)):
-        raise ValidationError('Un brano deve avere una durata massima di 30 minuti')
-    elif(t.hour == 0 and t.minute == 0):
-        raise ValidationError('Un brano deve avere una durata minima di 1 minuto')
+class change_pwdForm(FlaskForm): #Form per cambiare password
+    email = StringField(
+        'Email',
+        [
+            Email(message='Indirizzo email non valido'),
+            DataRequired(message="Inserisci l'indirizzo email")
+        ]
+    )
+    password = PasswordField(
+        'Nuova password',
+        [
+            DataRequired(message="Scegli una nuova password"),
+            Length(min=8, message=('La password deve essere di almeno 8 caratteri'))
+        ]
+    )
+    
+    submit = SubmitField('Salva')
 
-def len_name_song(form, field):
-    if(len(field.data) > 10):
-        raise ValidationError('Il titolo di un brano deve avere una lunghezza massima di 10 caratteri')
 
-def len_name_alb(form, field):
-    if(len(field.data) > 10):
-        raise ValidationError('Il titolo di un album deve avere una lunghezza massima di 10 caratteri')
-
-class upload_SongForm(FlaskForm):
+class upload_SongForm(FlaskForm): #Form per caricare una canzone
     name = StringField(
         'Nome',
         [
@@ -359,7 +385,7 @@ class upload_SongForm(FlaskForm):
     
     submit = SubmitField('Salva')
     
-class upload_AlbumForm(FlaskForm):
+class upload_AlbumForm(FlaskForm): #Form per caricare un album
     name = StringField(
         'Nome',
         [
@@ -391,11 +417,11 @@ class upload_AlbumForm(FlaskForm):
     
     submit = SubmitField('Salva')
     
-class upload_PlaylistForm(FlaskForm):
+class upload_PlaylistForm(FlaskForm): #Form per caricare una playlist
     name = StringField(
         'Nome',
         [
-            DataRequired(message="Indica il nome della playlist")
+            DataRequired(message="Indica il nome della playlist"), len_name_pl
         ]
     )
     

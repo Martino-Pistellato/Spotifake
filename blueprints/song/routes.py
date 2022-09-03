@@ -5,6 +5,7 @@ from blueprints.models import *
 import datetime
 from ..forms import upload_SongForm
 from sqlescapy import sqlescape
+from sqlalchemy import exc
 
 # Blueprint Configuration
 song_bp = Blueprint(
@@ -12,6 +13,21 @@ song_bp = Blueprint(
     template_folder='templates',
     static_folder='static'
 )
+
+
+#Route per caricare una canzone sull'applicazione
+
+#Solo gli artisti possono creare contenuti. Se un utente Free o Premium dovesse in qualche modo accedere a questa 
+#funzionalità, verrebbe rimandato alla home. 
+#Nel blocco try..except.., nel blocco try, vengono caricate le informazioni necessarie al caricamento della canzone,
+#prese dall'apposito form
+#Se tutte le informazioni sono ammesse, viene creata la canzone, caricata sul DB, associato all'artista che l'ha creata e 
+#l'utente viene reindirizzato alla pagina contente le sue canzoni
+#Se le informazioni non sono ammesse, e questo avviene quando 1)il nome della canzone eccede i 10 ch (gestito dal form)
+#                                                             2)il nome della canzone è uguale a quello di una canzone 
+#                                                               già esistente e caricata dal medesimo artista (gestito dal blocco except)
+#si resterà sulla pagina dedicata al form, che mostrerà specifici messaggi d'errore
+
 
 @song_bp.route('/upload_song', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
@@ -46,6 +62,23 @@ def upload_song():
         flash(err.orig.diag.message_primary, 'error') 
         return render_template('upload_song.html',form=form, user=current_user, playlists=playlists)
     
+
+#Route per modificare una canzone
+
+#Se un utente Free o Premium dovesse in qualche modo accedere a questa funzionalità, verrebbe rimandato alla home.
+#Lo stesso avviene se un artista dovesse accedere a questa funzionalità per una canzone non sua.
+#Nel blocco try..except.., nel blocco try, vengono caricate le informazioni necessarie alla modifica della canzone,
+#prese dall'apposito form
+#Se tutte le informazioni sono ammesse, viene modificata la canzone.
+#Da notare che, nel caso in cui la canzone fosse originariamente un contenuto Free che tramite modifica viene
+#alzato a contenuto Premium, da eventuali album Free che la contengono la canzone viene rimossa, e le durate di
+#ciascuno si aggiornano di conseguenza
+#Se le informazioni non sono ammesse, e questo avviene quando 1)il nome della canzone eccede i 10 ch (gestito dal form)
+#                                                             2)il nome della canzone è uguale a quello di una canzone 
+#                                                               già esistente e caricata dal medesimo artista (gestito dal blocco except)
+#si resterà sulla pagina dedicata al form, che mostrerà specifici messaggi d'errore
+
+
 @song_bp.route('/edit_song/<song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def edit_song(song_id):
@@ -88,7 +121,7 @@ def edit_song(song_id):
 
                     Albums.remove_song(a, song_id, session)
 
-                    Albums.update_album(a.Id, a.Name, a.ReleaseDate,a.Record_House, end.time(), a.Is_Restricted, session)
+                    Albums.update_album(a.Id, a.Name, a.ReleaseDate, a.Record_House, end.time(), a.Is_Restricted, session)
 
             Songs.update_song(song_id, name, time, genre, restriction, session)
                 
@@ -101,7 +134,16 @@ def edit_song(song_id):
         flash(err.orig.diag.message_primary, 'error') 
         return render_template("edit_song.html", user=current_user, playlists=playlists, id=song_id, form=form)
             
-    
+
+
+#Route per eliminare una canzone
+
+#Se un utente Free o Premium dovesse in qualche modo accedere a questa funzionalità, verrebbe rimandato alla home.
+#Lo stesso avviene se un artista dovesse accedere a questa funzionalità per una canzone non sua.
+#Innanzitutto, se una canzone viene eliminata, le playlist e gli album che la contengono vanno aggiornati di conseguenza.
+#Le loro durate vengono quindi aggiornate sottraendo il tempo della canzone
+#Viene poi chiamata l'opportuna funzione in Songs
+
 @song_bp.route('/delete_song/<song_id>', methods=['GET', 'POST'])
 @login_required # richiede autenticazione
 def delete_song(song_id):
@@ -133,7 +175,15 @@ def delete_song(song_id):
 
     Songs.delete_song(song_id, session)
     return redirect(url_for("song_bp.show_my_songs"))
-    
+
+#Route per raccogliere e mostrare tutti le canzoni di un artista
+
+#Se un utente Free o Premium dovesse in qualche modo accedere a questa funzionalità, verrebbe rimandato alla home.
+#Tramite due query vengono collezionate le canzoni pubbliche e le canzoni premium dell'artista che accede alla pagina
+#Nella pagina verrano visualizzate adeguatamente separate nelle due categorie
+#Oltre all'icona e al nome della canzone, vengono visualizzati anche un bottone per eliminare e uno per modificare la canzone
+#In cima alla pagina un bottone da la possibilità di creare nuovi album
+
 @song_bp.route('/show_my_songs')
 @login_required # richiede autenticazione
 def show_my_songs():
@@ -147,7 +197,16 @@ def show_my_songs():
     playlists = session.query(Playlists).filter(Playlists.User == current_user.Email)
     
     return render_template("show_my_songs.html", songs_free = songs_free, songs_premium = songs_premium, user = current_user, playlists = playlists)
-    
+
+
+
+#Route per mettere 'Mi piace' ad una canzone
+
+#A questa funzionalità ha accesso chiunque
+#Prima di effettuare l'azione e modificare il numero di 'Mi piace' della canzone, è opportuno controllare che
+#l'utente in questione non abbia già messo 'Mi piace' alla canzone, in modo che utenti malintenzionati
+#non accedano a questa funzionalià in maniera diretta andando a pompare o sgonfiare i 'Mi piace' a loro piacimento
+
 @song_bp.route('/add_to_liked_songs/<song_id>/<int:page>')
 @login_required # richiede autenticazione
 def add_to_liked_songs(song_id, page):
@@ -169,6 +228,13 @@ def add_to_liked_songs(song_id, page):
         return redirect(url_for("find_bp.find"))
     else:
         return redirect(url_for("song_bp.show_song", song_id=song_id))
+
+#Route per togliere 'Mi piace' ad una canzone
+
+#A questa funzionalità ha accesso chiunque
+#Prima di effettuare l'azione e modificare il numero di 'Mi piace' della canzone, è opportuno controllare che
+#l'utente in questione abbia già messo 'Mi piace' alla canzone, in modo che utenti malintenzionati
+#non accedano a questa funzionalià in maniera diretta andando a pompare o sgonfiare i 'Mi piace' a loro piacimento
 
 @song_bp.route('/remove_from_liked_songs/<song_id>/<int:page>')
 @login_required # richiede autenticazione
@@ -192,6 +258,12 @@ def remove_from_liked_songs(song_id, page):
     else:
         return redirect(url_for("song_bp.show_song", song_id=song_id))
 
+
+#Route per visualizzare la pagina contenente alcune informazioni di una canzone, come il titolo, l'artista, la durata, 
+#il genere ed il numero di 'Mi piace'
+
+#A questa pagina ha accesso chiunque
+#Se l'utente visualizza la pagina inerente ad una canzone non sua, ha la possibilità di mettere 'Mi piace'
 
 @song_bp.route('/show_song/<song_id>')
 @login_required # richiede autenticazione
