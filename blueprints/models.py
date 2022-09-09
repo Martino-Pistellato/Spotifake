@@ -217,11 +217,9 @@ class Premium(Users):
         super().__init__(email, name, birth, country, gender, password, profile, subs)
 
     def create_premium(self, session): #aggiunge l'utente al DB e popola il rispettivo campo Email in Premium
-        print('creo un premium')
         print(self)
         session.add(self)
         session.commit()
-        print('commit effettuato')
 
     
 #Tabella Artists ---> Sottoclasse di Users, contiene solo un campo Email (FK, Users) 
